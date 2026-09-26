@@ -8,6 +8,8 @@ export const NEWS_CATEGORIES = [
   { id: 'cell-therapy', label: 'Cell Therapy', color: 'teal' },
   { id: 'regulatory', label: 'Regulatory', color: 'slate' },
   { id: 'funding', label: 'Funding & Deals', color: 'blue' },
+  { id: 'research', label: 'Research', color: 'cyan' },
+  { id: 'industry', label: 'Industry & Pharma', color: 'indigo' },
 ];
 
 export const categoryById = Object.fromEntries(NEWS_CATEGORIES.map((c) => [c.id, c]));
@@ -21,5 +23,7 @@ export const CATEGORY_STYLES = {
   amber: 'bg-amber-50 text-amber-700 ring-amber-600/15 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20',
   teal: 'bg-teal-50 text-teal-700 ring-teal-600/15 dark:bg-teal-400/10 dark:text-teal-300 dark:ring-teal-400/20',
   slate: 'bg-slate-100 text-slate-700 ring-slate-600/15 dark:bg-slate-400/10 dark:text-slate-300 dark:ring-slate-400/20',
+  cyan: 'bg-cyan-50 text-cyan-700 ring-cyan-600/15 dark:bg-cyan-400/10 dark:text-cyan-300 dark:ring-cyan-400/20',
+  indigo: 'bg-indigo-50 text-indigo-700 ring-indigo-600/15 dark:bg-indigo-400/10 dark:text-indigo-300 dark:ring-indigo-400/20',
   blue: 'bg-blue-50 text-blue-700 ring-blue-600/15 dark:bg-blue-400/10 dark:text-blue-300 dark:ring-blue-400/20',
 };

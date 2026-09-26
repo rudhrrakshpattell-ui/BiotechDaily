@@ -10,12 +10,12 @@ export default function Footer() {
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-500 dark:text-slate-400">
             Your daily briefing on discoveries, companies and capital shaping the life sciences.
           </p>
-          {isMockMode && (
-            <p className="mt-4 inline-flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-800 dark:bg-amber-400/10 dark:text-amber-300">
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-              Demo mode: headlines, startups and podcasts are sample data
-            </p>
-          )}
+          <p className="mt-4 inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 dark:bg-white/5 dark:text-slate-400">
+            <span className={`h-1.5 w-1.5 rounded-full ${isMockMode ? 'bg-amber-500' : 'bg-helix-500'}`} />
+            {isMockMode
+              ? 'Demo mode: all content is sample data'
+              : 'Live headlines from STAT, BioPharma Dive, GEN, BioSpace, Labiotech & ScienceDaily. Startups and podcasts are sample data.'}
+          </p>
         </div>
         <div>
           <p className="mb-3 text-sm font-semibold text-slate-900 dark:text-white">Explore</p>

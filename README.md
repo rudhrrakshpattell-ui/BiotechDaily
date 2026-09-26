@@ -23,20 +23,30 @@ No Node yet? Serve the folder with any static server and open `preview.html`, wh
 python3 -m http.server 5178
 ```
 
-## Connecting a real API
+## Backend
 
-All data goes through `src/services/api.js`. Pages never import mock data directly.
+The backend is a set of Vercel serverless functions in `api/`, deployed with the site. The frontend calls them through `src/services/api.js`.
 
-1. Copy `.env.example` to `.env` and set `VITE_API_BASE_URL=https://your-api.example.com`.
-2. Implement the endpoints listed at the top of `api.js`. The mock query functions in the same file show how each endpoint should filter and sort, and what shape it should return.
+| Route | Data |
+| --- | --- |
+| `GET /api/news` | **Live.** Pulled from STAT, BioPharma Dive, GEN, BioSpace, Labiotech and ScienceDaily RSS feeds |
+| `GET /api/search` | Live news + sample data |
+| `GET /api/companies`, `/api/companies/:id` | Sample data (`src/data/companies.js`) |
+| `GET /api/startups`, `/api/videos`, `/api/podcasts` | Sample data |
 
-If `VITE_API_BASE_URL` is empty, the app uses the mock data in `src/data/` and adds a short delay so loading states still show. The footer shows a "Demo mode" badge while mock data is in use.
+How the news feed works (`server/feeds.js`):
+- All feeds are fetched in parallel with an 8-second timeout each. If one feed fails, it's skipped and the others still show.
+- Stories are normalized, de-duplicated and sorted into topics by keyword rules (`RULES`).
+- Results are cached in memory for 10 minutes. Vercel's CDN also caches responses (`s-maxage=600`), so the feeds are fetched at most a few times an hour.
+- If every feed fails, the API returns the sample stories with `live: false`, so the site keeps working.
 
-Suggested sources: an RSS/news aggregator for `/news`, the YouTube Data API (a curated playlist) for `/videos`, podcast RSS feeds parsed server-side for `/podcasts`, and a financial-data provider for live company figures.
+To add a feed, append it to `FEEDS` in `server/feeds.js`. It must be RSS 2.0, RDF or Atom.
+
+In development, `npm run dev` serves the same functions through a small Vite plugin (see `vite.config.js`), so there's nothing extra to run. `VITE_API_BASE_URL` is set to `/api` in `.env.development` and `.env.production`. Empty it to run fully on mock data in the browser.
 
 ## About the mock data
 
-- **News headlines, startups, investors and podcast shows are fictional.** News dates are generated relative to today, so the feed always looks current.
+- **Startups, investors and podcast shows are fictional.** The sample news in `src/data/news.js` is fictional too; it's used only as a fallback when the live feeds fail, or in mock mode.
 - **Company background and marketed products** come from public information. Headcount, market cap and pipeline stages are approximate placeholders.
 - **Videos** are real public YouTube videos.
 - **Podcast audio** uses royalty-free SoundHelix demo tracks.
@@ -44,8 +54,12 @@ Suggested sources: an RSS/news aggregator for `/news`, the YouTube Data API (a c
 ## Structure
 
 ```
+api/                   Vercel serverless functions (one file per route)
+server/feeds.js        RSS fetching, parsing, classification, caching
+server/http.js         JSON/caching helpers for the functions
 src/
   services/api.js      data layer (mock ↔ HTTP switch)
+  services/queries.js  filter/sort logic shared by the mock layer and the API
   services/format.js   date/money formatting
   data/                mock data + shared taxonomy
   hooks/               useAsync, useDebounce, useTheme, useRoute (hash router)

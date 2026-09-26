@@ -5,6 +5,7 @@ import { api } from '../services/api.js';
 import { useAsync } from '../hooks/useAsync.js';
 import { useDebounce } from '../hooks/useDebounce.js';
 import { NEWS_CATEGORIES } from '../data/categories.js';
+import { timeAgo } from '../services/format.js';
 
 const CATEGORY_OPTIONS = [{ id: 'all', label: 'All topics' }, ...NEWS_CATEGORIES];
 const RANGE_OPTIONS = [
@@ -60,7 +61,13 @@ export default function News({ query }) {
           {data && (
             <p className="mb-4 text-sm text-slate-500" aria-live="polite">
               {data.total} {data.total === 1 ? 'story' : 'stories'}
-              {loading && <span className="ml-2 text-brand-500">Updating…</span>}
+              {data.live && (
+                <span className="ml-3 inline-flex items-center gap-1.5 text-helix-600 dark:text-helix-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-helix-500" />
+                  Live · updated {timeAgo(data.fetchedAt)}
+                </span>
+              )}
+              {loading && <span className="ml-3 text-brand-500">Updating…</span>}
             </p>
           )}
           {error && <ErrorState error={error} onRetry={reload} />}

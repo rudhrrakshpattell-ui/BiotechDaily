@@ -10,7 +10,7 @@ import { formatMoney, formatDate } from '../services/format.js';
 import { NEWS_CATEGORIES } from '../data/categories.js';
 
 export default function Home() {
-  const newsQ = useAsync(() => api.getNews({ pageSize: 7 }), []);
+  const newsQ = useAsync(() => api.getNews({ pageSize: 20 }), []);
   const companiesQ = useAsync(() => api.getCompanies({}), []);
   const startupsQ = useAsync(() => api.getStartups({ sort: 'recent' }), []);
   const videosQ = useAsync(() => api.getVideos({}), []);
@@ -18,7 +18,7 @@ export default function Home() {
 
   const items = newsQ.data?.items ?? [];
   const featured = items.find((n) => n.featured) ?? items[0];
-  const rest = items.filter((n) => n !== featured);
+  const rest = items.filter((n) => n !== featured).slice(0, 6);
   const today = formatDate(new Date().toISOString(), { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
   return (
