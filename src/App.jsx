@@ -7,13 +7,31 @@ import { PlayerProvider, usePlayer } from './context/PlayerContext.jsx';
 import { useRoute } from './hooks/useRoute.js';
 import { useTheme } from './hooks/useTheme.js';
 import Home from './pages/Home.jsx';
-// Home ships in the main bundle; other pages load on first visit.
-const News = lazy(() => import('./pages/News.jsx'));
-const Companies = lazy(() => import('./pages/Companies.jsx'));
-const CompanyDetail = lazy(() => import('./pages/CompanyDetail.jsx'));
-const Startups = lazy(() => import('./pages/Startups.jsx'));
-const Media = lazy(() => import('./pages/Media.jsx'));
-const Podcasts = lazy(() => import('./pages/Podcasts.jsx'));
+// Home ships in the main bundle; other pages are code-split. Once a page's module has loaded (e.g. via
+// preloadPage before the first render), it renders directly instead of suspending, so there's no
+// placeholder flash and no layout shift on a direct visit.
+function lazyPage(loader) {
+  let Loaded = null;
+  const load = () => loader().then((m) => (Loaded = m.default));
+  const Lazy = lazy(() => loader());
+  const Page = (props) => (Loaded ? <Loaded {...props} /> : <Lazy {...props} />);
+  Page.preload = load;
+  return Page;
+}
+
+const News = lazyPage(() => import('./pages/News.jsx'));
+const Companies = lazyPage(() => import('./pages/Companies.jsx'));
+const CompanyDetail = lazyPage(() => import('./pages/CompanyDetail.jsx'));
+const Startups = lazyPage(() => import('./pages/Startups.jsx'));
+const Media = lazyPage(() => import('./pages/Media.jsx'));
+const Podcasts = lazyPage(() => import('./pages/Podcasts.jsx'));
+
+// Loads the code for the page at `pathname` (no-op for Home and unknown paths).
+export function preloadPage(pathname) {
+  const [section, id] = pathname.split('/').filter(Boolean);
+  const page = { news: News, companies: id ? CompanyDetail : Companies, startups: Startups, media: Media, podcasts: Podcasts }[section];
+  return page ? page.preload().catch(() => {}) : Promise.resolve();
+}
 import { metaFor } from './seo.js';
 
 function Page({ route }) {
@@ -67,7 +85,8 @@ function Shell() {
     <div className={`flex min-h-screen flex-col ${episode ? 'pb-20' : ''}`}>
       <Header path={route.path} theme={theme} onToggleTheme={toggle} onOpenSearch={() => setSearchOpen(true)} />
       <main className="flex-1">
-        <Suspense fallback={<div className="mx-auto max-w-7xl space-y-4 px-4 py-12 sm:px-6"><div className="skeleton h-10 w-72" /><div className="skeleton h-64" /></div>}>
+        {/* min-h-screen keeps the footer below the fold while a page's code loads, so it doesn't jump. */}
+        <Suspense fallback={<div className="mx-auto min-h-screen max-w-7xl space-y-4 px-4 py-12 sm:px-6"><div className="skeleton h-10 w-72" /><div className="skeleton h-64" /></div>}>
           <Page route={route} />
         </Suspense>
       </main>
