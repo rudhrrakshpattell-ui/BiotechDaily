@@ -1,4 +1,5 @@
 import { Logo, NAV } from './Header.jsx';
+import { FOUNDER } from '../seo.js';
 import { isMockMode } from '../services/api.js';
 
 export default function Footer() {
@@ -9,6 +10,7 @@ export default function Footer() {
           <Logo />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-500 dark:text-slate-400">
             Your daily briefing on discoveries, companies and capital shaping the life sciences.
+            <span className="mt-2 block font-medium text-slate-700 dark:text-slate-300">Founded by {FOUNDER}</span>
           </p>
           <p className="mt-4 inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 dark:bg-white/5 dark:text-slate-400">
             <span className={`h-1.5 w-1.5 rounded-full ${isMockMode ? 'bg-amber-500' : 'bg-helix-500'}`} />

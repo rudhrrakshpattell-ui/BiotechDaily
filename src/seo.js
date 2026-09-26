@@ -5,13 +5,14 @@ import { categoryById } from './data/categories.js';
 import { trendByKey, trendLabel } from './services/trending.js';
 
 export const SITE_NAME = 'BiotechDaily';
+export const FOUNDER = 'Rudhrraksh Pattell';
 // Canonical origin for links in sitemaps and share tags. Override with SITE_URL for a custom domain.
 export const DEFAULT_SITE_URL = 'https://biotech-daily.vercel.app';
 export const OG_IMAGE_PATH = '/og-image.png';
 
 const HOME = {
   title: 'BiotechDaily: daily biotech news, funding rounds, videos & podcasts',
-  description: 'The biotech day in one place: live news from STAT, Fierce Biotech and BioPharma Dive, the latest funding rounds and IPOs, top company profiles, videos and podcasts.',
+  description: 'BiotechDaily, founded by Rudhrraksh Pattell: live biotech news from STAT, Fierce Biotech and BioPharma Dive, funding rounds, company profiles, videos and podcasts.',
 };
 
 const page = (title, description) => ({ title: `${title} | ${SITE_NAME}`, description });

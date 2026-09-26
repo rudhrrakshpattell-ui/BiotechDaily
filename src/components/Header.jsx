@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Icon from './Icon.jsx';
+import { FOUNDER } from '../seo.js';
 
 export const NAV = [
   { href: '/news', label: 'News', icon: 'newspaper' },
@@ -15,8 +16,11 @@ export function Logo() {
       <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-helix-500 text-white shadow-md shadow-brand-600/25">
         <Icon name="dna" className="h-5 w-5" strokeWidth={2} />
       </span>
-      <span className="font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
-        Biotech<span className="text-brand-600 dark:text-brand-300">Daily</span>
+      <span className="flex flex-col leading-none">
+        <span className="font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
+          Biotech<span className="text-brand-600 dark:text-brand-300">Daily</span>
+        </span>
+        <span className="mt-0.5 text-[11px] font-medium text-slate-500">by {FOUNDER}</span>
       </span>
     </a>
   );

@@ -30,3 +30,11 @@ test('tags are escaped and previews get noindex', () => {
   assert.doesNotMatch(html, /noindex/);
   assert.match(seoTags('/', {}, 'https://example.com', { production: false }).html, /noindex/);
 });
+
+test('index.html defaults match the home page meta and credit the founder', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const home = metaFor('/');
+  assert.equal(html.split(`content="${home.description}"`).length - 1, 3, 'description, og:description, twitter:description');
+  assert.match(html, /<meta name="author" content="Rudhrraksh Pattell" \/>/);
+});
