@@ -29,18 +29,21 @@ The backend is a set of Vercel serverless functions in `api/`, deployed with the
 
 | Route | Data |
 | --- | --- |
-| `GET /api/news` | **Live.** Pulled from STAT, BioPharma Dive, GEN, BioSpace, Labiotech and ScienceDaily RSS feeds |
-| `GET /api/search` | Live news + sample data |
-| `GET /api/companies`, `/api/companies/:id` | Sample data (`src/data/companies.js`) |
-| `GET /api/startups`, `/api/videos`, `/api/podcasts` | Sample data |
+| `GET /api/news` | **Live.** STAT, BioPharma Dive, GEN, BioSpace, Labiotech and ScienceDaily RSS feeds (`server/news.js`) |
+| `GET /api/videos` | **Live.** Latest uploads from 8 YouTube channels via their free channel feeds, no API key (`server/videos.js`) |
+| `GET /api/podcasts` | **Live.** 5 latest episodes from 6 biotech podcasts' RSS feeds (`server/podcasts.js`) |
+| `GET /api/search` | Live news, videos and episodes + companies and startups |
+| `GET /api/companies`, `/api/companies/:id` | Curated data (`src/data/companies.js`) |
+| `GET /api/startups` | Sample data |
 
-How the news feed works (`server/feeds.js`):
+How the live sources work (shared plumbing in `server/rss.js`):
 - All feeds are fetched in parallel with an 8-second timeout each. If one feed fails, it's skipped and the others still show.
 - Stories are normalized, de-duplicated and sorted into topics by keyword rules (`RULES`).
-- Results are cached in memory for 10 minutes. Vercel's CDN also caches responses (`s-maxage=600`), so the feeds are fetched at most a few times an hour.
-- If every feed fails, the API returns the sample stories with `live: false`, so the site keeps working.
+- Results are cached in memory (news 10 minutes, videos and podcasts 30 minutes), and Vercel's CDN caches responses too, so sources are fetched at most a few times an hour.
+- If every source of a kind fails, the API returns the sample data instead, so the site keeps working.
+- Videos skip hiring/culture clips and feature the most-watched upload of the last two weeks.
 
-To add a feed, append it to `FEEDS` in `server/feeds.js`. It must be RSS 2.0, RDF or Atom.
+To add a source, append it to `NEWS_FEEDS`, `VIDEO_CHANNELS` or `PODCAST_FEEDS`. A YouTube channel ID is in the channel page's source (`"externalId"`); a podcast's feed URL can be found with `https://itunes.apple.com/search?media=podcast&term=<name>`.
 
 In development, `npm run dev` serves the same functions through a small Vite plugin (see `vite.config.js`), so there's nothing extra to run. `VITE_API_BASE_URL` is set to `/api` in `.env.development` and `.env.production`. Empty it to run fully on mock data in the browser.
 
@@ -48,14 +51,16 @@ In development, `npm run dev` serves the same functions through a small Vite plu
 
 - **Startups, investors and podcast shows are fictional.** The sample news in `src/data/news.js` is fictional too; it's used only as a fallback when the live feeds fail, or in mock mode.
 - **Company background and marketed products** come from public information. Headcount, market cap and pipeline stages are approximate placeholders.
-- **Videos** are real public YouTube videos.
-- **Podcast audio** uses royalty-free SoundHelix demo tracks.
+- **Sample videos and podcasts** in `src/data/` are only used as a fallback; the sample podcast audio is royalty-free SoundHelix demo tracks.
 
 ## Structure
 
 ```
 api/                   Vercel serverless functions (one file per route)
-server/feeds.js        RSS fetching, parsing, classification, caching
+server/rss.js          feed fetching, parsing, topic classification, caching
+server/news.js         live news
+server/videos.js       live YouTube videos
+server/podcasts.js     live podcast episodes
 server/http.js         JSON/caching helpers for the functions
 src/
   services/api.js      data layer (mock ↔ HTTP switch)

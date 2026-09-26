@@ -1,4 +1,4 @@
-import { getLiveNews } from '../server/feeds.js';
+import { getLiveNews } from '../server/news.js';
 import { json, params, companyKeyword } from '../server/http.js';
 import { queryNews } from '../src/services/queries.js';
 import { companies } from '../src/data/companies.js';

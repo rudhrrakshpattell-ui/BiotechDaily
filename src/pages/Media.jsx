@@ -1,41 +1,49 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import VideoEmbed from '../components/VideoEmbed.jsx';
 import NewsCard from '../components/NewsCard.jsx';
 import { Chips, LinkArrow, PageHeader, SkeletonList } from '../components/ui.jsx';
 import { api } from '../services/api.js';
 import { useAsync } from '../hooks/useAsync.js';
 import { NEWS_CATEGORIES } from '../data/categories.js';
+import { formatNumber, timeAgo } from '../services/format.js';
 
-const TOPICS = [{ id: 'all', label: 'All videos' }, ...NEWS_CATEGORIES.filter((c) => ['gene-editing', 'mrna', 'ai-discovery'].includes(c.id))];
+const videoMeta = (v) => [v.channel, v.date && timeAgo(v.date), v.views != null && `${formatNumber(v.views)} views`].filter(Boolean).join(' · ');
 
 export default function Media({ query }) {
   const [topic, setTopic] = useState('all');
   const [currentId, setCurrentId] = useState(query.v ?? null);
-  const videos = useAsync(() => api.getVideos({ category: topic }), [topic]);
+  // Load every video once and filter locally, so the topic chips can reflect what's actually available.
+  const videos = useAsync(() => api.getVideos({}), []);
   const headlines = useAsync(() => api.getNews({ pageSize: 6 }), []);
 
   useEffect(() => { if (query.v) setCurrentId(query.v); }, [query.v]);
 
-  const list = videos.data ?? [];
-  const current = list.find((v) => v.id === currentId) ?? list.find((v) => v.featured) ?? list[0];
+  const all = videos.data ?? [];
+  const topics = useMemo(
+    () => [{ id: 'all', label: 'All videos' }, ...NEWS_CATEGORIES.filter((c) => all.some((v) => v.category === c.id))],
+    [all],
+  );
+  const list = topic === 'all' ? all : all.filter((v) => v.category === topic);
+  const current = all.find((v) => v.id === currentId) ?? all.find((v) => v.featured) ?? all[0];
 
   return (
     <>
-      <PageHeader eyebrow="Video & news" title="Watch and catch up" description="Explainers and talks on the science behind the headlines, next to today’s top stories." />
+      <PageHeader eyebrow="Video & news" title="Watch and catch up" description="The latest uploads from STAT, Endpoints News, the Broad Institute, Nature, Science and more, next to today’s top stories." />
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 pt-8 sm:px-6 lg:grid-cols-[1fr_22rem]">
         <div className="min-w-0">
           {current ? (
             <div>
               <VideoEmbed key={current.id} video={current} autoLoad={Boolean(currentId)} className="shadow-xl shadow-brand-900/10" />
               <h2 className="mt-4 font-display text-xl font-semibold text-slate-900 dark:text-white">{current.title}</h2>
-              <p className="text-sm text-slate-500">{current.channel}</p>
+              <p className="text-sm text-slate-500">{videoMeta(current)}</p>
+              {current.description && <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">{current.description}</p>}
             </div>
           ) : (
             <div className="skeleton aspect-video" />
           )}
 
-          <div className="mt-10 mb-4">
-            <Chips label="Video topic" options={TOPICS} value={topic} onChange={(t) => { setTopic(t); setCurrentId(null); }} />
+          <div className="mb-4 mt-10">
+            <Chips label="Video topic" options={topics} value={topic} onChange={setTopic} />
           </div>
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {videos.data
@@ -45,7 +53,7 @@ export default function Media({ query }) {
                       <img src={`https://i.ytimg.com/vi/${v.youtubeId}/mqdefault.jpg`} alt="" loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
                     </div>
                     <p className="mt-2 line-clamp-2 text-sm font-semibold text-slate-900 group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-brand-300">{v.title}</p>
-                    <p className="text-xs text-slate-500">{v.channel}</p>
+                    <p className="text-xs text-slate-500">{videoMeta(v)}</p>
                   </button>
                 ))
               : <SkeletonList count={3} className="aspect-video" />}

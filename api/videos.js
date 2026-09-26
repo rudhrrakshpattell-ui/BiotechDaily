@@ -1,7 +1,15 @@
+import { getLiveVideos } from '../server/videos.js';
 import { json, params } from '../server/http.js';
 import { queryVideos } from '../src/services/queries.js';
-import { videos } from '../src/data/videos.js';
+import { videos as sampleVideos } from '../src/data/videos.js';
 
-export function GET(request) {
-  return json(queryVideos(videos, params(request)), { maxAge: 3600 });
+export async function GET(request) {
+  const p = params(request);
+  try {
+    const { items } = await getLiveVideos();
+    return json(queryVideos(items, p), { maxAge: 1800 });
+  } catch (err) {
+    console.error(err);
+    return json(queryVideos(sampleVideos, p), { maxAge: 60 });
+  }
 }

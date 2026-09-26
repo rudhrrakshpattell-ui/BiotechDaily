@@ -22,9 +22,9 @@ const MOCK_LATENCY_MS = 220;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-function toQuery(params = {}) {
+function toQuery(params) {
   const qs = new URLSearchParams();
-  Object.entries(params).forEach(([k, v]) => {
+  Object.entries(params ?? {}).forEach(([k, v]) => {
     if (v !== undefined && v !== null && v !== '' && v !== 'all') qs.set(k, v);
   });
   const s = qs.toString();
