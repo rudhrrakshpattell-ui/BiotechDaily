@@ -1,5 +1,6 @@
 import Icon from './Icon.jsx';
 import { usePlayer } from '../context/PlayerContext.jsx';
+import { imageUrl } from '../services/images.js';
 
 const fmt = (s) => {
   if (!Number.isFinite(s)) return '0:00';
@@ -17,7 +18,7 @@ export default function PodcastPlayer() {
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/90 backdrop-blur-xl dark:border-white/10 dark:bg-ink-900/90">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:gap-5 sm:px-6">
         {episode.imageUrl ? (
-          <img src={episode.imageUrl} alt="" className="hidden h-11 w-11 shrink-0 rounded-xl object-cover sm:block" />
+          <img src={imageUrl(episode.imageUrl, 128)} alt="" className="hidden h-11 w-11 shrink-0 rounded-xl object-cover sm:block" />
         ) : (
           <div className={`hidden h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br text-white sm:grid ${episode.color || 'from-brand-500 to-helix-500'}`}>
             <Icon name="headphones" className="h-5 w-5" />

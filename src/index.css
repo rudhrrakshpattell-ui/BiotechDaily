@@ -3,8 +3,8 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Sora", "Inter", ui-sans-serif, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Sora Variable", "Inter Variable", ui-sans-serif, sans-serif;
 
   --color-brand-50: #eef6ff;
   --color-brand-100: #d9ebff;
@@ -43,6 +43,12 @@ html { scroll-behavior: smooth; }
   .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.14em] text-helix-600 dark:text-helix-400; }
   .skeleton { @apply animate-pulse rounded-xl bg-slate-200/70 dark:bg-white/5; }
   .focus-ring { @apply outline-none focus-visible:ring-4 focus-visible:ring-brand-500/25; }
+}
+
+/* slate-500 text is only 3.7:1 on the dark navy background; lift it to slate-400 (7:1) in dark mode.
+   :where() keeps specificity equal to the utility, so hover/focus colors still take precedence. */
+@layer utilities {
+  :where(.dark) .text-slate-500 { color: var(--color-slate-400); }
 }
 
 .bg-grid {

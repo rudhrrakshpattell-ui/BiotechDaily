@@ -4,12 +4,13 @@ import { ErrorState, PageHeader, SkeletonList } from '../components/ui.jsx';
 import { api } from '../services/api.js';
 import { useAsync } from '../hooks/useAsync.js';
 import { usePlayer } from '../context/PlayerContext.jsx';
+import { imageProps } from '../services/images.js';
 
 function ShowArt({ show }) {
   if (show.imageUrl) {
     return (
       <div className="relative bg-slate-100 dark:bg-ink-800">
-        <img src={show.imageUrl} alt={`${show.title} cover art`} loading="lazy" className="aspect-square w-full object-cover" />
+        <img {...imageProps(show.imageUrl, [384, 640], '(min-width: 768px) 224px, 100vw')} alt={`${show.title} cover art`} loading="lazy" decoding="async" className="aspect-square w-full object-cover" />
       </div>
     );
   }

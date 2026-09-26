@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
 import SearchDialog from './components/SearchDialog.jsx';
@@ -7,12 +7,13 @@ import { PlayerProvider, usePlayer } from './context/PlayerContext.jsx';
 import { useRoute } from './hooks/useRoute.js';
 import { useTheme } from './hooks/useTheme.js';
 import Home from './pages/Home.jsx';
-import News from './pages/News.jsx';
-import Companies from './pages/Companies.jsx';
-import CompanyDetail from './pages/CompanyDetail.jsx';
-import Startups from './pages/Startups.jsx';
-import Media from './pages/Media.jsx';
-import Podcasts from './pages/Podcasts.jsx';
+// Home ships in the main bundle; other pages load on first visit.
+const News = lazy(() => import('./pages/News.jsx'));
+const Companies = lazy(() => import('./pages/Companies.jsx'));
+const CompanyDetail = lazy(() => import('./pages/CompanyDetail.jsx'));
+const Startups = lazy(() => import('./pages/Startups.jsx'));
+const Media = lazy(() => import('./pages/Media.jsx'));
+const Podcasts = lazy(() => import('./pages/Podcasts.jsx'));
 import { metaFor } from './seo.js';
 
 function Page({ route }) {
@@ -66,7 +67,9 @@ function Shell() {
     <div className={`flex min-h-screen flex-col ${episode ? 'pb-20' : ''}`}>
       <Header path={route.path} theme={theme} onToggleTheme={toggle} onOpenSearch={() => setSearchOpen(true)} />
       <main className="flex-1">
-        <Page route={route} />
+        <Suspense fallback={<div className="mx-auto max-w-7xl space-y-4 px-4 py-12 sm:px-6"><div className="skeleton h-10 w-72" /><div className="skeleton h-64" /></div>}>
+          <Page route={route} />
+        </Suspense>
       </main>
       <Footer />
       <PodcastPlayer />

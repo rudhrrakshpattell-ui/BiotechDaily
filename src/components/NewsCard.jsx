@@ -3,6 +3,7 @@ import Icon from './Icon.jsx';
 import { CategoryBadge } from './ui.jsx';
 import { categoryById } from '../data/categories.js';
 import { timeAgo } from '../services/format.js';
+import { imageProps } from '../services/images.js';
 
 // Abstract "cover art" per category until real article images come from the API (item.imageUrl).
 const COVERS = {
@@ -18,11 +19,24 @@ const COVERS = {
   indigo: 'from-indigo-400 via-brand-600 to-ink-700',
 };
 
-export function NewsCover({ item, className = '' }) {
+// `widths`/`sizes` describe how large the image is displayed, so the optimizer serves a fitting size.
+// `priority` is for the one above-the-fold image (the featured story): load it eagerly and first.
+export function NewsCover({ item, className = '', widths = [384, 640], sizes = '100vw', priority = false }) {
   const color = categoryById[item.category]?.color ?? 'blue';
   const [imageFailed, setImageFailed] = useState(false);
   if (item.imageUrl && !imageFailed) {
-    return <img src={item.imageUrl} alt="" loading="lazy" referrerPolicy="no-referrer" onError={() => setImageFailed(true)} className={`object-cover ${className}`} />;
+    return (
+      <img
+        {...imageProps(item.imageUrl, widths, sizes)}
+        alt=""
+        loading={priority ? 'eager' : 'lazy'}
+        fetchPriority={priority ? 'high' : 'auto'}
+        decoding="async"
+        referrerPolicy="no-referrer"
+        onError={() => setImageFailed(true)}
+        className={`object-cover ${className}`}
+      />
+    );
   }
   return (
     <div className={`relative overflow-hidden bg-gradient-to-br ${COVERS[color]} ${className}`}>
@@ -41,7 +55,7 @@ export default function NewsCard({ item, variant = 'row' }) {
   if (variant === 'featured') {
     return (
       <article className="card group relative overflow-hidden">
-        <NewsCover item={item} className="aspect-[16/8] w-full" />
+        <NewsCover item={item} className="aspect-[16/8] w-full" widths={[640, 828, 1200]} sizes="(min-width: 1024px) 720px, 100vw" priority />
         <div className="p-6">
           <div className="mb-3 flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
             <CategoryBadge id={item.category} />
@@ -60,7 +74,7 @@ export default function NewsCard({ item, variant = 'row' }) {
   if (variant === 'compact') {
     return (
       <article className="group relative flex gap-3 py-3">
-        <NewsCover item={item} className="h-14 w-14 shrink-0 rounded-lg" />
+        <NewsCover item={item} className="h-14 w-14 shrink-0 rounded-lg" widths={[128]} sizes="56px" />
         <div className="min-w-0">
           <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-slate-900 group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-brand-300"><Title item={item} /></h3>
           <p className="mt-1 text-xs text-slate-500">{categoryById[item.category]?.label} · {timeAgo(item.date)}</p>
@@ -71,7 +85,7 @@ export default function NewsCard({ item, variant = 'row' }) {
 
   return (
     <article className="card group relative flex flex-col gap-4 p-4 transition hover:border-brand-200 hover:shadow-md sm:flex-row sm:p-5 dark:hover:border-brand-400/30">
-      <NewsCover item={item} className="aspect-[16/9] w-full shrink-0 rounded-xl sm:aspect-auto sm:h-auto sm:w-44" />
+      <NewsCover item={item} className="aspect-[16/9] w-full shrink-0 rounded-xl sm:aspect-auto sm:h-auto sm:w-44" widths={[384, 640]} sizes="(min-width: 640px) 176px, 100vw" />
       <div className="min-w-0 flex-1">
         <div className="mb-2 flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
           <CategoryBadge id={item.category} />

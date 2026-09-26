@@ -1,11 +1,104 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
-    { "source": "/sitemap.xml", "destination": "/api/seo?file=sitemap" },
-    { "source": "/robots.txt", "destination": "/api/seo?file=robots" },
-    { "source": "/((?!api/|assets/).+)", "destination": "/api/page?__path=$1" }
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/seo?file=sitemap"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/api/seo?file=robots"
+    },
+    {
+      "source": "/((?!api/|assets/).+)",
+      "destination": "/api/page?__path=$1"
+    }
   ],
   "functions": {
-    "api/page.js": { "includeFiles": "dist/index.html" }
+    "api/page.js": {
+      "includeFiles": "dist/index.html"
+    }
+  },
+  "images": {
+    "sizes": [
+      64,
+      128,
+      256,
+      384,
+      640,
+      828,
+      1200
+    ],
+    "formats": [
+      "image/avif",
+      "image/webp"
+    ],
+    "minimumCacheTTL": 86400,
+    "remotePatterns": [
+      {
+        "protocol": "https",
+        "hostname": "statnews.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "**.statnews.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "fiercebiotech.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "**.fiercebiotech.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "genengnews.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "**.genengnews.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "labiotech.eu"
+      },
+      {
+        "protocol": "https",
+        "hostname": "**.labiotech.eu"
+      },
+      {
+        "protocol": "https",
+        "hostname": "biospace.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "**.biospace.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "imgproxy.divecdn.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "megaphone.imgix.net"
+      },
+      {
+        "protocol": "https",
+        "hostname": "d3t3ozftmdmh3i.cloudfront.net"
+      },
+      {
+        "protocol": "https",
+        "hostname": "**.sndcdn.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "hosting-media.riverside.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "storage.buzzsprout.com"
+      }
+    ]
   }
 }

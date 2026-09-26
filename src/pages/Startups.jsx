@@ -73,6 +73,7 @@ export default function Startups({ query }) {
           </div>
           {summary.stages.length > 1 && <Chips label="Stage" options={stageOptions} value={stage} onChange={setStage} />}
         </div>
+        <h2 className="sr-only">Funding rounds</h2>
         {error && <ErrorState error={error} onRetry={reload} />}
         {all.data?.length === 0 && !error && (
           <EmptyState title="No funding rounds in the news right now" hint="Rounds appear here as soon as our news sources report them." />

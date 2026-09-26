@@ -70,6 +70,7 @@ export default function News({ query }) {
               {loading && <span className="ml-3 text-brand-500">Updating…</span>}
             </p>
           )}
+          <h2 className="sr-only">Stories</h2>
           {error && <ErrorState error={error} onRetry={reload} />}
           {!data && loading && <div className="space-y-4"><SkeletonList count={4} className="h-40" /></div>}
           {data?.items.length === 0 && <EmptyState onReset={reset} />}
