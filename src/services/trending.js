@@ -58,6 +58,12 @@ for (const t of TRENDING_THEMES) t.key = slug(t.label);
 export const trendByKey = Object.fromEntries([...TRENDING_COMPANIES, ...TRENDING_THEMES].map((e) => [e.key, e]));
 export const trendLabel = (e) => e.name ?? e.label;
 
+// Whether `text` mentions the profiled company with this id (e.g. 'vertex'). Used for company pages.
+const byCompanyId = Object.fromEntries(TRENDING_COMPANIES.filter((c) => c.id).map((c) => [c.id, c.match]));
+export const mentionsCompany = (id, text) => Boolean(byCompanyId[id]?.test(text));
+// The /news?trend=<key> key for a profiled company, for "see all coverage" links.
+export const companyTrendKey = (id) => TRENDING_COMPANIES.find((c) => c.id === id)?.key;
+
 // 72h balances freshness against having enough stories for counts to mean something (weekends are thin).
 const WINDOW_HOURS = 72;
 const MIN_MENTIONS = 2;

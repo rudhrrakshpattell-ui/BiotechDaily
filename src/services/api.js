@@ -6,6 +6,7 @@
 //   GET {BASE}/news?q=&category=&company=&range=&sort=&page=&pageSize=   -> { items, total, page, pageSize, live }
 //   GET {BASE}/companies?q=&focus=&sort=                         -> Company[]
 //   GET {BASE}/companies/:id                                     -> Company
+//   GET {BASE}/companies/:id?section=press                       -> { pressReleases }
 //   GET {BASE}/startups?q=&stage=&area=&sort=                    -> Startup[]
 //   GET {BASE}/videos?category=                                  -> Video[]
 //   GET {BASE}/podcasts                                          -> Podcast[]
@@ -50,10 +51,7 @@ async function request(path, params, mock) {
 
 export const api = {
   getNews: (params) =>
-    request('/news', params, (p, { news, companies }) => ({
-      ...queryNews(news, { ...p, companyName: companies.find((c) => c.id === p.company)?.name.split(' ')[0] }),
-      live: false,
-    })),
+    request('/news', params, (p, { news }) => ({ ...queryNews(news, p), live: false })),
   getCompanies: (params) => request('/companies', params, (p, { companies }) => queryCompanies(companies, p)),
   getCompany: (id) =>
     request(`/companies/${encodeURIComponent(id)}`, null, (_, { companies }) => {
@@ -61,6 +59,8 @@ export const api = {
       if (!company) throw new Error('Company not found');
       return company;
     }),
+  getPressReleases: (id) =>
+    request(`/companies/${encodeURIComponent(id)}`, { section: 'press' }, () => ({ pressReleases: [] })).then((r) => r.pressReleases),
   getStartups: (params) => request('/startups', params, (p, { startups }) => queryStartups(startups, p)),
   getVideos: (params) => request('/videos', params, (p, { videos }) => queryVideos(videos, p)),
   getPodcasts: () => request('/podcasts', null, (_, { podcasts }) => podcasts),

@@ -7,17 +7,16 @@ export const matches = (q, ...fields) => {
   return fields.flat().filter(Boolean).some((f) => String(f).toLowerCase().includes(needle));
 };
 
-import { trendByKey } from './trending.js';
+import { mentionsCompany, trendByKey } from './trending.js';
 
 const RANGE_DAYS = { today: 1, week: 7, month: 31 };
 
-export function queryNews(news, { q, category, company, companyName, trend, range, sort = 'newest', page = 1, pageSize = 8 } = {}) {
+export function queryNews(news, { q, category, company, trend, range, sort = 'newest', page = 1, pageSize = 8 } = {}) {
   const now = Date.now();
   page = Number(page) || 1;
   pageSize = Math.min(Number(pageSize) || 8, 50);
-  // Live stories have no companyIds, so fall back to matching the company name in the text.
-  const aboutCompany = (n) =>
-    n.companyIds?.includes(company) || (companyName && matches(companyName, n.title, n.summary));
+  // Sample stories carry companyIds; live ones are matched by name (same patterns as Trending).
+  const aboutCompany = (n) => n.companyIds?.includes(company) || mentionsCompany(company, `${n.title} ${n.summary ?? ''}`);
 
   const trendRule = trend ? trendByKey[trend]?.match ?? /$^/ : null;
   let items = news.filter(

@@ -1,14 +1,31 @@
 import Icon from '../components/Icon.jsx';
 import NewsCard from '../components/NewsCard.jsx';
-import { ErrorState, Monogram, SkeletonList } from '../components/ui.jsx';
+import { ErrorState, LinkArrow, Monogram, SkeletonList } from '../components/ui.jsx';
 import { api } from '../services/api.js';
 import { useAsync } from '../hooks/useAsync.js';
 import { PIPELINE_STAGES } from '../data/companies.js';
-import { formatNumber } from '../services/format.js';
+import { formatDate, formatNumber, timeAgo } from '../services/format.js';
+import { companyTrendKey, mentionsCompany } from '../services/trending.js';
+import EpisodeRow from '../components/EpisodeRow.jsx';
+import StartupCard from '../components/StartupCard.jsx';
 
 export default function CompanyDetail({ id }) {
   const { data: c, error, reload } = useAsync(() => api.getCompany(id), [id]);
-  const related = useAsync(() => api.getNews({ company: id, pageSize: 4 }), [id]);
+  const related = useAsync(() => api.getNews({ company: id, pageSize: 5 }), [id]);
+  // Videos, episodes and funding rounds are small lists: fetch once and match the company locally.
+  const videos = useAsync(() => api.getVideos({}), []);
+  const podcasts = useAsync(() => api.getPodcasts(), []);
+  const rounds = useAsync(() => api.getStartups({}), []);
+  const press = useAsync(() => api.getPressReleases(id), [id]);
+
+  const about = (text) => mentionsCompany(id, text);
+  const companyVideos = (videos.data ?? []).filter((v) => about(`${v.title} ${v.description ?? ''}`) || v.channel === c?.name).slice(0, 3);
+  const companyEpisodes = (podcasts.data ?? [])
+    .flatMap((show) => show.episodes.map((e) => ({ episode: e, show })))
+    .filter(({ episode }) => about(episode.title))
+    .slice(0, 4);
+  const companyRounds = (rounds.data ?? []).filter((r) => about(r.headline));
+  const trendKey = companyTrendKey(id);
 
   if (error) return <div className="mx-auto max-w-3xl px-4 py-16"><ErrorState error={error} onRetry={reload} /></div>;
   if (!c || c.id !== id) return <div className="mx-auto max-w-7xl space-y-4 px-4 py-12 sm:px-6"><SkeletonList count={3} className="h-40" /></div>;
@@ -102,6 +119,57 @@ export default function CompanyDetail({ id }) {
               </div>
             </div>
           </section>
+
+          {press.data?.length > 0 && (
+            <section className="card p-6">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="font-display text-lg font-semibold text-slate-900 dark:text-white">Latest from {c.name}</h2>
+                <span className="text-xs text-slate-500">Official press releases</span>
+              </div>
+              <ul className="mt-3 divide-y divide-slate-100 dark:divide-white/5">
+                {press.data.map((r) => (
+                  <li key={r.id} className="group relative py-3">
+                    <a href={r.url} target="_blank" rel="noopener noreferrer" className="focus-ring rounded text-sm font-semibold leading-snug text-slate-900 after:absolute after:inset-0 after:content-[''] group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-brand-300">
+                      {r.title}
+                    </a>
+                    <p className="mt-1 flex items-center gap-1 text-xs text-slate-500">
+                      {formatDate(r.date)}
+                      <Icon name="arrowUpRight" className="h-3 w-3 text-slate-400" />
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {companyVideos.length > 0 && (
+            <section className="card p-6">
+              <div className="flex items-center justify-between">
+                <h2 className="font-display text-lg font-semibold text-slate-900 dark:text-white">Videos</h2>
+                <LinkArrow href="/media">All videos</LinkArrow>
+              </div>
+              <div className="mt-4 grid gap-4 sm:grid-cols-3">
+                {companyVideos.map((v) => (
+                  <a key={v.id} href={`/media?v=${v.id}`} className="focus-ring group rounded-xl">
+                    <div className="aspect-video overflow-hidden rounded-xl bg-ink-900">
+                      <img src={`https://i.ytimg.com/vi/${v.youtubeId}/mqdefault.jpg`} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition group-hover:scale-105" />
+                    </div>
+                    <p className="mt-2 line-clamp-2 text-sm font-semibold text-slate-900 group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-brand-300">{v.title}</p>
+                    <p className="text-xs text-slate-500">{v.channel}{v.date && ` · ${timeAgo(v.date)}`}</p>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {companyRounds.length > 0 && (
+            <section>
+              <h2 className="mb-3 font-display text-lg font-semibold text-slate-900 dark:text-white">Funding rounds mentioning {c.name}</h2>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {companyRounds.map((r) => <StartupCard key={r.id} startup={r} maxRaised={Math.max(...companyRounds.map((x) => x.amountM))} />)}
+              </div>
+            </section>
+          )}
         </div>
 
         <aside className="space-y-6">
@@ -120,9 +188,31 @@ export default function CompanyDetail({ id }) {
 
           {related.data?.items.length > 0 && (
             <section className="card px-6 py-4">
-              <h2 className="pt-2 font-display text-lg font-semibold text-slate-900 dark:text-white">In the news</h2>
+              <div className="flex items-baseline justify-between gap-3 pt-2">
+                <h2 className="font-display text-lg font-semibold text-slate-900 dark:text-white">In the news</h2>
+                <span className="text-xs text-slate-500">{related.data.total} {related.data.total === 1 ? 'story' : 'stories'}</span>
+              </div>
               <div className="divide-y divide-slate-100 dark:divide-white/5">
                 {related.data.items.map((n) => <NewsCard key={n.id} item={n} variant="compact" />)}
+              </div>
+              {trendKey && related.data.total > related.data.items.length && (
+                <div className="border-t border-slate-100 pb-1 pt-3 dark:border-white/5">
+                  <LinkArrow href={`/news?trend=${trendKey}`}>All {related.data.total} stories</LinkArrow>
+                </div>
+              )}
+            </section>
+          )}
+
+          {companyEpisodes.length > 0 && (
+            <section className="card px-6 py-4">
+              <h2 className="pb-2 pt-2 font-display text-lg font-semibold text-slate-900 dark:text-white">On the podcasts</h2>
+              <div className="-mx-3 space-y-0.5">
+                {companyEpisodes.map(({ episode, show }) => (
+                  <div key={episode.id}>
+                    <p className="px-3 pt-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">{show.title}</p>
+                    <EpisodeRow episode={episode} show={show} />
+                  </div>
+                ))}
               </div>
             </section>
           )}

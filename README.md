@@ -30,7 +30,8 @@ The backend is a set of Vercel serverless functions in `api/`, deployed with the
 | `GET /api/podcasts` | **Live.** 5 latest episodes from 6 biotech podcasts' RSS feeds (`server/podcasts.js`) |
 | `GET /api/trending` | Companies and themes mentioned most in the last 3 days of news, videos and podcasts (`src/services/trending.js`) |
 | `GET /api/search` | Live news, funding rounds, videos and episodes + companies |
-| `GET /api/companies`, `/api/companies/:id` | Curated data (`src/data/companies.js`) |
+| `GET /api/companies`, `/api/companies/:id` | Curated profiles (`src/data/companies.js`) |
+| `GET /api/companies/:id?section=press` | **Live.** The company's own press releases, for the 6 companies with a public feed (`server/pressReleases.js`) |
 | `GET /api/startups` | **Live.** Funding rounds and IPOs extracted from the news headlines (`server/funding.js`) |
 
 How the live sources work (shared plumbing in `server/rss.js`):
@@ -43,6 +44,8 @@ How the live sources work (shared plumbing in `server/rss.js`):
 The funding tracker reads headlines like "Enveda reaps $311M series E" and extracts the company, amount (converted to approximate USD), stage and therapeutic area. It skips headlines about deals, acquisitions and licensing. It only knows rounds the news feeds currently carry, roughly the last two weeks, and it never falls back to sample data. Parser tests are in `tests/funding.test.js`; run them with `npm test`.
 
 **Trending now** (home page) counts how many distinct stories, videos and episodes from the last 72 hours mention each company or theme in `TRENDING_COMPANIES` / `TRENDING_THEMES` (at least 2 to show, widening to 7 days on very quiet stretches). Each chip links to `/news?trend=<key>`, which filters the feed with the same pattern, so the list matches the count. Add a company or theme by appending an entry with a `match` regex.
+
+**Company pages** also show the company's latest press releases (Amgen, BioNTech, Vertex, Regeneron, Biogen and Alnylam publish feeds; Moderna, Gilead, Genentech and CSL don't), plus videos, podcast episodes and funding rounds that mention it, matched with the same patterns as Trending. Sections only appear when there's something to show.
 
 To add a source, append it to `NEWS_FEEDS`, `VIDEO_CHANNELS` or `PODCAST_FEEDS`. A YouTube channel ID is in the channel page's source (`"externalId"`); a podcast's feed URL can be found with `https://itunes.apple.com/search?media=podcast&term=<name>`.
 
@@ -65,6 +68,7 @@ server/news.js         live news
 server/videos.js       live YouTube videos
 server/podcasts.js     live podcast episodes
 server/funding.js      funding rounds extracted from live news
+server/pressReleases.js company press releases
 tests/                 node:test tests (npm test)
 server/http.js         JSON/caching helpers for the functions
 src/

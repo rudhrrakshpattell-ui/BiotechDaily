@@ -2,8 +2,10 @@
 // text cleanup and an in-memory cache with request de-duplication.
 import { XMLParser } from 'fast-xml-parser';
 
-const USER_AGENT = 'Mozilla/5.0 (compatible; BiotechDaily/1.0; +https://biotech-daily.vercel.app)';
-const FETCH_TIMEOUT_MS = 8000;
+// No URL in the UA: some investor-relations firewalls (Q4) stall requests whose UA contains one.
+const USER_AGENT = 'Mozilla/5.0 (compatible; BiotechDaily/1.0)';
+// Large podcast feeds (hundreds of episodes) can take 6-8s; functions get 30s (vercel.json).
+const FETCH_TIMEOUT_MS = 12000;
 
 const parser = new XMLParser({
   ignoreAttributes: false,

@@ -13,5 +13,3 @@ export function json(data, { status = 200, maxAge = 600 } = {}) {
 
 export const notFound = (message = 'Not found') => json({ error: message }, { status: 404, maxAge: 60 });
 
-// Short keyword used to find a company in free-text headlines ("Gilead Sciences" -> "Gilead").
-export const companyKeyword = (companies, id) => companies.find((c) => c.id === id)?.name.split(' ')[0];

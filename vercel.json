@@ -15,6 +15,27 @@
     }
   ],
   "functions": {
+    "api/news.js": {
+      "maxDuration": 30
+    },
+    "api/videos.js": {
+      "maxDuration": 30
+    },
+    "api/podcasts.js": {
+      "maxDuration": 30
+    },
+    "api/startups.js": {
+      "maxDuration": 30
+    },
+    "api/search.js": {
+      "maxDuration": 30
+    },
+    "api/trending.js": {
+      "maxDuration": 30
+    },
+    "api/companies/[id].js": {
+      "maxDuration": 30
+    },
     "api/page.js": {
       "includeFiles": "dist/index.html"
     }
