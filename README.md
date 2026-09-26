@@ -29,12 +29,12 @@ The backend is a set of Vercel serverless functions in `api/`, deployed with the
 
 | Route | Data |
 | --- | --- |
-| `GET /api/news` | **Live.** STAT, BioPharma Dive, GEN, BioSpace, Labiotech and ScienceDaily RSS feeds (`server/news.js`) |
+| `GET /api/news` | **Live.** STAT, Fierce Biotech, BioPharma Dive, GEN, BioSpace, Labiotech and ScienceDaily RSS feeds (`server/news.js`) |
 | `GET /api/videos` | **Live.** Latest uploads from 8 YouTube channels via their free channel feeds, no API key (`server/videos.js`) |
 | `GET /api/podcasts` | **Live.** 5 latest episodes from 6 biotech podcasts' RSS feeds (`server/podcasts.js`) |
-| `GET /api/search` | Live news, videos and episodes + companies and startups |
+| `GET /api/search` | Live news, funding rounds, videos and episodes + companies |
 | `GET /api/companies`, `/api/companies/:id` | Curated data (`src/data/companies.js`) |
-| `GET /api/startups` | Sample data |
+| `GET /api/startups` | **Live.** Funding rounds and IPOs extracted from the news headlines (`server/funding.js`) |
 
 How the live sources work (shared plumbing in `server/rss.js`):
 - All feeds are fetched in parallel with an 8-second timeout each. If one feed fails, it's skipped and the others still show.
@@ -43,13 +43,15 @@ How the live sources work (shared plumbing in `server/rss.js`):
 - If every source of a kind fails, the API returns the sample data instead, so the site keeps working.
 - Videos skip hiring/culture clips and feature the most-watched upload of the last two weeks.
 
+The funding tracker reads headlines like "Enveda reaps $311M series E" and extracts the company, amount (converted to approximate USD), stage and therapeutic area. It skips headlines about deals, acquisitions and licensing. It only knows rounds the news feeds currently carry, roughly the last two weeks, and it never falls back to sample data. Parser tests are in `tests/funding.test.js`; run them with `npm test`.
+
 To add a source, append it to `NEWS_FEEDS`, `VIDEO_CHANNELS` or `PODCAST_FEEDS`. A YouTube channel ID is in the channel page's source (`"externalId"`); a podcast's feed URL can be found with `https://itunes.apple.com/search?media=podcast&term=<name>`.
 
 In development, `npm run dev` serves the same functions through a small Vite plugin (see `vite.config.js`), so there's nothing extra to run. `VITE_API_BASE_URL` is set to `/api` in `.env.development` and `.env.production`. Empty it to run fully on mock data in the browser.
 
 ## About the mock data
 
-- **Startups, investors and podcast shows are fictional.** The sample news in `src/data/news.js` is fictional too; it's used only as a fallback when the live feeds fail, or in mock mode.
+- **The sample startups, investors and podcast shows are fictional**, and only appear in mock mode. The sample news in `src/data/news.js` is fictional too; it's used only as a fallback when the live feeds fail, or in mock mode.
 - **Company background and marketed products** come from public information. Headcount, market cap and pipeline stages are approximate placeholders.
 - **Sample videos and podcasts** in `src/data/` are only used as a fallback; the sample podcast audio is royalty-free SoundHelix demo tracks.
 
@@ -61,6 +63,8 @@ server/rss.js          feed fetching, parsing, topic classification, caching
 server/news.js         live news
 server/videos.js       live YouTube videos
 server/podcasts.js     live podcast episodes
+server/funding.js      funding rounds extracted from live news
+tests/                 node:test tests (npm test)
 server/http.js         JSON/caching helpers for the functions
 src/
   services/api.js      data layer (mock ↔ HTTP switch)

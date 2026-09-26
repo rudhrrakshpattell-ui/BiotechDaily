@@ -45,16 +45,14 @@ export function queryCompanies(companies, { q, focus, sort = 'name' } = {}) {
   );
 }
 
-export function queryStartups(startups, { q, stage, area, sort = 'recent' } = {}) {
-  const items = startups.filter(
-    (s) =>
-      (!stage || stage === 'all' || s.stage === stage) &&
-      (!area || area === 'all' || s.area === area) &&
-      matches(q, s.name, s.area, s.tagline, s.hq, s.investors),
+export function queryStartups(rounds, { q, stage, area, sort = 'recent' } = {}) {
+  const items = rounds.filter(
+    (r) =>
+      (!stage || stage === 'all' || r.stage === stage) &&
+      (!area || area === 'all' || r.area === area) &&
+      matches(q, r.name, r.area, r.headline, r.investors, r.sources ?? r.source),
   );
-  return items.sort((a, b) =>
-    sort === 'raised' ? b.totalRaisedM - a.totalRaisedM : new Date(b.lastRoundDate) - new Date(a.lastRoundDate),
-  );
+  return items.sort((a, b) => (sort === 'raised' ? b.amountM - a.amountM : new Date(b.date) - new Date(a.date)));
 }
 
 export const queryVideos = (videos, { category } = {}) =>
@@ -64,7 +62,7 @@ export function searchAll({ news, companies, startups, videos, podcasts }, q) {
   return {
     news: news.filter((n) => matches(q, n.title, n.summary, n.tags)).slice(0, 5),
     companies: companies.filter((c) => matches(q, c.name, c.ticker, c.focus, c.products.map((p) => p.name))).slice(0, 5),
-    startups: startups.filter((s) => matches(q, s.name, s.area, s.tagline)).slice(0, 5),
+    startups: startups.filter((s) => matches(q, s.name, s.area, s.headline)).slice(0, 5),
     videos: videos.filter((v) => matches(q, v.title, v.channel)).slice(0, 4),
     episodes: podcasts
       .flatMap((p) => p.episodes.map((e) => ({ ...e, show: p.title, showId: p.id, color: p.color })))

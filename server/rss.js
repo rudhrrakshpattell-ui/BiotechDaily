@@ -56,7 +56,12 @@ export function cachedLoader(load, ttlMs) {
 export const text = (v) => {
   if (v == null) return '';
   if (Array.isArray(v)) return text(v[0]);
-  if (typeof v === 'object') return text(v['#text'] ?? v['@href'] ?? '');
+  if (typeof v === 'object') {
+    if (v['#text'] != null) return text(v['#text']);
+    // Markup inside a field (e.g. Fierce wraps titles in <a>) parses as child elements: use their text.
+    const child = Object.entries(v).find(([k]) => !k.startsWith('@'));
+    return child ? text(child[1]) : text(v['@href'] ?? '');
+  }
   return String(v);
 };
 
@@ -80,8 +85,10 @@ export function hash(str) {
 
 export function parseDate(...candidates) {
   for (const c of candidates) {
-    const d = new Date(text(c));
-    if (text(c) && !Number.isNaN(d.getTime())) return d;
+    // Accept "Sep 24, 2026 9:20pm" (Fierce) by converting the 12-hour clock to 24-hour.
+    const raw = text(c).replace(/\b(\d{1,2}):(\d{2})\s*(am|pm)\b/i, (_, h, m, ap) => `${(Number(h) % 12) + (ap.toLowerCase() === 'pm' ? 12 : 0)}:${m}`);
+    const d = new Date(raw);
+    if (raw && !Number.isNaN(d.getTime())) return d;
   }
   return null;
 }

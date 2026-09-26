@@ -6,7 +6,7 @@ import EpisodeRow from '../components/EpisodeRow.jsx';
 import { LinkArrow, SectionHeader, SkeletonList, Monogram } from '../components/ui.jsx';
 import { api } from '../services/api.js';
 import { useAsync } from '../hooks/useAsync.js';
-import { formatMoney, formatDate } from '../services/format.js';
+import { formatDate, timeAgo } from '../services/format.js';
 import { NEWS_CATEGORIES } from '../data/categories.js';
 
 export default function Home() {
@@ -94,25 +94,28 @@ export default function Home() {
         <div className="card p-6">
           <div className="mb-5 flex items-center justify-between">
             <div>
-              <p className="eyebrow mb-1">Emerging startups</p>
+              <p className="eyebrow mb-1">Funding</p>
               <h2 className="font-display text-xl font-semibold text-slate-900 dark:text-white">Latest funding rounds</h2>
             </div>
             <LinkArrow href="#/startups">Tracker</LinkArrow>
           </div>
           <ul className="divide-y divide-slate-100 dark:divide-white/5">
             {(startupsQ.data ?? []).slice(0, 5).map((s) => (
-              <li key={s.id} className="flex items-center gap-4 py-3">
+              <li key={s.id} className="relative flex items-center gap-4 py-3">
                 <Monogram name={s.name} color="from-helix-500 to-brand-600" className="h-10 w-10 text-xs" />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold text-slate-900 dark:text-white">{s.name}</p>
-                  <p className="truncate text-xs text-slate-500">{s.area} · {s.hq}</p>
+                  <p className="truncate font-semibold text-slate-900 dark:text-white">
+                    {s.url ? <a href={s.url} target="_blank" rel="noopener noreferrer" className="focus-ring rounded after:absolute after:inset-0 after:content-[''] hover:text-brand-700 dark:hover:text-brand-300">{s.name}</a> : s.name}
+                  </p>
+                  <p className="truncate text-xs text-slate-500">{s.area} · {timeAgo(s.date)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-display font-semibold tabular-nums text-helix-600 dark:text-helix-400">{formatMoney(s.lastRoundM)}</p>
-                  <p className="text-xs text-slate-500">{s.stage}</p>
+                  <p className="font-display font-semibold tabular-nums text-helix-600 dark:text-helix-400">{s.amountLabel}</p>
+                  <p className="text-xs text-slate-500">{s.stage === 'Other' ? 'Round' : s.stage}</p>
                 </div>
               </li>
             ))}
+            {startupsQ.data?.length === 0 && <li className="py-6 text-center text-sm text-slate-500">No funding rounds in the news right now.</li>}
             {!startupsQ.data && <SkeletonList count={5} className="my-2 h-12" />}
           </ul>
         </div>

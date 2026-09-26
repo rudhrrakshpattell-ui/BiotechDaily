@@ -3,7 +3,9 @@ import { cachedLoader, classify, fetchAll, fetchFeed, hash, parseDate, stripHtml
 
 export const NEWS_FEEDS = [
   { name: 'STAT', url: 'https://www.statnews.com/category/biotech/feed/' },
-  { name: 'BioPharma Dive', url: 'https://www.biopharmadive.com/feeds/news/' },
+  { name: 'Fierce Biotech', url: 'https://www.fiercebiotech.com/rss/biotech/xml' },
+  // The biotech topic feed carries 20 items; the main /feeds/news/ feed only 10.
+  { name: 'BioPharma Dive', url: 'https://www.biopharmadive.com/feeds/topic/biotech/' },
   { name: 'GEN', url: 'https://www.genengnews.com/feed/' },
   { name: 'ScienceDaily', url: 'https://www.sciencedaily.com/rss/plants_animals/biotechnology.xml' },
   { name: 'Labiotech', url: 'https://www.labiotech.eu/feed/' },
@@ -11,7 +13,7 @@ export const NEWS_FEEDS = [
 ];
 
 // Newsroom sources (not press-release or paper feeds) that are eligible for the lead story.
-const LEAD_SOURCES = new Set(['STAT', 'BioPharma Dive', 'BioSpace', 'Labiotech']);
+const LEAD_SOURCES = new Set(['STAT', 'Fierce Biotech', 'BioPharma Dive', 'BioSpace', 'Labiotech']);
 const MAX_PER_FEED = 25;
 const GENERIC_TAGS = new Set(['biotech', 'biotechnology', 'business', 'pharma', 'pharmaceuticals', 'research', 'news', 'the readout', 'stat+', 'health', 'science']);
 
