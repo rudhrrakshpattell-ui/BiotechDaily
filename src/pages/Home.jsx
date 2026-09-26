@@ -3,11 +3,11 @@ import NewsCard from '../components/NewsCard.jsx';
 import CompanyCard from '../components/CompanyCard.jsx';
 import VideoEmbed from '../components/VideoEmbed.jsx';
 import EpisodeRow from '../components/EpisodeRow.jsx';
+import TrendingStrip from '../components/TrendingStrip.jsx';
 import { LinkArrow, SectionHeader, SkeletonList, Monogram } from '../components/ui.jsx';
 import { api } from '../services/api.js';
 import { useAsync } from '../hooks/useAsync.js';
 import { formatDate, timeAgo } from '../services/format.js';
-import { NEWS_CATEGORIES } from '../data/categories.js';
 
 export default function Home() {
   const newsQ = useAsync(() => api.getNews({ pageSize: 20 }), []);
@@ -15,6 +15,7 @@ export default function Home() {
   const startupsQ = useAsync(() => api.getStartups({ sort: 'recent' }), []);
   const videosQ = useAsync(() => api.getVideos({}), []);
   const podcastsQ = useAsync(() => api.getPodcasts(), []);
+  const trendingQ = useAsync(() => api.getTrending(), []);
 
   const items = newsQ.data?.items ?? [];
   const featured = items.find((n) => n.featured) ?? items[0];
@@ -48,11 +49,7 @@ export default function Home() {
               <Icon name="headphones" className="h-4 w-4" /> Listen instead
             </a>
           </div>
-          <div className="no-scrollbar mt-10 flex gap-2 overflow-x-auto">
-            {NEWS_CATEGORIES.map((c) => (
-              <a key={c.id} href={`/news?category=${c.id}`} className="chip chip-idle focus-ring">{c.label}</a>
-            ))}
-          </div>
+          <TrendingStrip data={trendingQ.data} />
         </div>
       </section>
 

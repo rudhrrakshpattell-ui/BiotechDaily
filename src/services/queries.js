@@ -7,9 +7,11 @@ export const matches = (q, ...fields) => {
   return fields.flat().filter(Boolean).some((f) => String(f).toLowerCase().includes(needle));
 };
 
+import { trendByKey } from './trending.js';
+
 const RANGE_DAYS = { today: 1, week: 7, month: 31 };
 
-export function queryNews(news, { q, category, company, companyName, range, sort = 'newest', page = 1, pageSize = 8 } = {}) {
+export function queryNews(news, { q, category, company, companyName, trend, range, sort = 'newest', page = 1, pageSize = 8 } = {}) {
   const now = Date.now();
   page = Number(page) || 1;
   pageSize = Math.min(Number(pageSize) || 8, 50);
@@ -17,10 +19,12 @@ export function queryNews(news, { q, category, company, companyName, range, sort
   const aboutCompany = (n) =>
     n.companyIds?.includes(company) || (companyName && matches(companyName, n.title, n.summary));
 
+  const trendRule = trend ? trendByKey[trend]?.match ?? /$^/ : null;
   let items = news.filter(
     (n) =>
       (!category || category === 'all' || n.category === category) &&
       (!company || aboutCompany(n)) &&
+      (!trendRule || trendRule.test(`${n.title} ${n.summary ?? ''} ${(n.tags ?? []).join(' ')}`)) &&
       (!RANGE_DAYS[range] || now - new Date(n.date).getTime() <= RANGE_DAYS[range] * 86400000) &&
       matches(q, n.title, n.summary, n.tags, n.source),
   );

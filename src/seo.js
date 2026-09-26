@@ -2,6 +2,7 @@
 // and by api/page.js, which writes these tags into the HTML for crawlers and link previews.
 import { companies } from './data/companies.js';
 import { categoryById } from './data/categories.js';
+import { trendByKey, trendLabel } from './services/trending.js';
 
 export const SITE_NAME = 'BiotechDaily';
 // Canonical origin for links in sitemaps and share tags. Override with SITE_URL for a custom domain.
@@ -27,6 +28,8 @@ export function metaFor(pathname, query = {}) {
     case 'news': {
       if (id) return notFound;
       const cat = categoryById[query.category];
+      const trend = trendByKey[query.trend];
+      if (trend) return { ...page(`${trendLabel(trend)} news`, `The latest biotech stories about ${trendLabel(trend)}, updated throughout the day.`), status: 200, index: false };
       return cat
         ? { ...page(`${cat.label} news`, `The latest ${cat.label.toLowerCase()} stories in biotech, updated throughout the day from leading newsrooms.`), status: 200, index: true }
         : { ...page('Biotech news today', 'Live biotech news from STAT, Fierce Biotech, BioPharma Dive, GEN and more: research breakthroughs, clinical readouts, approvals and deals.'), status: 200, index: !query.q };

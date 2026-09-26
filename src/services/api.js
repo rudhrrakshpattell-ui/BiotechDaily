@@ -10,7 +10,9 @@
 //   GET {BASE}/videos?category=                                  -> Video[]
 //   GET {BASE}/podcasts                                          -> Podcast[]
 //   GET {BASE}/search?q=                                         -> { news, companies, startups, videos, episodes }
+//   GET {BASE}/trending                                          -> { companies, themes, windowHours, documents }
 import { queryNews, queryCompanies, queryStartups, queryVideos, searchAll } from './queries.js';
+import { computeTrending } from './trending.js';
 
 // Sample data is only needed in mock mode, so it's loaded on demand and kept out of the production bundle.
 const loadMockData = () =>
@@ -63,6 +65,7 @@ export const api = {
   getVideos: (params) => request('/videos', params, (p, { videos }) => queryVideos(videos, p)),
   getPodcasts: () => request('/podcasts', null, (_, { podcasts }) => podcasts),
   search: (q) => request('/search', { q }, (_, data) => searchAll(data, q)),
+  getTrending: () => request('/trending', null, (_, data) => computeTrending(data)),
 };
 
 export const isMockMode = !API_BASE;

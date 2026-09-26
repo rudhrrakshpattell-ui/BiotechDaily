@@ -65,7 +65,7 @@ function Shell() {
     const meta = metaFor(route.path, route.query);
     document.title = meta.title;
     document.querySelector('meta[name="description"]')?.setAttribute('content', meta.description);
-  }, [route.path, route.query.category]);
+  }, [route.path, route.query.category, route.query.trend]);
 
   useEffect(() => {
     const onKey = (e) => {
