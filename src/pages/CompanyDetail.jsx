@@ -28,7 +28,7 @@ export default function CompanyDetail({ id }) {
         <div className={`absolute inset-0 bg-gradient-to-br opacity-[0.08] dark:opacity-[0.15] ${c.color}`} />
         <div className="bg-grid absolute inset-0 [mask-image:linear-gradient(to_bottom,black,transparent)]" />
         <div className="relative mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6">
-          <a href="#/companies" className="focus-ring inline-flex items-center gap-1 rounded text-sm font-medium text-slate-500 hover:text-brand-600 dark:text-slate-400">
+          <a href="/companies" className="focus-ring inline-flex items-center gap-1 rounded text-sm font-medium text-slate-500 hover:text-brand-600 dark:text-slate-400">
             <Icon name="chevronLeft" className="h-4 w-4" /> All companies
           </a>
           <div className="mt-6 flex flex-wrap items-center gap-5">

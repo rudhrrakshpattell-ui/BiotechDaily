@@ -13,6 +13,7 @@ import CompanyDetail from './pages/CompanyDetail.jsx';
 import Startups from './pages/Startups.jsx';
 import Media from './pages/Media.jsx';
 import Podcasts from './pages/Podcasts.jsx';
+import { metaFor } from './seo.js';
 
 function Page({ route }) {
   const [section, id] = route.segments;
@@ -28,7 +29,7 @@ function Page({ route }) {
         <div className="mx-auto max-w-xl px-4 py-24 text-center">
           <p className="eyebrow">404</p>
           <h1 className="mt-2 font-display text-3xl font-semibold text-slate-900 dark:text-white">Page not found</h1>
-          <a href="#/" className="mt-6 inline-block font-semibold text-brand-600">Back to today’s brief</a>
+          <a href="/" className="mt-6 inline-block font-semibold text-brand-600">Back to today’s brief</a>
         </div>
       );
   }
@@ -39,6 +40,13 @@ function Shell() {
   const { theme, toggle } = useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
   const { episode } = usePlayer();
+
+  // Keep the tab title and description in step with in-app navigation (the server sets them on first load).
+  useEffect(() => {
+    const meta = metaFor(route.path, route.query);
+    document.title = meta.title;
+    document.querySelector('meta[name="description"]')?.setAttribute('content', meta.description);
+  }, [route.path, route.query.category]);
 
   useEffect(() => {
     const onKey = (e) => {

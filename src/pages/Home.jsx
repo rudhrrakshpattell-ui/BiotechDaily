@@ -41,16 +41,16 @@ export default function Home() {
             Breakthroughs, company moves and funding rounds from across biotech, curated into a ten-minute read.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#/news" className="focus-ring inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/25 hover:bg-brand-700">
+            <a href="/news" className="focus-ring inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/25 hover:bg-brand-700">
               Read today’s brief <Icon name="chevronRight" className="h-4 w-4" />
             </a>
-            <a href="#/podcasts" className="focus-ring inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:border-brand-300 dark:border-white/10 dark:bg-ink-900 dark:text-slate-200">
+            <a href="/podcasts" className="focus-ring inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:border-brand-300 dark:border-white/10 dark:bg-ink-900 dark:text-slate-200">
               <Icon name="headphones" className="h-4 w-4" /> Listen instead
             </a>
           </div>
           <div className="no-scrollbar mt-10 flex gap-2 overflow-x-auto">
             {NEWS_CATEGORIES.map((c) => (
-              <a key={c.id} href={`#/news?category=${c.id}`} className="chip chip-idle focus-ring">{c.label}</a>
+              <a key={c.id} href={`/news?category=${c.id}`} className="chip chip-idle focus-ring">{c.label}</a>
             ))}
           </div>
         </div>
@@ -58,7 +58,7 @@ export default function Home() {
 
       {/* Top stories */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6">
-        <SectionHeader eyebrow="Top stories" title="Today’s discoveries" action={<LinkArrow href="#/news">All news</LinkArrow>} />
+        <SectionHeader eyebrow="Top stories" title="Today’s discoveries" action={<LinkArrow href="/news">All news</LinkArrow>} />
         {newsQ.loading && !newsQ.data ? (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.4fr_1fr]"><div className="skeleton h-[28rem]" /><div className="space-y-3"><SkeletonList count={5} className="h-16" /></div></div>
         ) : (
@@ -73,14 +73,14 @@ export default function Home() {
 
       {/* Companies */}
       <section className="mx-auto mt-20 max-w-7xl px-4 sm:px-6">
-        <SectionHeader eyebrow="Industry leaders" title="Top 10 biotech companies" description="Profiles, marketed medicines, pipeline focus and milestones." action={<LinkArrow href="#/companies">All profiles</LinkArrow>} />
+        <SectionHeader eyebrow="Industry leaders" title="Top 10 biotech companies" description="Profiles, marketed medicines, pipeline focus and milestones." action={<LinkArrow href="/companies">All profiles</LinkArrow>} />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {companiesQ.data ? companiesQ.data.slice(0, 4).map((c) => <CompanyCard key={c.id} company={c} />) : <SkeletonList count={4} className="h-60" />}
         </div>
         {companiesQ.data && (
           <div className="no-scrollbar mt-4 flex gap-2 overflow-x-auto">
             {companiesQ.data.slice(4).map((c) => (
-              <a key={c.id} href={`#/companies/${c.id}`} className="focus-ring flex shrink-0 items-center gap-2 rounded-xl border border-slate-200 bg-white py-1.5 pl-1.5 pr-3 text-sm font-medium text-slate-700 hover:border-brand-300 dark:border-white/10 dark:bg-ink-900 dark:text-slate-300">
+              <a key={c.id} href={`/companies/${c.id}`} className="focus-ring flex shrink-0 items-center gap-2 rounded-xl border border-slate-200 bg-white py-1.5 pl-1.5 pr-3 text-sm font-medium text-slate-700 hover:border-brand-300 dark:border-white/10 dark:bg-ink-900 dark:text-slate-300">
                 <Monogram name={c.name} color={c.color} className="h-7 w-7 rounded-lg text-[10px]" />
                 {c.name}
               </a>
@@ -97,7 +97,7 @@ export default function Home() {
               <p className="eyebrow mb-1">Funding</p>
               <h2 className="font-display text-xl font-semibold text-slate-900 dark:text-white">Latest funding rounds</h2>
             </div>
-            <LinkArrow href="#/startups">Tracker</LinkArrow>
+            <LinkArrow href="/startups">Tracker</LinkArrow>
           </div>
           <ul className="divide-y divide-slate-100 dark:divide-white/5">
             {(startupsQ.data ?? []).slice(0, 5).map((s) => (
@@ -126,7 +126,7 @@ export default function Home() {
               <p className="eyebrow mb-1">Listen</p>
               <h2 className="font-display text-xl font-semibold text-slate-900 dark:text-white">New episodes</h2>
             </div>
-            <LinkArrow href="#/podcasts">All shows</LinkArrow>
+            <LinkArrow href="/podcasts">All shows</LinkArrow>
           </div>
           <div className="-mx-3 space-y-1">
             {(podcastsQ.data ?? []).flatMap((p) => p.episodes.slice(0, 1).map((e) => (
@@ -142,7 +142,7 @@ export default function Home() {
 
       {/* Video */}
       <section className="mx-auto mt-20 max-w-7xl px-4 sm:px-6">
-        <SectionHeader eyebrow="Watch" title="Science explained" action={<LinkArrow href="#/media">Video library</LinkArrow>} />
+        <SectionHeader eyebrow="Watch" title="Science explained" action={<LinkArrow href="/media">Video library</LinkArrow>} />
         <div className="grid gap-5 md:grid-cols-3">
           {(videosQ.data ?? []).slice(0, 3).map((v) => (
             <div key={v.id}>

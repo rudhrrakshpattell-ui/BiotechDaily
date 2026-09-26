@@ -28,7 +28,7 @@ export default function News({ query }) {
   const [page, setPage] = useState(1);
   const debouncedQ = useDebounce(q);
 
-  // Follow links like #/news?category=mrna even when already on this page.
+  // Follow links like /news?category=mrna even when already on this page.
   useEffect(() => {
     if (query.category) setCategory(query.category);
     if (query.q !== undefined) setQ(query.q);

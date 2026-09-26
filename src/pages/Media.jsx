@@ -64,7 +64,7 @@ export default function Media({ query }) {
           <div className="card px-5 py-4">
             <div className="flex items-center justify-between pt-1">
               <h2 className="font-display text-lg font-semibold text-slate-900 dark:text-white">Latest headlines</h2>
-              <LinkArrow href="#/news">Feed</LinkArrow>
+              <LinkArrow href="/news">Feed</LinkArrow>
             </div>
             <div className="divide-y divide-slate-100 dark:divide-white/5">
               {headlines.data ? headlines.data.items.map((n) => <NewsCard key={n.id} item={n} variant="compact" />) : <SkeletonList count={5} className="my-3 h-14" />}
