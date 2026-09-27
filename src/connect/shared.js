@@ -26,3 +26,10 @@ export const isAgeBlocked = () => { try { return Boolean(localStorage.getItem(AG
 export const setAgeBlocked = () => { try { localStorage.setItem(AGE_BLOCK_KEY, new Date().toISOString()); } catch {} };
 
 export const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
+
+// The birth date given at the Join step, kept in this browser until the profile exists. Supabase only
+// stores sign-up metadata when it creates the account, so a repeat or earlier attempt can lose it.
+const PENDING_BIRTH_KEY = 'bd-connect-birth-date';
+export const savePendingBirthDate = (d) => { try { localStorage.setItem(PENDING_BIRTH_KEY, d); } catch {} };
+export const pendingBirthDate = () => { try { return localStorage.getItem(PENDING_BIRTH_KEY); } catch { return null; } };
+export const clearPendingBirthDate = () => { try { localStorage.removeItem(PENDING_BIRTH_KEY); } catch {} };

@@ -1,4 +1,5 @@
 // Entry point for /connect/*. Loaded on demand, so Supabase code never slows down the rest of the site.
+import { useState } from 'react';
 import Icon from '../components/Icon.jsx';
 import { SkeletonList } from '../components/ui.jsx';
 import { isConfigured } from './supabase.js';
@@ -19,6 +20,32 @@ function NotConfigured() {
       <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-brand-400/10 dark:text-brand-300"><Icon name="users" /></span>
       <h1 className="mt-4 font-display text-2xl font-semibold text-slate-900 dark:text-white">Connect is almost ready</h1>
       <p className="mt-2 text-slate-500">The community for biotech students is launching soon.</p>
+    </div>
+  );
+}
+
+// Read once at load: why a sign-in link didn't work, if Supabase or the URL says so.
+function readLinkProblem() {
+  const params = new URLSearchParams(`${window.location.search.slice(1)}&${window.location.hash.slice(1)}`);
+  const description = params.get('error_description');
+  const code = params.get('error_code');
+  if (description || code) {
+    const expired = /expired|invalid/i.test(`${description} ${code}`);
+    return expired
+      ? 'That sign-in link has expired or was already used. Links work once and expire after an hour. Please request a new one.'
+      : `Sign-in didn’t work: ${description ?? code}.`;
+  }
+  return params.get('code') ? 'pending-code' : null;
+}
+
+function LinkProblem({ message }) {
+  return (
+    <div className="mx-auto mt-6 max-w-xl px-4">
+      <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200">
+        <p className="font-semibold">Couldn’t sign you in</p>
+        <p className="mt-1">{message}</p>
+        <a href="/connect/join?mode=signin" className="mt-2 inline-block font-semibold underline">Send a new sign-in link</a>
+      </div>
     </div>
   );
 }
@@ -52,7 +79,17 @@ function SubNav({ path, profile }) {
 
 export default function ConnectApp({ route }) {
   const { loading, session, profile } = useSession();
+  const [linkProblem] = useState(readLinkProblem);
   if (!isConfigured) return <NotConfigured />;
+
+  // A ?code= in the URL with no session means the link was opened in a different browser than the one
+  // that requested it (the sign-in is tied to that browser), or it was already used.
+  const problem =
+    linkProblem === 'pending-code'
+      ? !loading && !session
+        ? 'Sign-in links only work in the browser you requested them from. Open the link in that browser, or request a new link here.'
+        : null
+      : linkProblem;
 
   const [, page, a, b] = route.segments; // /connect/<page>/<a>/<b>
   const me = profile?.id ?? null;
@@ -73,6 +110,7 @@ export default function ConnectApp({ route }) {
   return (
     <>
       <SubNav path={route.path} profile={profile} />
+      {problem && !profile && <LinkProblem message={problem} />}
       {body}
     </>
   );

@@ -1,32 +1,17 @@
 import { useState } from 'react';
 import Icon from '../../components/Icon.jsx';
 import { supabase, friendlyError } from '../supabase.js';
-import { MIN_AGE, ageOn, birthDateFrom, isAgeBlocked, setAgeBlocked } from '../shared.js';
+import { MIN_AGE, isAgeBlocked, savePendingBirthDate } from '../shared.js';
+import BirthDatePicker from '../components/BirthDatePicker.jsx';
 
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const thisYear = new Date().getFullYear();
-const YEARS = Array.from({ length: 90 }, (_, i) => thisYear - i);
 
 // mode 'signin': returning members skip the age step, and no new account can be created that way.
 export default function Join({ mode }) {
   const signIn = mode === 'signin';
   const [step, setStep] = useState(isAgeBlocked() && !signIn ? 'blocked' : signIn ? 'email' : 'age');
-  const [month, setMonth] = useState('');
-  const [year, setYear] = useState('');
+  const [birthDate, setBirthDate] = useState(null);
   const [email, setEmail] = useState('');
   const [state, setState] = useState({ sending: false, error: null });
-  const birthDate = month && year ? birthDateFrom(year, month) : null;
-
-  function confirmAge(e) {
-    e.preventDefault();
-    if (ageOn(birthDate) < MIN_AGE) {
-      setAgeBlocked();
-      setStep('blocked');
-    } else {
-      setStep('email');
-    }
-  }
-
   async function sendLink(e) {
     e.preventDefault();
     setState({ sending: true, error: null });
@@ -58,29 +43,14 @@ export default function Join({ mode }) {
         )}
 
         {step === 'age' && (
-          <form onSubmit={confirmAge}>
+          <div>
             <p className="eyebrow mb-2">Join Connect</p>
             <h1 className="font-display text-2xl font-semibold text-slate-900 dark:text-white">When were you born?</h1>
-            <p className="mt-2 text-sm text-slate-500">We ask so we can keep younger members safe. Your birth date is never shown on your profile.</p>
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <label>
-                <span className="mb-1 block text-xs font-medium text-slate-500">Month</span>
-                <select value={month} onChange={(e) => setMonth(e.target.value)} required className="input">
-                  <option value="">Month</option>
-                  {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-                </select>
-              </label>
-              <label>
-                <span className="mb-1 block text-xs font-medium text-slate-500">Year</span>
-                <select value={year} onChange={(e) => setYear(e.target.value)} required className="input">
-                  <option value="">Year</option>
-                  {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
-                </select>
-              </label>
-            </div>
-            <button disabled={!birthDate} className="focus-ring mt-6 w-full rounded-xl bg-brand-600 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50">Continue</button>
-            <p className="mt-4 text-center text-sm text-slate-500">Already a member? <a href="/connect/join?mode=signin" className="font-semibold text-brand-600 dark:text-brand-300">Sign in</a></p>
-          </form>
+            <p className="mt-2 mb-5 text-sm text-slate-500">We ask so we can keep younger members safe. Your birth date is never shown on your profile.</p>
+            <BirthDatePicker onTooYoung={() => setStep('blocked')} onConfirm={(d) => { setBirthDate(d); savePendingBirthDate(d); setStep('email'); }}>
+              <p className="mt-4 text-center text-sm text-slate-500">Already a member? <a href="/connect/join?mode=signin" className="font-semibold text-brand-600 dark:text-brand-300">Sign in</a></p>
+            </BirthDatePicker>
+          </div>
         )}
 
         {step === 'email' && (
