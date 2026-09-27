@@ -80,6 +80,9 @@ export default function Join({ mode }) {
             <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-helix-500/10 text-helix-600"><Icon name="sparkles" /></div>
             <h1 className="mt-4 font-display text-2xl font-semibold text-slate-900 dark:text-white">Check your inbox</h1>
             <p className="mt-2 text-sm text-slate-500">We sent a sign-in link to <span className="font-semibold text-slate-700 dark:text-slate-200">{email}</span>. Open it on this device to continue.</p>
+            <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-left text-sm text-amber-900 dark:bg-amber-400/10 dark:text-amber-200">
+              <span className="font-semibold">Can’t find it?</span> Check your <span className="font-semibold">Spam</span> or <span className="font-semibold">Promotions</span> folder for an email from BiotechDaily, and mark it “Not spam” so future emails arrive in your inbox. It can take a couple of minutes.
+            </p>
             <button onClick={() => setStep('email')} className="focus-ring mt-5 text-sm font-semibold text-brand-600 dark:text-brand-300">Use a different email</button>
           </div>
         )}
