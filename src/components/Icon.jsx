@@ -30,6 +30,12 @@ const PATHS = {
   sparkles: <><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3Z" /><path d="M19 17v4M17 19h4" /></>,
   database: <><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5M3 12c0 1.7 4 3 9 3s9-1.3 9-3" /></>,
   volume: <><path d="M11 5 6 9H2v6h4l5 4V5Z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14" /></>,
+  message: <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-5A8.4 8.4 0 0 1 3 11.5 8.6 8.6 0 0 1 12 3a8.6 8.6 0 0 1 9 8.5Z" />,
+  heart: <path d="M12 20s-7-4.4-9.3-9C1.2 7.8 3 4.5 6.3 4.5c2 0 3.3 1.1 3.9 2.2.6-1.1 1.9-2.2 3.9-2.2 3.3 0 5.1 3.3 3.6 6.5C19 15.6 12 20 12 20Z" />,
+  heartFilled: <path d="M12 20s-7-4.4-9.3-9C1.2 7.8 3 4.5 6.3 4.5c2 0 3.3 1.1 3.9 2.2.6-1.1 1.9-2.2 3.9-2.2 3.3 0 5.1 3.3 3.6 6.5C19 15.6 12 20 12 20Z" fill="currentColor" />,
+  share: <><path d="M12 3v12M7 8l5-5 5 5" /><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" /></>,
+  image: <><rect x="3" y="4" width="18" height="16" rx="2.5" /><circle cx="8.5" cy="9.5" r="1.8" /><path d="m21 16-5-5-9 9" /></>,
+  more: <><circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none" /><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none" /><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none" /></>,
 };
 
 export default function Icon({ name, className = 'h-5 w-5', strokeWidth = 1.8 }) {

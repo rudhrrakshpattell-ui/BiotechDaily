@@ -11,6 +11,7 @@ import Join from './pages/Join.jsx';
 import Landing from './pages/Landing.jsx';
 import Onboarding from './pages/Onboarding.jsx';
 import People from './pages/People.jsx';
+import PostPage from './pages/PostPage.jsx';
 import Profile from './pages/Profile.jsx';
 import Settings from './pages/Settings.jsx';
 
@@ -103,6 +104,7 @@ export default function ConnectApp({ route }) {
   else if (page === undefined) body = profile ? <Feed profile={profile} /> : <Landing />;
   else if (page === 'settings') body = profile ? <Settings profile={profile} /> : <Join mode="signin" />;
   else if (page === 'search') body = <People query={route.query.q ?? ''} me={me} />;
+  else if (page === 'p' && a && !b) body = <PostPage key={a} id={a} me={me} />;
   else if (page === 'u' && a && !b) body = <Profile key={a} username={a} me={me} />;
   else if (page === 'u' && a && (b === 'followers' || b === 'following')) body = <People key={`${a}/${b}`} username={a} direction={b} me={me} />;
   else body = <div className="py-24 text-center text-slate-500">Page not found. <a href="/connect" className="font-semibold text-brand-600">Back to Connect</a></div>;

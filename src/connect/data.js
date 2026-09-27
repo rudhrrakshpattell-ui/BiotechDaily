@@ -3,7 +3,21 @@ import { supabase } from './supabase.js';
 
 const AUTHOR = 'author:profiles!posts_author_id_fkey(id, username, display_name, avatar_url, university, program)';
 // `*` rather than a column list so new columns (like edited_at) don't break older databases.
-const POST_FIELDS = `*, ${AUTHOR}, likes:post_likes(count)`;
+const POST_FIELDS_BASE = `*, ${AUTHOR}, likes:post_likes(count)`;
+const POST_FIELDS_WITH_COMMENTS = `${POST_FIELDS_BASE}, comments(count)`;
+// Comment counts need migration 0003; until it's applied, PostgREST reports the relationship as missing.
+let commentsAvailable = true;
+const postFields = () => (commentsAvailable ? POST_FIELDS_WITH_COMMENTS : POST_FIELDS_BASE);
+
+// Runs a posts query, retrying once without comment counts if the comments table doesn't exist yet.
+async function queryPosts(build) {
+  let result = await build(postFields());
+  if (result.error && commentsAvailable && /comments/.test(result.error.message ?? '')) {
+    commentsAvailable = false;
+    result = await build(postFields());
+  }
+  return unwrap(result);
+}
 const PROFILE_CARD = 'id, username, display_name, avatar_url, university, program, bio, interests';
 export const PAGE_SIZE = 15;
 
@@ -12,7 +26,7 @@ const unwrap = ({ data, error }) => {
   return data;
 };
 
-const normalizePost = (p) => ({ ...p, likeCount: p.likes?.[0]?.count ?? 0 });
+const normalizePost = (p) => ({ ...p, likeCount: p.likes?.[0]?.count ?? 0, commentCount: p.comments?.[0]?.count ?? 0 });
 
 // ---- profiles ----
 export const getProfile = (username) =>
@@ -78,11 +92,20 @@ export async function listConnections(id, direction) {
 // ---- posts ----
 // feed: 'following' (people I follow + me), 'discover' (everyone), or { authorId }.
 export async function listPosts({ feed, authorId, me, before, limit = PAGE_SIZE }) {
-  let query = supabase.from('posts').select(POST_FIELDS).order('created_at', { ascending: false }).limit(limit);
-  if (authorId) query = query.eq('author_id', authorId);
-  if (feed === 'following') query = query.in('author_id', [...(await followingIds(me)), me]);
-  if (before) query = query.lt('created_at', before);
-  return unwrap(await query).map(normalizePost);
+  const ids = feed === 'following' ? [...(await followingIds(me)), me] : null;
+  const rows = await queryPosts((fields) => {
+    let query = supabase.from('posts').select(fields).order('created_at', { ascending: false }).limit(limit);
+    if (authorId) query = query.eq('author_id', authorId);
+    if (ids) query = query.in('author_id', ids);
+    if (before) query = query.lt('created_at', before);
+    return query;
+  });
+  return rows.map(normalizePost);
+}
+
+export async function getPost(id) {
+  const row = await queryPosts((fields) => supabase.from('posts').select(fields).eq('id', id).maybeSingle());
+  return row ? normalizePost(row) : null;
 }
 
 export async function likedPostIds(me, postIds) {
@@ -107,13 +130,13 @@ const storagePath = (bucket, url) => url?.split(`/object/public/${bucket}/`)[1];
 
 export async function createPost(me, { body, image }) {
   const image_url = image ? await upload('post-images', me, image) : null;
-  const post = unwrap(await supabase.from('posts').insert({ author_id: me, body: body.trim(), image_url }).select(POST_FIELDS).single());
+  const post = await queryPosts((fields) => supabase.from('posts').insert({ author_id: me, body: body.trim(), image_url }).select(fields).single());
   return normalizePost(post);
 }
 
 // Only the text can change (enforced in the database); returns the updated post.
 export async function updatePost(id, body) {
-  return normalizePost(unwrap(await supabase.from('posts').update({ body: body.trim() }).eq('id', id).select(POST_FIELDS).single()));
+  return normalizePost(await queryPosts((fields) => supabase.from('posts').update({ body: body.trim() }).eq('id', id).select(fields).single()));
 }
 
 export async function deletePost(post) {
@@ -130,9 +153,23 @@ export async function setAvatar(me, file, previousUrl) {
   return profile;
 }
 
+// ---- comments ----
+const COMMENT_FIELDS = 'id, body, created_at, post_id, author_id, author:profiles!comments_author_id_fkey(id, username, display_name, avatar_url)';
+
+export const listComments = (postId) =>
+  supabase.from('comments').select(COMMENT_FIELDS).eq('post_id', postId).order('created_at', { ascending: true }).limit(200).then(unwrap);
+
+export const addComment = (me, postId, body) =>
+  supabase.from('comments').insert({ author_id: me, post_id: postId, body: body.trim() }).select(COMMENT_FIELDS).single().then(unwrap);
+
+export const deleteComment = (id) => supabase.from('comments').delete().eq('id', id).then(unwrap);
+
 // ---- safety ----
-export const report = ({ postId, profileId, reason, details }) =>
-  supabase.from('reports').insert({ post_id: postId ?? null, profile_id: profileId ?? null, reason, details: details || null }).then(unwrap);
+export const report = ({ postId, profileId, commentId, reason, details }) =>
+  supabase
+    .from('reports')
+    .insert({ post_id: postId ?? null, profile_id: profileId ?? null, ...(commentId ? { comment_id: commentId } : {}), reason, details: details || null })
+    .then(unwrap);
 
 export const block = (id) => supabase.from('blocks').insert({ blocked_id: id }).then(unwrap);
 export const unblock = (me, id) => supabase.from('blocks').delete().eq('blocker_id', me).eq('blocked_id', id).then(unwrap);

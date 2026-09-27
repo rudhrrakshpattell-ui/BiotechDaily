@@ -120,6 +120,35 @@ test('follows: only as yourself, and hidden from the public when a minor is invo
   assert.equal(Number(stats.followers), 1);
 });
 
+test('comments: visibility follows the post and the commenter; only as yourself', async () => {
+  const [adultPost] = await as(id.adult, `select id from posts where body = 'Hello from Ada'`);
+  const [minorPost] = await as(id.minor, `select id from posts where body = 'Hello from a teen'`);
+  await as(id.other, `insert into comments (post_id, body) values ($1, 'Great post, Ada')`, [adultPost.id]);
+  await as(id.minor, `insert into comments (post_id, body) values ($1, 'Teen reply on Ada')`, [adultPost.id]);
+  await as(id.other, `insert into comments (post_id, body) values ($1, 'Reply on teen post')`, [minorPost.id]);
+  await fails(() => as(id.other, `insert into comments (post_id, author_id, body) values ($1, $2, 'impersonation')`, [adultPost.id, id.adult]), /row-level security/);
+  await fails(() => as(id.other, `insert into comments (post_id, body) values ($1, '  ')`, [adultPost.id]), /check constraint/);
+  await fails(() => as(null, `insert into comments (post_id, body) values ($1, 'anon')`, [adultPost.id]), /row-level security|permission denied/);
+  // Public: only adult comments on adult posts.
+  assert.deepEqual((await as(null, `select body from comments order by body`)).map((r) => r.body), ['Great post, Ada']);
+  assert.equal((await as(id.other, `select * from comments`)).length, 3);
+  // Nobody can edit comments.
+  await fails(() => as(id.other, `update comments set body = 'changed' where body = 'Great post, Ada'`), /permission denied/);
+});
+
+test('comments: post owners can remove comments on their posts; others cannot', async () => {
+  const [teen] = await as(id.adult, `select id from comments where body = 'Teen reply on Ada'`);
+  assert.equal((await as(id.other, `delete from comments where id = $1 returning id`, [teen.id])).length, 0);
+  assert.equal((await as(id.adult, `delete from comments where id = $1 returning id`, [teen.id])).length, 1);
+  const [c] = await as(id.other, `select id from comments where body = 'Great post, Ada'`);
+  await as(id.adult, `insert into reports (comment_id, reason) values ($1, 'spam')`, [c.id]);
+  const snaps = (await db.query(`select snapshot from reports where comment_id = $1`, [c.id])).rows;
+  assert.equal(snaps[0].snapshot, 'Comment by @bob: Great post, Ada');
+  await db.query(`update comments set hidden = true where id = $1`, [c.id]);
+  assert.equal((await as(id.adult, `select * from comments where id = $1`, [c.id])).length, 0, 'hidden from others');
+  assert.equal((await as(id.other, `select * from comments where id = $1`, [c.id])).length, 1, 'author still sees it');
+});
+
 test('authors can edit only the text of their own posts', async () => {
   const [post] = await as(id.adult, `select id from posts where body = 'Hello from Ada'`);
   const [edited] = await as(id.adult, `update posts set body = 'Hello from Ada (edited)' where id = $1 returning body, edited_at`, [post.id]);
@@ -145,7 +174,7 @@ test('likes and reports', async () => {
   await as(id.other, `insert into reports (post_id, reason) values ($1, 'spam')`, [post.id]);
   assert.equal((await as(id.other, `select * from reports`)).length, 0, 'reports are not readable by members');
   await fails(() => as(id.other, `insert into reports (reason) values ('spam')`), /row-level security/);
-  const [r] = (await db.query(`select snapshot from reports`)).rows;
+  const [r] = (await db.query(`select snapshot from reports where post_id = $1`, [post.id])).rows;
   assert.equal(r.snapshot, 'Post by @ada_l: Hello from Ada', 'report keeps evidence');
 });
 
@@ -156,6 +185,8 @@ test('blocking hides both people from each other and removes follows', async () 
   assert.equal((await as(id.minor, `select * from profiles where id = $1`, [id.other])).length, 0);
   assert.equal((await db.query(`select * from follows where following_id = $1`, [id.minor])).rows.length, 0, 'follow removed');
   await fails(() => as(id.other, `insert into follows (follower_id, following_id) values ($1, $2)`, [id.other, id.minor]), /row-level security/);
+  const [minorPost] = (await db.query(`select id from posts where author_id = $1 limit 1`, [id.minor])).rows;
+  await fails(() => as(id.other, `insert into comments (post_id, body) values ($1, 'still here?')`, [minorPost.id]), /row-level security/);
 });
 
 test('posting is rate-limited to 20 per hour', async () => {
@@ -180,7 +211,7 @@ test('deleting an account removes the profile and everything it owns', async () 
     (select count(*) from posts where author_id = $1) +
     (select count(*) from follows where following_id = $1) as n`, [id.adult])).rows[0].n;
   assert.equal(Number(left), 0);
-  const [r] = (await db.query(`select post_id, snapshot from reports`)).rows;
+  const [r] = (await db.query(`select post_id, snapshot from reports where snapshot like 'Post by%'`)).rows;
   assert.equal(r.post_id, null);
   assert.match(r.snapshot, /Hello from Ada/, 'evidence survives account deletion');
 });

@@ -27,17 +27,17 @@ export default function PostList({ feed, authorId, me, prepend, empty }) {
   useEffect(() => { if (prepend) setPosts((prev) => [prepend, ...(prev ?? []).filter((p) => p.id !== prepend.id)]); }, [prepend]);
 
   if (error) return <p className="card p-6 text-sm text-rose-600">Couldn’t load posts: {error}</p>;
-  if (!posts) return <div className="space-y-4"><SkeletonList count={3} className="h-36" /></div>;
+  if (!posts) return <div className="space-y-4"><SkeletonList count={3} className="h-32" /></div>;
   if (!posts.length) return empty;
   return (
-    <div className="space-y-4">
-      {posts.map((p) => (
-        <PostCard key={p.id} post={p} me={me} liked={liked.has(p.id)} onDeleted={(id) => setPosts((prev) => prev.filter((x) => x.id !== id))} />
-      ))}
+    <div className="card overflow-hidden">
+      <div className="divide-y divide-slate-100 dark:divide-white/[0.06]">
+        {posts.map((p) => (
+          <PostCard key={p.id} post={p} me={me} liked={liked.has(p.id)} onDeleted={(id) => setPosts((prev) => prev.filter((x) => x.id !== id))} />
+        ))}
+      </div>
       {more && (
-        <div className="text-center">
-          <button onClick={() => load(posts.at(-1).created_at)} className="focus-ring rounded-xl border border-slate-200 bg-white px-5 py-2 text-sm font-semibold text-slate-700 hover:border-brand-300 dark:border-white/10 dark:bg-ink-900 dark:text-slate-200">Load more</button>
-        </div>
+        <button onClick={() => load(posts.at(-1).created_at)} className="focus-ring block w-full border-t border-slate-100 py-3 text-sm font-semibold text-brand-600 hover:bg-slate-50 dark:border-white/[0.06] dark:text-brand-300 dark:hover:bg-white/[0.02]">Show more posts</button>
       )}
     </div>
   );

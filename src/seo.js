@@ -29,6 +29,7 @@ export function metaFor(pathname, query = {}) {
     if (id === 'join' && !rest.length) return connect('Join Connect', 'Create your free BiotechDaily Connect profile.');
     // Member pages are never indexed: some members are under 18.
     if (id === 'u' && rest.length >= 1 && rest.length <= 2) return connect(`@${rest[0]} on Connect`, 'A biotech student on BiotechDaily Connect.');
+    if (id === 'p' && rest.length === 1) return connect('Post on Connect', 'A post from the BiotechDaily Connect community for biotech students.');
     if ((id === 'settings' || id === 'search') && !rest.length) return connect('Connect', 'BiotechDaily Connect.');
     return notFound;
   }

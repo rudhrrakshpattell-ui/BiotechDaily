@@ -41,11 +41,18 @@ export default function Feed({ profile }) {
   return (
     <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[1fr_20rem]">
       <div className="min-w-0 space-y-4">
-        <Composer profile={profile} onPosted={(p) => { setJustPosted(p); setTab('following'); }} />
-        <div className="flex gap-2" role="tablist" aria-label="Feed">
-          {[['following', 'Following'], ['discover', 'Discover']].map(([id, label]) => (
-            <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={`chip focus-ring ${tab === id ? 'chip-active' : 'chip-idle'}`}>{label}</button>
-          ))}
+        <div className="card overflow-hidden">
+          <div className="grid grid-cols-2 border-b border-slate-100 dark:border-white/[0.06]" role="tablist" aria-label="Feed">
+            {[['following', 'Following'], ['discover', 'Discover']].map(([id, label]) => (
+              <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className="focus-ring flex justify-center py-3.5 text-[15px] transition hover:bg-slate-50 dark:hover:bg-white/[0.03]">
+                <span className={`relative ${tab === id ? 'font-bold text-slate-900 dark:text-white' : 'font-medium text-slate-500'}`}>
+                  {label}
+                  {tab === id && <span className="absolute -bottom-3.5 left-1/2 h-1 w-14 -translate-x-1/2 rounded-full bg-brand-500" />}
+                </span>
+              </button>
+            ))}
+          </div>
+          <Composer profile={profile} onPosted={(p) => { setJustPosted(p); setTab('following'); }} />
         </div>
         <PostList
           key={tab}
