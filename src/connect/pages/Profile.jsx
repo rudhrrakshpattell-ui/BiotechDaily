@@ -3,7 +3,8 @@ import Avatar from '../components/Avatar.jsx';
 import FollowButton from '../components/FollowButton.jsx';
 import PostList from '../components/PostList.jsx';
 import ReportDialog from '../components/ReportDialog.jsx';
-import { block, getProfile, getStats, hasBlocked, unblock } from '../data.js';
+import { block, canMessage, getProfile, getStats, hasBlocked, unblock } from '../data.js';
+import Icon from '../../components/Icon.jsx';
 import { SkeletonList } from '../../components/ui.jsx';
 import { formatNumber } from '../../services/format.js';
 import { navigate } from '../../hooks/useRoute.js';
@@ -33,6 +34,9 @@ export default function Profile({ username, me }) {
   }, [username]);
   useEffect(() => { if (person) getStats(person.id).then(setStats, () => {}); }, [person]);
   useEffect(() => { if (person && me && me !== person.id) hasBlocked(me, person.id).then(setBlocked, () => {}); }, [person, me]);
+  const [messageable, setMessageable] = useState(false);
+  const refreshMessageable = () => person && me && me !== person.id && canMessage(person.id).then(setMessageable, () => setMessageable(false));
+  useEffect(() => { refreshMessageable(); }, [person, me]);
 
   if (person === undefined) return <div className="mx-auto max-w-3xl space-y-4 px-4 py-10"><SkeletonList count={2} className="h-40" /></div>;
   if (!person) return <Unavailable signedIn={Boolean(me)} />;
@@ -73,7 +77,12 @@ export default function Profile({ username, me }) {
           </div>
           <div className="flex items-center gap-2">
             {isMe && <a href="/connect/settings" className="focus-ring rounded-full border border-slate-200 px-5 py-2 text-sm font-semibold text-slate-700 dark:border-white/15 dark:text-slate-200">Edit profile</a>}
-            {me && !isMe && !blocked && <FollowButton me={me} id={person.id} onChange={() => getStats(person.id).then(setStats)} />}
+            {me && !isMe && !blocked && messageable && (
+              <a href={`/connect/messages/${person.username}`} className="focus-ring grid h-10 w-10 place-items-center rounded-full border border-slate-200 text-slate-700 hover:border-brand-300 hover:text-brand-600 dark:border-white/15 dark:text-slate-200" aria-label={`Message ${person.display_name}`} title="Message">
+                <Icon name="message" className="h-[18px] w-[18px]" />
+              </a>
+            )}
+            {me && !isMe && !blocked && <FollowButton me={me} id={person.id} onChange={() => { getStats(person.id).then(setStats); refreshMessageable(); }} />}
             {!me && <a href="/connect/join" className="focus-ring rounded-full bg-brand-600 px-5 py-2 text-sm font-semibold text-white">Follow</a>}
             {me && !isMe && (
               <div className="relative">

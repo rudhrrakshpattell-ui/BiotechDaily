@@ -12,6 +12,9 @@ import Landing from './pages/Landing.jsx';
 import Onboarding from './pages/Onboarding.jsx';
 import People from './pages/People.jsx';
 import PostPage from './pages/PostPage.jsx';
+import Messages from './pages/Messages.jsx';
+import Chat from './pages/Chat.jsx';
+import { useUnreadMessages } from './unread.js';
 import Profile from './pages/Profile.jsx';
 import Settings from './pages/Settings.jsx';
 
@@ -52,9 +55,10 @@ function LinkProblem({ message }) {
 }
 
 function SubNav({ path, profile }) {
+  const unread = useUnreadMessages(profile?.id);
   const links = [
     ['/connect', 'Feed'],
-    ...(profile ? [[`/connect/u/${profile.username}`, 'My profile'], ['/connect/settings', 'Settings']] : []),
+    ...(profile ? [['/connect/messages', 'Messages'], [`/connect/u/${profile.username}`, 'My profile'], ['/connect/settings', 'Settings']] : []),
     ['/connect/guidelines', 'Guidelines'],
   ];
   return (
@@ -64,7 +68,10 @@ function SubNav({ path, profile }) {
           <Icon name="users" className="h-4 w-4 text-helix-500" /> Connect
         </span>
         {links.map(([href, label]) => (
-          <a key={href} href={href} aria-current={path === href ? 'page' : undefined} className={`focus-ring shrink-0 rounded-lg px-3 py-3 text-sm font-medium ${path === href ? 'text-brand-700 dark:text-brand-300' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}>{label}</a>
+          <a key={href} href={href} aria-current={path === href ? 'page' : undefined} className={`focus-ring inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-3 text-sm font-medium ${path === href || (href === '/connect/messages' && path.startsWith(href)) ? 'text-brand-700 dark:text-brand-300' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}>
+            {label}
+            {href === '/connect/messages' && unread > 0 && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-brand-600 px-1.5 text-[11px] font-bold text-white" aria-label={`${unread} unread`}>{unread > 99 ? '99+' : unread}</span>}
+          </a>
         ))}
         <span className="ml-auto shrink-0 py-2">
           {profile ? (
@@ -104,6 +111,7 @@ export default function ConnectApp({ route }) {
   else if (page === undefined) body = profile ? <Feed profile={profile} /> : <Landing />;
   else if (page === 'settings') body = profile ? <Settings profile={profile} /> : <Join mode="signin" />;
   else if (page === 'search') body = <People query={route.query.q ?? ''} me={me} />;
+  else if (page === 'messages' && !b) body = profile ? (a ? <Chat key={a} profile={profile} username={a} /> : <Messages profile={profile} />) : <Join mode="signin" />;
   else if (page === 'p' && a && !b) body = <PostPage key={a} id={a} me={me} />;
   else if (page === 'u' && a && !b) body = <Profile key={a} username={a} me={me} />;
   else if (page === 'u' && a && (b === 'followers' || b === 'following')) body = <People key={`${a}/${b}`} username={a} direction={b} me={me} />;

@@ -41,7 +41,7 @@ export default function ReportDialog({ target, onClose }) {
           </div>
         ) : (
           <form onSubmit={submit}>
-            <p className="font-display text-lg font-semibold text-slate-900 dark:text-white">Report {target.commentId ? 'comment' : target.postId ? 'post' : 'profile'}</p>
+            <p className="font-display text-lg font-semibold text-slate-900 dark:text-white">Report {target.messageId ? 'message' : target.commentId ? 'comment' : target.postId ? 'post' : 'profile'}</p>
             <fieldset className="mt-4 space-y-2">
               <legend className="sr-only">Reason</legend>
               {REASONS.map(([value, label]) => (

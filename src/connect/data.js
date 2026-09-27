@@ -164,11 +164,76 @@ export const addComment = (me, postId, body) =>
 
 export const deleteComment = (id) => supabase.from('comments').delete().eq('id', id).then(unwrap);
 
+// ---- direct messages ----
+// Allowed only between mutual follows with no block (enforced in the database).
+export const canMessage = (otherId) => supabase.rpc('can_message', { other: otherId }).then(unwrap);
+
+// People I follow who follow me back: the people I can start a conversation with.
+export async function mutualFollows(me) {
+  const following = await followingIds(me);
+  if (!following.length) return [];
+  const back = unwrap(await supabase.from('follows').select('follower_id').eq('following_id', me).in('follower_id', following)).map((r) => r.follower_id);
+  if (!back.length) return [];
+  return unwrap(await supabase.from('profiles').select(PROFILE_CARD).in('id', back).order('display_name'));
+}
+
+// Inbox: latest message per person, with unread counts. Conversations with people you can't see
+// (blocked, or deleted accounts) are dropped.
+export async function listConversations() {
+  const rows = unwrap(await supabase.rpc('my_conversations'));
+  if (!rows.length) return [];
+  const people = unwrap(await supabase.from('profiles').select(PROFILE_CARD).in('id', rows.map((r) => r.other_id)));
+  const byId = new Map(people.map((p) => [p.id, p]));
+  return rows.filter((r) => byId.has(r.other_id)).map((r) => ({ ...r, unread: Number(r.unread), person: byId.get(r.other_id) }));
+}
+
+export async function listMessages(me, otherId, limit = 200) {
+  const rows = unwrap(
+    await supabase
+      .from('messages')
+      .select('*')
+      .or(`and(sender_id.eq.${me},recipient_id.eq.${otherId}),and(sender_id.eq.${otherId},recipient_id.eq.${me})`)
+      .order('created_at', { ascending: false })
+      .limit(limit),
+  );
+  return rows.reverse();
+}
+
+export const sendMessage = (me, otherId, body) =>
+  supabase.from('messages').insert({ sender_id: me, recipient_id: otherId, body: body.trim() }).select().single().then(unwrap);
+
+export const markConversationRead = (me, otherId) =>
+  supabase.from('messages').update({ read_at: new Date().toISOString() }).eq('recipient_id', me).eq('sender_id', otherId).is('read_at', null).then(unwrap);
+
+export const deleteMessage = (id) => supabase.from('messages').delete().eq('id', id).then(unwrap);
+
+export async function unreadMessageCount(me) {
+  const { count, error } = await supabase.from('messages').select('id', { count: 'exact', head: true }).eq('recipient_id', me).is('read_at', null);
+  if (error) throw error;
+  return count ?? 0;
+}
+
+// Calls onMessage(row) for each new message sent to me, live. Returns an unsubscribe function.
+export function subscribeToMessages(me, onMessage) {
+  const channel = supabase
+    .channel(`messages-to-${me}-${Math.random().toString(36).slice(2)}`)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `recipient_id=eq.${me}` }, (payload) => onMessage(payload.new))
+    .subscribe();
+  return () => { supabase.removeChannel(channel); };
+}
+
 // ---- safety ----
-export const report = ({ postId, profileId, commentId, reason, details }) =>
+export const report = ({ postId, profileId, commentId, messageId, reason, details }) =>
   supabase
     .from('reports')
-    .insert({ post_id: postId ?? null, profile_id: profileId ?? null, ...(commentId ? { comment_id: commentId } : {}), reason, details: details || null })
+    .insert({
+      post_id: postId ?? null,
+      profile_id: profileId ?? null,
+      ...(commentId ? { comment_id: commentId } : {}),
+      ...(messageId ? { message_id: messageId } : {}),
+      reason,
+      details: details || null,
+    })
     .then(unwrap);
 
 export const block = (id) => supabase.from('blocks').insert({ blocked_id: id }).then(unwrap);
