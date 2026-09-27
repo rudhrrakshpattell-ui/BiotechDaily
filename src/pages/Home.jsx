@@ -4,6 +4,7 @@ import CompanyCard from '../components/CompanyCard.jsx';
 import VideoEmbed from '../components/VideoEmbed.jsx';
 import EpisodeRow from '../components/EpisodeRow.jsx';
 import TrendingStrip from '../components/TrendingStrip.jsx';
+import { connectEnabled } from '../connect/enabled.js';
 import { LinkArrow, SectionHeader, SkeletonList, Monogram } from '../components/ui.jsx';
 import { api } from '../services/api.js';
 import { useAsync } from '../hooks/useAsync.js';
@@ -85,6 +86,33 @@ export default function Home() {
           </div>
         )}
       </section>
+
+      {/* Connect (only once Supabase is configured) */}
+      {connectEnabled && <section className="mx-auto mt-20 max-w-7xl px-4 sm:px-6">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-900 p-8 text-white sm:p-10">
+          <div className="bg-grid absolute inset-0 opacity-40" />
+          <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-helix-400/30 blur-3xl" />
+          <div className="relative grid items-center gap-8 lg:grid-cols-[1.4fr_1fr]">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-helix-300">New · BiotechDaily Connect</p>
+              <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl">The community for biotech students</h2>
+              <p className="mt-3 max-w-xl text-brand-100">Create your profile, follow students from universities around the world, and share papers, lab wins and questions.</p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a href="/connect/join" className="focus-ring rounded-xl bg-white px-5 py-3 text-sm font-semibold text-brand-700 hover:bg-brand-50">Join free</a>
+                <a href="/connect" className="focus-ring rounded-xl border border-white/30 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10">Explore Connect</a>
+              </div>
+            </div>
+            <ul className="space-y-3 text-sm">
+              {[['users', 'Follow students and build your network'], ['sparkles', 'Post research, tips and questions'], ['flask', 'Profiles built around your program and interests']].map(([icon, text]) => (
+                <li key={text} className="flex items-center gap-3 rounded-xl bg-white/10 px-4 py-3 backdrop-blur">
+                  <Icon name={icon} className="h-5 w-5 text-helix-300" />
+                  {text}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>}
 
       {/* Startups + podcasts */}
       <section className="mx-auto mt-20 grid max-w-7xl grid-cols-1 gap-6 px-4 sm:px-6 lg:grid-cols-[1.3fr_1fr]">

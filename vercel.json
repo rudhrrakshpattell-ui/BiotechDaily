@@ -119,6 +119,10 @@
       {
         "protocol": "https",
         "hostname": "storage.buzzsprout.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "**.supabase.co"
       }
     ]
   }

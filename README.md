@@ -69,6 +69,8 @@ server/videos.js       live YouTube videos
 server/podcasts.js     live podcast episodes
 server/funding.js      funding rounds extracted from live news
 server/pressReleases.js company press releases
+src/connect/            Connect: Supabase client, data layer, pages, components
+supabase/migrations/   Connect database schema and security policies
 tests/                 node:test tests (npm test)
 server/http.js         JSON/caching helpers for the functions
 src/
@@ -82,6 +84,25 @@ src/
   pages/               Home, News, Companies, CompanyDetail, Startups, Media, Podcasts
   seo.js               per-page titles/descriptions, sitemap paths
 ```
+
+## Connect (student community)
+
+`/connect` is a community for biotech students aged 13+: magic-link sign-in, profiles, follows, posts with images, likes, report and block. It's built on Supabase (Postgres + Auth + Storage), and all access rules live in the database as row-level security, so they hold even if someone calls the API directly.
+
+**Safety rules (enforced in `supabase/migrations/0001_connect.sql`, tested in `tests/connect-rls.test.js`):**
+- Age is asked before email; under-13s are refused and can't simply retry. Birth month/year is stored privately.
+- Profiles, posts and follows of under-18 members are visible only to signed-in members, and member pages are never indexed.
+- Blocking hides both people from each other and removes follows. Posting is limited to 20 per hour.
+- Reports store a snapshot of what was reported, so evidence survives deletion. Members can delete their account and everything in it.
+
+**Setup**
+1. Create a free project at [supabase.com](https://supabase.com).
+2. SQL Editor → New query → paste `supabase/migrations/0001_connect.sql` → Run.
+3. Authentication → URL Configuration: Site URL `https://biotech-daily.vercel.app`; add redirect URLs `https://biotech-daily.vercel.app/connect` and `http://localhost:5173/connect`.
+4. Authentication → Emails → SMTP: set up a custom sender (Supabase's built-in email only reaches your own team and is heavily rate-limited).
+5. Project Settings → API: set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in Vercel (Settings → Environment Variables) and in `.env.development.local` for local dev. The anon key is public by design. Connect's menu item and home section appear only once these are set.
+
+**Moderation:** review reports in Supabase → Table Editor → `reports`. To remove a post, set `hidden = true` on it; the author still sees it, nobody else does.
 
 ## Routing and SEO
 

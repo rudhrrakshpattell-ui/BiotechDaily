@@ -21,6 +21,17 @@ const page = (title, description) => ({ title: `${title} | ${SITE_NAME}`, descri
 export function metaFor(pathname, query = {}) {
   const [section, id, ...rest] = pathname.split('/').filter(Boolean);
   const notFound = { ...page('Page not found', 'This page doesn’t exist. Head back to today’s biotech brief.'), status: 404, index: false };
+
+  if (section === 'connect') {
+    const connect = (title, description, index = false) => ({ ...page(title, description), status: 200, index });
+    if (!id) return connect('Connect: the community for biotech students', 'Join BiotechDaily Connect: create your profile, follow biotech students from universities worldwide, and share what you’re learning.', true);
+    if (id === 'guidelines' && !rest.length) return connect('Connect community guidelines', 'The rules that keep BiotechDaily Connect safe and useful for biotech students aged 13 and over.', true);
+    if (id === 'join' && !rest.length) return connect('Join Connect', 'Create your free BiotechDaily Connect profile.');
+    // Member pages are never indexed: some members are under 18.
+    if (id === 'u' && rest.length >= 1 && rest.length <= 2) return connect(`@${rest[0]} on Connect`, 'A biotech student on BiotechDaily Connect.');
+    if ((id === 'settings' || id === 'search') && !rest.length) return connect('Connect', 'BiotechDaily Connect.');
+    return notFound;
+  }
   if (rest.length) return notFound;
 
   switch (section) {
@@ -61,4 +72,4 @@ export function metaFor(pathname, query = {}) {
 }
 
 // Paths listed in sitemap.xml.
-export const SITEMAP_PATHS = ['/', '/news', '/companies', ...companies.map((c) => `/companies/${c.id}`), '/startups', '/media', '/podcasts'];
+export const SITEMAP_PATHS = ['/', '/news', '/companies', ...companies.map((c) => `/companies/${c.id}`), '/startups', '/media', '/podcasts', '/connect', '/connect/guidelines'];

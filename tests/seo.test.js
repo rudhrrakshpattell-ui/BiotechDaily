@@ -38,3 +38,15 @@ test('index.html defaults match the home page meta and credit the founder', asyn
   assert.equal(html.split(`content="${home.description}"`).length - 1, 3, 'description, og:description, twitter:description');
   assert.match(html, /<meta name="author" content="Rudhrraksh Pattell" \/>/);
 });
+
+test('Connect: landing and guidelines are indexable; member pages never are', () => {
+  assert.equal(metaFor('/connect').index, true);
+  assert.equal(metaFor('/connect/guidelines').index, true);
+  for (const path of ['/connect/join', '/connect/settings', '/connect/search', '/connect/u/ada', '/connect/u/ada/followers']) {
+    const meta = metaFor(path);
+    assert.equal(meta.status, 200, path);
+    assert.equal(meta.index, false, path);
+  }
+  assert.equal(metaFor('/connect/u/ada/followers/extra').status, 404);
+  assert.equal(metaFor('/connect/nope').status, 404);
+});

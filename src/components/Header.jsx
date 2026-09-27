@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Icon from './Icon.jsx';
 import { FOUNDER } from '../seo.js';
+import { connectEnabled } from '../connect/enabled.js';
 
 export const NAV = [
   { href: '/news', label: 'News', icon: 'newspaper' },
@@ -8,6 +9,8 @@ export const NAV = [
   { href: '/startups', label: 'Startups', icon: 'rocket' },
   { href: '/media', label: 'Video', icon: 'video' },
   { href: '/podcasts', label: 'Podcasts', icon: 'mic' },
+  // Shown once Supabase is configured.
+  ...(connectEnabled ? [{ href: '/connect', label: 'Connect', icon: 'users' }] : []),
 ];
 
 export function Logo() {

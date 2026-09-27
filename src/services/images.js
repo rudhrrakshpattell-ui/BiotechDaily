@@ -16,6 +16,7 @@ const OPTIMIZED_HOSTS = [
   /(^|\.)sndcdn\.com$/,
   /^hosting-media\.riverside\.com$/,
   /^storage\.buzzsprout\.com$/,
+  /\.supabase\.co$/, // Connect profile photos and post images
 ];
 
 // Must match "images.sizes" in vercel.json.

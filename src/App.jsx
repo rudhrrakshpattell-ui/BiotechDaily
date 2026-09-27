@@ -25,11 +25,12 @@ const CompanyDetail = lazyPage(() => import('./pages/CompanyDetail.jsx'));
 const Startups = lazyPage(() => import('./pages/Startups.jsx'));
 const Media = lazyPage(() => import('./pages/Media.jsx'));
 const Podcasts = lazyPage(() => import('./pages/Podcasts.jsx'));
+const Connect = lazyPage(() => import('./connect/ConnectApp.jsx'));
 
 // Loads the code for the page at `pathname` (no-op for Home and unknown paths).
 export function preloadPage(pathname) {
   const [section, id] = pathname.split('/').filter(Boolean);
-  const page = { news: News, companies: id ? CompanyDetail : Companies, startups: Startups, media: Media, podcasts: Podcasts }[section];
+  const page = { news: News, companies: id ? CompanyDetail : Companies, startups: Startups, media: Media, podcasts: Podcasts, connect: Connect }[section];
   return page ? page.preload().catch(() => {}) : Promise.resolve();
 }
 import { metaFor } from './seo.js';
@@ -43,6 +44,7 @@ function Page({ route }) {
     case 'startups': return <Startups query={route.query} />;
     case 'media': return <Media query={route.query} />;
     case 'podcasts': return <Podcasts />;
+    case 'connect': return <Connect route={route} />;
     default:
       return (
         <div className="mx-auto max-w-xl px-4 py-24 text-center">
