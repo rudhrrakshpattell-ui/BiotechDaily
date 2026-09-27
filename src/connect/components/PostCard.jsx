@@ -3,11 +3,18 @@ import Icon from '../../components/Icon.jsx';
 import Avatar from './Avatar.jsx';
 import Linkified from './Linkified.jsx';
 import ReportDialog from './ReportDialog.jsx';
-import { deletePost, like, unlike } from '../data.js';
+import { deletePost, like, unlike, updatePost } from '../data.js';
+import { friendlyError } from '../supabase.js';
 import { timeAgo } from '../../services/format.js';
 import { imageProps } from '../../services/images.js';
 
-export default function PostCard({ post, me, liked: initiallyLiked, onDeleted }) {
+const MAX = 1000;
+
+export default function PostCard({ post: initialPost, me, liked: initiallyLiked, onDeleted }) {
+  const [post, setPost] = useState(initialPost);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(initialPost.body);
+  const [saveState, setSaveState] = useState({ saving: false, error: null });
   const [liked, setLiked] = useState(initiallyLiked);
   const [count, setCount] = useState(post.likeCount);
   const [menu, setMenu] = useState(false);
@@ -28,6 +35,27 @@ export default function PostCard({ post, me, liked: initiallyLiked, onDeleted })
     }
   }
 
+  function startEditing() {
+    setMenu(false);
+    setDraft(post.body);
+    setSaveState({ saving: false, error: null });
+    setEditing(true);
+  }
+
+  async function saveEdit(e) {
+    e.preventDefault();
+    if (draft.trim() === post.body) return setEditing(false);
+    setSaveState({ saving: true, error: null });
+    try {
+      const updated = await updatePost(post.id, draft);
+      setPost((p) => ({ ...p, ...updated, likeCount: p.likeCount }));
+      setEditing(false);
+      setSaveState({ saving: false, error: null });
+    } catch (err) {
+      setSaveState({ saving: false, error: friendlyError(err) });
+    }
+  }
+
   async function remove() {
     setMenu(false);
     if (!window.confirm('Delete this post? This can’t be undone.')) return;
@@ -43,7 +71,10 @@ export default function PostCard({ post, me, liked: initiallyLiked, onDeleted })
           <div className="flex items-start justify-between gap-2">
             <p className="min-w-0 text-sm leading-tight">
               <a href={`/connect/u/${author.username}`} className="font-semibold text-slate-900 hover:underline dark:text-white">{author.display_name}</a>
-              <span className="ml-1.5 text-slate-500">@{author.username} · {timeAgo(post.created_at)}</span>
+              <span className="ml-1.5 text-slate-500">
+                @{author.username} · {timeAgo(post.created_at)}
+                {post.edited_at && <span title={`Edited ${new Date(post.edited_at).toLocaleString()}`}> · edited</span>}
+              </span>
               {(author.program || author.university) && (
                 <span className="mt-0.5 block truncate text-xs text-slate-500">{[author.program, author.university].filter(Boolean).join(' · ')}</span>
               )}
@@ -54,7 +85,10 @@ export default function PostCard({ post, me, liked: initiallyLiked, onDeleted })
                 {menu && (
                   <div className="card absolute right-0 z-10 mt-1 w-40 overflow-hidden py-1 text-sm shadow-lg">
                     {mine ? (
-                      <button onClick={remove} className="block w-full px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-400/10">Delete post</button>
+                      <>
+                        <button onClick={startEditing} className="block w-full px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-white/5">Edit post</button>
+                        <button onClick={remove} className="block w-full px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-400/10">Delete post</button>
+                      </>
                     ) : (
                       <button onClick={() => { setMenu(false); setReporting(true); }} className="block w-full px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-white/5">Report post</button>
                     )}
@@ -63,7 +97,30 @@ export default function PostCard({ post, me, liked: initiallyLiked, onDeleted })
               </div>
             )}
           </div>
-          <p className="mt-2 whitespace-pre-wrap break-words text-[15px] leading-relaxed text-slate-800 dark:text-slate-200"><Linkified text={post.body} /></p>
+          {editing ? (
+            <form onSubmit={saveEdit} className="mt-2">
+              <label htmlFor={`edit-${post.id}`} className="sr-only">Edit post</label>
+              <textarea
+                id={`edit-${post.id}`}
+                value={draft}
+                onChange={(e) => setDraft(e.target.value.slice(0, MAX))}
+                onKeyDown={(e) => e.key === 'Escape' && setEditing(false)}
+                rows={Math.min(10, Math.max(3, draft.split('\n').length + 1))}
+                autoFocus
+                className="input resize-none text-[15px]"
+              />
+              {saveState.error && <p className="mt-1 text-sm text-rose-600">{saveState.error}</p>}
+              <div className="mt-2 flex items-center justify-end gap-2">
+                <span className={`mr-auto text-xs tabular-nums ${draft.length > MAX - 50 ? 'text-amber-600' : 'text-slate-400'}`}>{draft.length}/{MAX}</span>
+                <button type="button" onClick={() => setEditing(false)} className="focus-ring rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10">Cancel</button>
+                <button disabled={!draft.trim() || saveState.saving} className="focus-ring rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50">
+                  {saveState.saving ? 'Saving…' : 'Save'}
+                </button>
+              </div>
+            </form>
+          ) : (
+            <p className="mt-2 whitespace-pre-wrap break-words text-[15px] leading-relaxed text-slate-800 dark:text-slate-200"><Linkified text={post.body} /></p>
+          )}
           {post.image_url && (
             <img {...imageProps(post.image_url, [640, 828], '(min-width: 768px) 600px, 100vw')} alt="" loading="lazy" className="mt-3 max-h-[28rem] w-full rounded-xl border border-slate-100 object-cover dark:border-white/5" />
           )}

@@ -1,12 +1,14 @@
-// Runs supabase/migrations/0001_connect.sql in PGlite (Postgres in WebAssembly) with a minimal Supabase environment
+// Runs supabase/migrations/*.sql in PGlite (Postgres in WebAssembly) with a minimal Supabase environment
 // (auth + storage schemas, anon/authenticated roles) and checks the security rules as different users.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { PGlite } from '@electric-sql/pglite';
 import { citext } from '@electric-sql/pglite/contrib/citext';
 
-const MIGRATION = readFileSync(new URL('../supabase/migrations/0001_connect.sql', import.meta.url), 'utf8');
+// Every migration, in order, exactly as run in the Supabase SQL editor.
+const MIGRATIONS_DIR = new URL('../supabase/migrations/', import.meta.url);
+const MIGRATIONS = readdirSync(MIGRATIONS_DIR).filter((f) => f.endsWith('.sql')).sort().map((f) => readFileSync(new URL(f, MIGRATIONS_DIR), 'utf8'));
 
 const SUPABASE_STUB = `
   create role anon nologin; create role authenticated nologin;
@@ -34,7 +36,7 @@ const SUPABASE_STUB = `
 
 const db = new PGlite({ extensions: { citext } });
 await db.exec(SUPABASE_STUB);
-await db.exec(MIGRATION);
+for (const sql of MIGRATIONS) await db.exec(sql);
 
 const id = { adult: '11111111-1111-1111-1111-111111111111', minor: '22222222-2222-2222-2222-222222222222', other: '33333333-3333-3333-3333-333333333333', kid: '44444444-4444-4444-4444-444444444444' };
 for (const [name, uid] of Object.entries(id)) await db.query('insert into auth.users (id, email) values ($1, $2)', [uid, `${name}@test.dev`]);
@@ -116,6 +118,24 @@ test('follows: only as yourself, and hidden from the public when a minor is invo
   assert.equal((await as(null, `select * from follows`)).length, 1, 'anon sees only adult-to-adult follows');
   const [stats] = await as(id.minor, `select * from profile_stats($1)`, [id.minor]);
   assert.equal(Number(stats.followers), 1);
+});
+
+test('authors can edit only the text of their own posts', async () => {
+  const [post] = await as(id.adult, `select id from posts where body = 'Hello from Ada'`);
+  const [edited] = await as(id.adult, `update posts set body = 'Hello from Ada (edited)' where id = $1 returning body, edited_at`, [post.id]);
+  assert.equal(edited.body, 'Hello from Ada (edited)');
+  assert.ok(edited.edited_at, 'edited_at is stamped');
+  const others = await as(id.other, `update posts set body = 'vandalized' where id = $1 returning id`, [post.id]);
+  assert.equal(others.length, 0, 'cannot edit someone else’s post');
+  await fails(() => as(id.adult, `update posts set hidden = false where id = $1`, [post.id]), /permission denied/);
+  await fails(() => as(id.adult, `update posts set author_id = $2 where id = $1`, [post.id, id.other]), /permission denied/);
+  await fails(() => as(id.adult, `update posts set edited_at = null where id = $1`, [post.id]), /permission denied/);
+  await fails(() => as(id.adult, `update posts set body = '  ' where id = $1`, [post.id]), /check constraint/);
+  // A moderator-hidden post stays hidden when its author edits it.
+  const [hiddenPost] = await as(id.adult, `select id from posts where body = 'to be hidden'`);
+  await as(id.adult, `update posts set body = 'edited while hidden' where id = $1`, [hiddenPost.id]);
+  assert.equal((await as(id.other, `select * from posts where id = $1`, [hiddenPost.id])).length, 0);
+  await as(id.adult, `update posts set body = 'Hello from Ada' where id = $1`, [post.id]); // restore for later tests
 });
 
 test('likes and reports', async () => {

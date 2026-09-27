@@ -2,7 +2,8 @@
 import { supabase } from './supabase.js';
 
 const AUTHOR = 'author:profiles!posts_author_id_fkey(id, username, display_name, avatar_url, university, program)';
-const POST_FIELDS = `id, body, image_url, created_at, author_id, ${AUTHOR}, likes:post_likes(count)`;
+// `*` rather than a column list so new columns (like edited_at) don't break older databases.
+const POST_FIELDS = `*, ${AUTHOR}, likes:post_likes(count)`;
 const PROFILE_CARD = 'id, username, display_name, avatar_url, university, program, bio, interests';
 export const PAGE_SIZE = 15;
 
@@ -108,6 +109,11 @@ export async function createPost(me, { body, image }) {
   const image_url = image ? await upload('post-images', me, image) : null;
   const post = unwrap(await supabase.from('posts').insert({ author_id: me, body: body.trim(), image_url }).select(POST_FIELDS).single());
   return normalizePost(post);
+}
+
+// Only the text can change (enforced in the database); returns the updated post.
+export async function updatePost(id, body) {
+  return normalizePost(unwrap(await supabase.from('posts').update({ body: body.trim() }).eq('id', id).select(POST_FIELDS).single()));
 }
 
 export async function deletePost(post) {
