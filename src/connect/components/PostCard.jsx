@@ -21,7 +21,10 @@ function Action({ icon, label, count, active, tone, onClick, disabled }) {
   };
   return (
     <button onClick={onClick} disabled={disabled} aria-label={label} title={label} className={`focus-ring group/action -ml-2 inline-flex items-center gap-1 rounded-full text-[13px] tabular-nums transition disabled:cursor-default ${active ? (tone === 'rose' ? 'text-rose-600' : 'text-brand-600') : 'text-slate-500'} ${disabled ? '' : tones[tone]}`}>
-      <span className="circle grid h-8 w-8 place-items-center rounded-full transition"><Icon name={icon} className="h-[18px] w-[18px]" /></span>
+      <span className="circle grid h-8 w-8 place-items-center rounded-full transition">
+        {/* Keyed on `active` so the pop replays each time it's switched on. */}
+        <span key={String(active)} className={active && tone === 'rose' ? 'animate-heart-pop' : ''}><Icon name={icon} className="h-[18px] w-[18px]" /></span>
+      </span>
       {count !== undefined && <span className="min-w-[1ch]">{count > 0 ? formatNumber(count) : ''}</span>}
     </button>
   );
