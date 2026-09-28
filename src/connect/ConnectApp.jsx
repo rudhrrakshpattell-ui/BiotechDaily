@@ -15,6 +15,7 @@ import PostPage from './pages/PostPage.jsx';
 import Messages from './pages/Messages.jsx';
 import Chat from './pages/Chat.jsx';
 import { useUnreadMessages } from './unread.js';
+import TabBar from './components/TabBar.jsx';
 import Profile from './pages/Profile.jsx';
 import Settings from './pages/Settings.jsx';
 
@@ -54,12 +55,17 @@ function LinkProblem({ message }) {
   );
 }
 
-function SubNav({ path, profile }) {
-  const unread = useUnreadMessages(profile?.id);
+function SubNav({ path, profile, unread }) {
   const links = [
-    ['/connect', 'Feed'],
-    ...(profile ? [['/connect/messages', 'Messages'], [`/connect/u/${profile.username}`, 'My profile'], ['/connect/settings', 'Settings']] : []),
-    ['/connect/guidelines', 'Guidelines'],
+    { href: '/connect', label: 'Feed', icon: 'home', active: path === '/connect', tab: true },
+    ...(profile
+      ? [
+          { href: '/connect/messages', label: 'Messages', icon: 'message', active: path.startsWith('/connect/messages'), badge: unread, tab: true },
+          { href: `/connect/u/${profile.username}`, label: 'My profile', avatar: profile, active: path.startsWith(`/connect/u/${profile.username}`), tab: true },
+          { href: '/connect/settings', label: 'Settings', icon: 'settings', active: path === '/connect/settings' },
+        ]
+      : []),
+    { href: '/connect/guidelines', label: 'Guidelines', icon: 'flask', active: path === '/connect/guidelines' },
   ];
   return (
     <div className="border-b border-slate-200/70 bg-white/60 dark:border-white/5 dark:bg-ink-900/40">
@@ -67,19 +73,24 @@ function SubNav({ path, profile }) {
         <span className="mr-3 flex shrink-0 items-center gap-2 py-3 font-display text-sm font-semibold text-slate-900 dark:text-white">
           <Icon name="users" className="h-4 w-4 text-helix-500" /> Connect
         </span>
-        {links.map(([href, label]) => (
-          <a key={href} href={href} aria-current={path === href ? 'page' : undefined} className={`focus-ring inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-3 text-sm font-medium ${path === href || (href === '/connect/messages' && path.startsWith(href)) ? 'text-brand-700 dark:text-brand-300' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}>
-            {label}
-            {href === '/connect/messages' && unread > 0 && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-brand-600 px-1.5 text-[11px] font-bold text-white" aria-label={`${unread} unread`}>{unread > 99 ? '99+' : unread}</span>}
+        {links.map((l) => (
+          <a
+            key={l.href}
+            href={l.href}
+            aria-current={l.active ? 'page' : undefined}
+            // Feed, Messages and My profile live in the bottom tab bar on phones, so show them here from md up.
+            className={`focus-ring ${l.tab ? 'hidden md:inline-flex' : 'inline-flex'} shrink-0 items-center gap-1.5 rounded-lg px-3 py-3 text-sm font-medium ${l.active ? 'text-brand-700 dark:text-brand-300' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
+          >
+            {l.avatar ? <Avatar profile={l.avatar} size="sm" className="!h-5 !w-5 !text-[8px]" /> : <Icon name={l.active && l.icon === 'home' ? 'homeFilled' : l.icon} className="h-4 w-4" />}
+            {l.label}
+            {l.badge > 0 && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-[#ff3b30] px-1.5 text-[11px] font-bold text-white" aria-label={`${l.badge} unread`}>{l.badge > 99 ? '99+' : l.badge}</span>}
           </a>
         ))}
-        <span className="ml-auto shrink-0 py-2">
-          {profile ? (
-            <a href={`/connect/u/${profile.username}`} className="focus-ring flex items-center gap-2 rounded-full" aria-label="Your profile"><Avatar profile={profile} size="sm" /></a>
-          ) : (
+        {!profile && (
+          <span className="ml-auto shrink-0 py-2">
             <a href="/connect/join?mode=signin" className="focus-ring rounded-lg px-3 py-1.5 text-sm font-semibold text-brand-600 dark:text-brand-300">Sign in</a>
-          )}
-        </span>
+          </span>
+        )}
       </div>
     </div>
   );
@@ -88,6 +99,7 @@ function SubNav({ path, profile }) {
 export default function ConnectApp({ route }) {
   const { loading, session, profile } = useSession();
   const [linkProblem] = useState(readLinkProblem);
+  const unread = useUnreadMessages(profile?.id);
   if (!isConfigured) return <NotConfigured />;
 
   // A ?code= in the URL with no session means the link was opened in a different browser than the one
@@ -119,9 +131,11 @@ export default function ConnectApp({ route }) {
 
   return (
     <>
-      <SubNav path={route.path} profile={profile} />
+      <SubNav path={route.path} profile={profile} unread={unread} />
       {problem && !profile && <LinkProblem message={problem} />}
       {body}
+      {/* Hidden inside a chat, like Apple Messages, to give the conversation the whole screen. */}
+      {!(page === 'messages' && a) && <TabBar path={route.path} profile={profile} unread={unread} />}
     </>
   );
 }

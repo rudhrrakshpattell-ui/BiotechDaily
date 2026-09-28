@@ -30,6 +30,11 @@
 }
 
 html { scroll-behavior: smooth; }
+/* Set while the Connect tab bar is showing (phones and tablets only). */
+:root { --tabbar-h: 0px; }
+@media (max-width: 767px) {
+  html.has-tabbar { --tabbar-h: calc(3.25rem + env(safe-area-inset-bottom)); }
+}
 @layer base {
   body { @apply bg-slate-50 text-slate-800 antialiased dark:bg-ink-950 dark:text-slate-200; }
 }

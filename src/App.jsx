@@ -84,7 +84,7 @@ function Shell() {
   }, []);
 
   return (
-    <div className={`flex min-h-screen flex-col ${episode ? 'pb-20' : ''}`}>
+    <div className="flex min-h-screen flex-col" style={{ paddingBottom: episode ? 'calc(5rem + var(--tabbar-h))' : 'var(--tabbar-h)' }}>
       <Header path={route.path} theme={theme} onToggleTheme={toggle} onOpenSearch={() => setSearchOpen(true)} />
       <main className="flex-1">
         {/* min-h-screen keeps the footer below the fold while a page's code loads, so it doesn't jump. */}

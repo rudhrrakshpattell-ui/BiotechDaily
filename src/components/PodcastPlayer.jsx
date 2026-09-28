@@ -15,7 +15,8 @@ export default function PodcastPlayer() {
   if (!episode) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/90 backdrop-blur-xl dark:border-white/10 dark:bg-ink-900/90">
+    // Sits above the Connect tab bar when one is showing (--tabbar-h is 0 otherwise).
+    <div className="fixed inset-x-0 bottom-[var(--tabbar-h)] z-40 border-t border-slate-200 bg-white/90 backdrop-blur-xl dark:border-white/10 dark:bg-ink-900/90">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:gap-5 sm:px-6">
         {episode.imageUrl ? (
           <img src={imageUrl(episode.imageUrl, 128)} alt="" className="hidden h-11 w-11 shrink-0 rounded-xl object-cover sm:block" />
