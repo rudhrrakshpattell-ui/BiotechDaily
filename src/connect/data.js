@@ -177,13 +177,17 @@ export const deleteComment = (id) => supabase.from('comments').delete().eq('id',
 // Allowed only between mutual follows with no block (enforced in the database).
 export const canMessage = (otherId) => supabase.rpc('can_message', { other: otherId }).then(unwrap);
 
-// People I follow who follow me back: the people I can start a conversation with.
-export async function mutualFollows(me) {
+// Everyone I follow, marking who follows me back. Mutual follows can chat freely; adults I follow who don't
+// follow back can get one message request; under-18s need a mutual follow (the database decides).
+export async function messageCandidates(me) {
   const following = await followingIds(me);
   if (!following.length) return [];
-  const back = unwrap(await supabase.from('follows').select('follower_id').eq('following_id', me).in('follower_id', following)).map((r) => r.follower_id);
-  if (!back.length) return [];
-  return unwrap(await supabase.from('profiles').select(PROFILE_CARD).in('id', back).order('display_name'));
+  const [people, back] = await Promise.all([
+    supabase.from('profiles').select(PROFILE_CARD).in('id', following).order('display_name').then(unwrap),
+    supabase.from('follows').select('follower_id').eq('following_id', me).in('follower_id', following).then(unwrap),
+  ]);
+  const followsMe = new Set(back.map((r) => r.follower_id));
+  return people.map((p) => ({ ...p, followsMe: followsMe.has(p.id) })).sort((a, b) => Number(b.followsMe) - Number(a.followsMe));
 }
 
 // Inbox: latest message per person, with unread counts. Conversations with people you can't see
@@ -193,7 +197,9 @@ export async function listConversations() {
   if (!rows.length) return [];
   const people = unwrap(await supabase.from('profiles').select(PROFILE_CARD).in('id', rows.map((r) => r.other_id)));
   const byId = new Map(people.map((p) => [p.id, p]));
-  return rows.filter((r) => byId.has(r.other_id)).map((r) => ({ ...r, unread: Number(r.unread), person: byId.get(r.other_id) }));
+  return rows
+    .filter((r) => byId.has(r.other_id))
+    .map((r) => ({ ...r, unread: Number(r.unread), isRequest: Boolean(r.is_request), person: byId.get(r.other_id) }));
 }
 
 export async function listMessages(me, otherId, limit = 200) {
@@ -216,10 +222,10 @@ export const markConversationRead = (me, otherId) =>
 
 export const deleteMessage = (id) => supabase.from('messages').delete().eq('id', id).then(unwrap);
 
-export async function unreadMessageCount(me) {
-  const { count, error } = await supabase.from('messages').select('id', { count: 'exact', head: true }).eq('recipient_id', me).is('read_at', null);
-  if (error) throw error;
-  return count ?? 0;
+// Unread messages in accepted conversations; message requests don't count, so they can't be used to ping people.
+export async function unreadMessageCount() {
+  const rows = unwrap(await supabase.rpc('my_conversations'));
+  return rows.filter((r) => !r.is_request).reduce((sum, r) => sum + Number(r.unread), 0);
 }
 
 // Calls onMessage(row) for each new message sent to me, live. Returns an unsubscribe function.

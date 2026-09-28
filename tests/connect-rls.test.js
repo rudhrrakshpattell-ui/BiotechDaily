@@ -167,32 +167,52 @@ test('authors can edit only the text of their own posts', async () => {
   await as(id.adult, `update posts set body = 'Hello from Ada' where id = $1`, [post.id]); // restore for later tests
 });
 
-test('messages: only between mutual follows, private to the two people', async () => {
-  // other follows adult already; adult has not followed back yet.
-  await fails(() => as(id.other, `insert into messages (recipient_id, body) values ($1, 'hi Ada')`, [id.adult]), /row-level security/);
-  assert.equal((await as(id.other, `select can_message($1) as ok`, [id.adult]))[0].ok, false);
-  await as(id.adult, `insert into follows (follower_id, following_id) values ($1, $2)`, [id.adult, id.other]);
-  assert.equal((await as(id.other, `select can_message($1) as ok`, [id.adult]))[0].ok, true);
+test('messages: one request to an adult you follow; replying accepts; private to the two people', async () => {
+  // other follows adult; adult doesn't follow other back.
+  assert.equal((await as(id.other, `select can_message($1) as ok`, [id.adult]))[0].ok, true, 'request allowed');
   await as(id.other, `insert into messages (recipient_id, body) values ($1, 'hi Ada')`, [id.adult]);
+  await fails(() => as(id.other, `insert into messages (recipient_id, body) values ($1, 'hello??')`, [id.adult]), /row-level security/);
+  assert.equal((await as(id.other, `select can_message($1) as ok`, [id.adult]))[0].ok, false, 'only one request');
+  const [req] = await as(id.adult, `select * from my_conversations()`);
+  assert.equal(req.is_request, true);
+  // The adult replies without following back: that accepts the request.
   await as(id.adult, `insert into messages (recipient_id, body) values ($1, 'hi Bob')`, [id.other]);
+  await as(id.other, `insert into messages (recipient_id, body) values ($1, 'thanks!')`, [id.adult]);
+  assert.equal((await as(id.adult, `select * from my_conversations()`))[0].is_request, false);
+  // Nobody can message someone they don't follow and who hasn't written to them.
+  await fails(() => as(id.adult, `insert into messages (recipient_id, body) values ($1, 'cold message')`, [id.minor]), /row-level security/);
   await fails(() => as(id.other, `insert into messages (sender_id, recipient_id, body) values ($1, $2, 'spoofed')`, [id.adult, id.other]), /row-level security/);
   await fails(() => as(id.other, `insert into messages (recipient_id, body) values ($1, '  ')`, [id.adult]), /check constraint/);
   // Third parties and signed-out visitors see nothing.
   assert.equal((await as(id.minor, `select * from messages`)).length, 0);
   assert.equal((await as(null, `select * from messages`)).length, 0);
-  assert.equal((await as(id.adult, `select * from messages`)).length, 2);
+  assert.equal((await as(id.adult, `select * from messages`)).length, 3);
   await fails(() => as(null, `select * from my_conversations()`), /permission denied/);
   await fails(() => as(null, `select can_message($1)`, [id.adult]), /permission denied/);
+});
+
+test('messages: under-18 recipients always need a mutual follow', async () => {
+  // other follows minor, minor doesn't follow back: no request possible.
+  assert.equal((await as(id.other, `select can_message($1) as ok`, [id.minor]))[0].ok, false);
+  await fails(() => as(id.other, `insert into messages (recipient_id, body) values ($1, 'hey teen')`, [id.minor]), /row-level security/);
+  // Mutual follow: allowed both ways.
+  await as(id.minor, `insert into follows (follower_id, following_id) values ($1, $2)`, [id.minor, id.other]);
+  await as(id.minor, `insert into messages (recipient_id, body) values ($1, 'hi from teen')`, [id.other]);
+  await as(id.other, `insert into messages (recipient_id, body) values ($1, 'hi back')`, [id.minor]);
+  // The teen unfollows: the adult can't message them any more, even though the teen wrote first.
+  await as(id.minor, `delete from follows where follower_id = $1 and following_id = $2`, [id.minor, id.other]);
+  await fails(() => as(id.other, `insert into messages (recipient_id, body) values ($1, 'still there?')`, [id.minor]), /row-level security/);
+  assert.equal((await as(id.minor, `select * from messages`)).length, 2, 'history stays readable');
 });
 
 test('messages: read receipts, unsend, no editing; inbox summary', async () => {
   const [inbox] = await as(id.adult, `select * from my_conversations()`);
   assert.equal(inbox.other_id, id.other);
-  assert.equal(inbox.last_body, 'hi Bob');
-  assert.equal(Number(inbox.unread), 1);
-  const [msg] = await as(id.adult, `select id from messages where body = 'hi Ada'`);
-  await as(id.adult, `update messages set read_at = now() where id = $1`, [msg.id]);
+  assert.equal(inbox.last_body, 'thanks!');
+  assert.equal(Number(inbox.unread), 2);
+  await as(id.adult, `update messages set read_at = now() where recipient_id = $1 and sender_id = $2`, [id.adult, id.other]);
   assert.equal(Number((await as(id.adult, `select * from my_conversations()`))[0].unread), 0);
+  const [msg] = await as(id.adult, `select id from messages where body = 'hi Ada'`);
   await fails(() => as(id.adult, `update messages set body = 'rewritten' where id = $1`, [msg.id]), /permission denied/);
   assert.equal((await as(id.other, `update messages set read_at = now() where id = $1 returning id`, [msg.id])).length, 0, 'sender cannot mark read');
   assert.equal((await as(id.adult, `delete from messages where id = $1 returning id`, [msg.id])).length, 0, 'recipient cannot delete');
@@ -204,16 +224,15 @@ test('messages: read receipts, unsend, no editing; inbox summary', async () => {
   assert.equal(r.snapshot, 'Message from @bob to @ada_l: hi Ada');
 });
 
-test('messages: unfollowing or blocking stops new messages', async () => {
-  await as(id.adult, `delete from follows where follower_id = $1 and following_id = $2`, [id.adult, id.other]);
-  await fails(() => as(id.other, `insert into messages (recipient_id, body) values ($1, 'still there?')`, [id.adult]), /row-level security/);
-  assert.equal((await as(id.other, `select * from messages`)).length, 1, 'history stays readable');
-  await as(id.adult, `insert into follows (follower_id, following_id) values ($1, $2)`, [id.adult, id.other]);
-  await as(id.other, `insert into messages (recipient_id, body) values ($1, 'back again')`, [id.adult]);
+test('messages: blocking stops everything and hides the conversation', async () => {
+  await as(id.other, `insert into messages (recipient_id, body) values ($1, 'before block')`, [id.adult]);
   await as(id.adult, `insert into blocks (blocked_id) values ($1)`, [id.other]);
   await fails(() => as(id.other, `insert into messages (recipient_id, body) values ($1, 'blocked?')`, [id.adult]), /row-level security/);
+  await fails(() => as(id.adult, `insert into messages (recipient_id, body) values ($1, 'blocked?')`, [id.other]), /row-level security/);
   assert.equal((await as(id.adult, `select * from messages`)).length, 0, 'blocked conversation is hidden');
   await as(id.adult, `delete from blocks where blocked_id = $1`, [id.other]);
+  // Blocking removed the follow; restore it for the tests that follow.
+  await as(id.other, `insert into follows (follower_id, following_id) values ($1, $2)`, [id.other, id.adult]);
 });
 
 test('likes and reports', async () => {

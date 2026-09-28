@@ -10,7 +10,7 @@ const emit = () => listeners.forEach((l) => l());
 
 export async function refreshUnread() {
   if (!owner) return;
-  try { count = await unreadMessageCount(owner); emit(); } catch {}
+  try { count = await unreadMessageCount(); emit(); } catch {}
 }
 
 function start(me) {

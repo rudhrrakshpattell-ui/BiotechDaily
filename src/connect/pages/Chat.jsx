@@ -3,7 +3,9 @@ import Icon from '../../components/Icon.jsx';
 import Avatar from '../components/Avatar.jsx';
 import Linkified from '../components/Linkified.jsx';
 import ReportDialog from '../components/ReportDialog.jsx';
-import { canMessage, deleteMessage, getProfile, listMessages, markConversationRead, sendMessage, subscribeToMessages } from '../data.js';
+import { block, canMessage, deleteMessage, getProfile, isFollowing, listMessages, markConversationRead, sendMessage, subscribeToMessages } from '../data.js';
+import FollowButton from '../components/FollowButton.jsx';
+import { navigate } from '../../hooks/useRoute.js';
 import { friendlyError } from '../supabase.js';
 import { refreshUnread } from '../unread.js';
 import { SkeletonList } from '../../components/ui.jsx';
@@ -60,6 +62,7 @@ export default function Chat({ profile, username }) {
   const [other, setOther] = useState(undefined);
   const [messages, setMessages] = useState(null);
   const [allowed, setAllowed] = useState(null);
+  const [iFollow, setIFollow] = useState(false);
   const [draft, setDraft] = useState('');
   const [state, setState] = useState({ sending: false, error: null });
   const [reporting, setReporting] = useState(null);
@@ -75,10 +78,11 @@ export default function Chat({ profile, username }) {
       if (!live) return;
       setOther(p);
       if (!p) return;
-      const [history, ok] = await Promise.all([listMessages(me, p.id), canMessage(p.id)]);
+      const [history, ok, follows] = await Promise.all([listMessages(me, p.id), canMessage(p.id), isFollowing(me, p.id)]);
       if (!live) return;
       setMessages(history);
       setAllowed(ok);
+      setIFollow(follows);
       await markConversationRead(me, p.id).catch(() => {});
       refreshUnread();
     }, () => live && setOther(null));
@@ -91,6 +95,7 @@ export default function Chat({ profile, username }) {
     return subscribeToMessages(me, (m) => {
       if (m.sender_id !== other.id) return;
       setMessages((prev) => (prev && !prev.some((x) => x.id === m.id) ? [...prev, m] : prev));
+      canMessage(other.id).then(setAllowed, () => {});
       markConversationRead(me, other.id).then(refreshUnread, () => {});
     });
   }, [me, other]);
@@ -104,6 +109,7 @@ export default function Chat({ profile, username }) {
     try {
       const m = await sendMessage(me, other.id, draft);
       setMessages((prev) => [...(prev ?? []), m]);
+      canMessage(other.id).then(setAllowed, () => {});
       setDraft('');
       if (textRef.current) textRef.current.style.height = 'auto';
       setState({ sending: false, error: null });
@@ -117,6 +123,17 @@ export default function Chat({ profile, username }) {
     if (!window.confirm('Unsend this message? It will be removed for both of you.')) return;
     await deleteMessage(m.id);
     setMessages((prev) => prev.filter((x) => x.id !== m.id));
+  }
+
+  const theySent = messages?.some((m) => m.sender_id === other?.id) ?? false;
+  const iSent = messages?.some((m) => m.sender_id === me) ?? false;
+  const incomingRequest = theySent && !iSent && !iFollow;
+  const outgoingRequestPending = iSent && !theySent && allowed === false && iFollow;
+
+  async function blockThem() {
+    if (!window.confirm(`Block @${other.username}? You won’t see each other’s profiles, posts or messages.`)) return;
+    await block(other.id);
+    navigate('/connect/messages');
   }
 
   if (other === null) {
@@ -150,6 +167,16 @@ export default function Chat({ profile, username }) {
           <p className="mx-auto mb-5 max-w-md rounded-2xl bg-amber-50 px-4 py-2.5 text-center text-xs leading-relaxed text-amber-900 dark:bg-amber-400/10 dark:text-amber-200">
             Messages are private between you two. Never share your address, phone number, passwords or where you are. If anything feels wrong, use ••• → <span className="font-semibold">Report</span> or block them from their profile.
           </p>
+          {incomingRequest && (
+            <div className="mx-auto mb-5 max-w-md rounded-2xl border border-slate-200 p-4 text-center dark:border-white/10">
+              <p className="text-sm font-semibold text-slate-900 dark:text-white">{other.display_name} wants to message you</p>
+              <p className="mt-1 text-xs text-slate-500">You don’t follow them. {allowed ? 'Replying accepts the request.' : 'Follow them back to reply.'} They can’t send more until you do.</p>
+              <div className="mt-3 flex justify-center gap-2">
+                {!allowed && <FollowButton me={me} id={other.id} small onChange={(f) => { setIFollow(f); canMessage(other.id).then(setAllowed); }} />}
+                <button onClick={blockThem} className="focus-ring rounded-full border border-rose-200 px-3.5 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:border-rose-400/30 dark:hover:bg-rose-400/10">Block</button>
+              </div>
+            </div>
+          )}
           {!messages && <SkeletonList count={3} className="my-2 h-10" />}
           {messages?.length === 0 && other && <p className="py-8 text-center text-sm text-slate-500">Say hi to {other.display_name} 👋</p>}
           <div className="space-y-1.5">
@@ -177,8 +204,16 @@ export default function Chat({ profile, username }) {
         <div className="border-t border-slate-100 p-3 dark:border-white/[0.06]">
           {allowed === false ? (
             <p className="px-2 py-2 text-center text-sm text-slate-500">
-              You can message {other?.display_name ?? 'this member'} when you <span className="font-semibold">follow each other</span>.{' '}
-              {other && <a href={`/connect/u/${other.username}`} className="font-semibold text-brand-600 dark:text-brand-300">View profile</a>}
+              {outgoingRequestPending ? (
+                <>Message request sent. You can send more once {other?.display_name} replies.</>
+              ) : incomingRequest ? (
+                <>Follow {other?.display_name} back to reply.</>
+              ) : iFollow ? (
+                <>You can message {other?.display_name ?? 'this member'} when you <span className="font-semibold">follow each other</span>.</>
+              ) : (
+                <>Follow {other?.display_name ?? 'this member'} to send them a message.</>
+              )}{' '}
+              {other && !incomingRequest && <a href={`/connect/u/${other.username}`} className="font-semibold text-brand-600 dark:text-brand-300">View profile</a>}
             </p>
           ) : (
             <form onSubmit={send} className="flex items-end gap-2">
@@ -194,7 +229,7 @@ export default function Chat({ profile, username }) {
                 }}
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) send(e); }}
                 rows={1}
-                placeholder="Start a new message"
+                placeholder={!iSent && !theySent && allowed ? 'Send a message request' : 'Start a new message'}
                 disabled={allowed === null}
                 className="max-h-40 min-h-[2.5rem] flex-1 resize-none rounded-3xl border border-slate-200 bg-slate-50 px-4 py-2 text-[15px] outline-none placeholder:text-slate-400 focus:border-brand-400 dark:border-white/10 dark:bg-white/5 dark:text-slate-100"
               />
