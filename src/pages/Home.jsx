@@ -68,10 +68,12 @@ export default function Home() {
               </a>
             )}
           </div>
+          {/* Phones and tablets: the helix runs horizontally under the buttons. */}
+          <DnaHelix orientation="horizontal" pairs={24} turns={2.5} speed={0.8} className="relative -mx-2 mt-8 h-36 sm:h-44 lg:hidden" />
           <TrendingStrip data={trendingQ.data} />
           </div>
 
-          {/* The rotating helix, desktop only. */}
+          {/* Desktop: a tall vertical helix with floating cards. */}
           <div className="relative hidden h-[34rem] lg:block">
             <DnaHelix pairs={26} turns={2.2} className="absolute inset-0" />
             {connectEnabled && (
