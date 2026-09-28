@@ -56,30 +56,23 @@ function LinkProblem({ message }) {
 }
 
 function SubNav({ path, profile, unread }) {
+  // Feed, Search, Messages and Profile live in the tab bar; this menu has the rest.
   const links = [
-    { href: '/connect', label: 'Feed', icon: 'home', active: path === '/connect', tab: true },
-    ...(profile
-      ? [
-          { href: '/connect/messages', label: 'Messages', icon: 'message', active: path.startsWith('/connect/messages'), badge: unread, tab: true },
-          { href: `/connect/u/${profile.username}`, label: 'My profile', avatar: profile, active: path.startsWith(`/connect/u/${profile.username}`), tab: true },
-          { href: '/connect/settings', label: 'Settings', icon: 'settings', active: path === '/connect/settings' },
-        ]
-      : []),
+    ...(profile ? [{ href: '/connect/settings', label: 'Settings', icon: 'settings', active: path === '/connect/settings' }] : []),
     { href: '/connect/guidelines', label: 'Guidelines', icon: 'flask', active: path === '/connect/guidelines' },
   ];
   return (
     <div className="border-b border-slate-200/70 bg-white/60 dark:border-white/5 dark:bg-ink-900/40">
       <div className="no-scrollbar mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-4 sm:px-6">
-        <span className="mr-3 flex shrink-0 items-center gap-2 py-3 font-display text-sm font-semibold text-slate-900 dark:text-white">
+        <a href="/connect" className="focus-ring mr-3 flex shrink-0 items-center gap-2 rounded-lg py-3 font-display text-sm font-semibold text-slate-900 dark:text-white">
           <Icon name="users" className="h-4 w-4 text-helix-500" /> Connect
-        </span>
+        </a>
         {links.map((l) => (
           <a
             key={l.href}
             href={l.href}
             aria-current={l.active ? 'page' : undefined}
-            // Feed, Messages and My profile live in the bottom tab bar on phones, so show them here from md up.
-            className={`focus-ring ${l.tab ? 'hidden md:inline-flex' : 'inline-flex'} shrink-0 items-center gap-1.5 rounded-lg px-3 py-3 text-sm font-medium ${l.active ? 'text-brand-700 dark:text-brand-300' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
+            className={`focus-ring inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-3 text-sm font-medium ${l.active ? 'text-brand-700 dark:text-brand-300' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
           >
             {l.avatar ? <Avatar profile={l.avatar} size="sm" className="!h-5 !w-5 !text-[8px]" /> : <Icon name={l.active && l.icon === 'home' ? 'homeFilled' : l.icon} className="h-4 w-4" />}
             {l.label}
@@ -87,7 +80,7 @@ function SubNav({ path, profile, unread }) {
           </a>
         ))}
         {!profile && (
-          <span className="ml-auto shrink-0 py-2">
+          <span className="ml-auto shrink-0 py-2 md:hidden">
             <a href="/connect/join?mode=signin" className="focus-ring rounded-lg px-3 py-1.5 text-sm font-semibold text-brand-600 dark:text-brand-300">Sign in</a>
           </span>
         )}
