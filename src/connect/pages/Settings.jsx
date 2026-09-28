@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react';
 import Avatar from '../components/Avatar.jsx';
 import ProfileForm from '../components/ProfileForm.jsx';
-import { deleteAccount, setAvatar, updateProfile } from '../data.js';
+import DnaAvatarPicker from '../components/DnaAvatarPicker.jsx';
+import { deleteAccount, setAvatar, setDnaAvatar, updateProfile } from '../data.js';
+import { defaultDnaAvatar, dnaAvatarId } from '../dnaAvatars.js';
 import { friendlyError, supabase } from '../supabase.js';
 import { refreshProfile } from '../session.js';
 import { navigate } from '../../hooks/useRoute.js';
@@ -11,6 +13,9 @@ export default function Settings({ profile }) {
   const [avatarState, setAvatarState] = useState({ busy: false, error: null });
   const [confirm, setConfirm] = useState('');
   const [deleting, setDeleting] = useState(false);
+  // What the avatar shows now: a chosen DNA style, the default one for members without a picture, or a photo.
+  const hasPhoto = Boolean(profile.avatar_url) && !dnaAvatarId(profile.avatar_url);
+  const currentDna = dnaAvatarId(profile.avatar_url) ?? defaultDnaAvatar(profile.id);
 
   async function save({ display_name, university, program, bio, interests }) {
     try {
@@ -38,6 +43,18 @@ export default function Settings({ profile }) {
     }
   }
 
+  async function pickDna(style) {
+    if (style === currentDna && !hasPhoto) return;
+    setAvatarState({ busy: true, error: null });
+    try {
+      await setDnaAvatar(profile.id, style, profile.avatar_url);
+      await refreshProfile();
+      setAvatarState({ busy: false, error: null });
+    } catch (err) {
+      setAvatarState({ busy: false, error: friendlyError(err) });
+    }
+  }
+
   async function signOut() {
     await supabase.auth.signOut();
     navigate('/connect');
@@ -58,16 +75,21 @@ export default function Settings({ profile }) {
     <div className="mx-auto max-w-xl space-y-6 px-4 py-10">
       <h1 className="font-display text-3xl font-semibold text-slate-900 dark:text-white">Settings</h1>
 
-      <section className="card flex items-center gap-5 p-6">
-        <Avatar profile={profile} size="lg" />
-        <div>
-          <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={pickAvatar} className="hidden" />
-          <button onClick={() => fileRef.current?.click()} disabled={avatarState.busy} className="focus-ring rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-brand-300 disabled:opacity-50 dark:border-white/10 dark:text-slate-200">
-            {avatarState.busy ? 'Uploading…' : profile.avatar_url ? 'Change photo' : 'Add a photo'}
-          </button>
-          <p className="mt-2 text-xs text-slate-500">JPG, PNG or WebP, up to 2 MB. Visible on your profile.</p>
-          {avatarState.error && <p className="mt-1 text-sm text-rose-600">{avatarState.error}</p>}
+      <section className="card p-6">
+        <h2 className="mb-4 font-display text-lg font-semibold text-slate-900 dark:text-white">Profile picture</h2>
+        <div className="flex items-center gap-5">
+          <Avatar profile={profile} size="lg" />
+          <div>
+            <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={pickAvatar} className="hidden" />
+            <button onClick={() => fileRef.current?.click()} disabled={avatarState.busy} className="focus-ring rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-brand-300 disabled:opacity-50 dark:border-white/10 dark:text-slate-200">
+              {avatarState.busy ? 'Saving…' : hasPhoto ? 'Change photo' : 'Upload your own photo'}
+            </button>
+            <p className="mt-2 text-xs text-slate-500">JPG, PNG or WebP, up to 2 MB. Visible on your profile.</p>
+          </div>
         </div>
+        <p className="mb-3 mt-6 text-sm font-medium text-slate-700 dark:text-slate-300">Or pick a DNA strand</p>
+        <DnaAvatarPicker value={hasPhoto ? null : currentDna} onChange={pickDna} disabled={avatarState.busy} />
+        {avatarState.error && <p className="mt-3 text-sm text-rose-600">{avatarState.error}</p>}
       </section>
 
       <section className="card p-6">

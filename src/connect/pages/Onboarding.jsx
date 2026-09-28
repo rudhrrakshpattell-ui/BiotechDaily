@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import BirthDatePicker from '../components/BirthDatePicker.jsx';
 import ProfileForm from '../components/ProfileForm.jsx';
-import { createProfile } from '../data.js';
+import DnaAvatarPicker from '../components/DnaAvatarPicker.jsx';
+import { createProfile, setDnaAvatar } from '../data.js';
+import { defaultDnaAvatar, dnaAvatarSrc } from '../dnaAvatars.js';
 import { friendlyError, supabase } from '../supabase.js';
 import { refreshProfile } from '../session.js';
 import { MIN_AGE, clearPendingBirthDate, isAgeBlocked, pendingBirthDate } from '../shared.js';
@@ -11,11 +13,14 @@ export default function Onboarding({ session }) {
   // Sign-up metadata first, then what this browser remembered from the Join step; otherwise ask here.
   const [birthDate, setBirthDate] = useState(session.user.user_metadata?.birth_date ?? pendingBirthDate());
   const [tooYoung, setTooYoung] = useState(isAgeBlocked() && !birthDate);
+  const [dna, setDna] = useState(() => defaultDnaAvatar(session.user.id));
 
   async function submit(fields) {
     if (!agreed) return 'Please agree to the community guidelines.';
     try {
       await createProfile({ ...fields, birth_date: birthDate });
+      // The profile exists at this point; a failed picture save just leaves the default DNA avatar.
+      await setDnaAvatar(session.user.id, dna).catch(() => {});
       clearPendingBirthDate();
       await refreshProfile();
       return null;
@@ -55,6 +60,16 @@ export default function Onboarding({ session }) {
       <h1 className="font-display text-3xl font-semibold text-slate-900 dark:text-white">Set up your profile</h1>
       <p className="mt-2 text-slate-500">Signed in as {session.user.email}. This is how other students will find and recognize you.</p>
       <div className="card mt-6 p-6">
+        <div className="mb-6 border-b border-slate-100 pb-6 dark:border-white/5">
+          <div className="mb-4 flex items-center gap-4">
+            <img src={dnaAvatarSrc(dna)} alt="" className="h-16 w-16 rounded-full" />
+            <div>
+              <p className="font-semibold text-slate-900 dark:text-white">Pick your profile picture</p>
+              <p className="text-sm text-slate-500">A DNA strand to start. You can upload your own photo any time in Settings.</p>
+            </div>
+          </div>
+          <DnaAvatarPicker value={dna} onChange={setDna} />
+        </div>
         <ProfileForm withUsername submitLabel="Create my profile" onSubmit={submit}>
           <label className="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-300">
             <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5" />

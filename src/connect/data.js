@@ -1,5 +1,6 @@
 // All Connect reads and writes. Row-level security decides what each call can see or change.
 import { supabase } from './supabase.js';
+import { dnaAvatarUrl } from './dnaAvatars.js';
 
 const AUTHOR = 'author:profiles!posts_author_id_fkey(id, username, display_name, avatar_url, university, program)';
 // `*` rather than a column list so new columns (like edited_at) don't break older databases.
@@ -148,6 +149,14 @@ export async function deletePost(post) {
 export async function setAvatar(me, file, previousUrl) {
   const url = await upload('avatars', me, file);
   const profile = await updateProfile(me, { avatar_url: url });
+  const old = storagePath('avatars', previousUrl);
+  if (old) await supabase.storage.from('avatars').remove([old]);
+  return profile;
+}
+
+// Switch to one of the DNA profile pictures; an uploaded photo it replaces is deleted.
+export async function setDnaAvatar(me, style, previousUrl) {
+  const profile = await updateProfile(me, { avatar_url: dnaAvatarUrl(style) });
   const old = storagePath('avatars', previousUrl);
   if (old) await supabase.storage.from('avatars').remove([old]);
   return profile;
