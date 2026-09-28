@@ -38,7 +38,22 @@ export default function Header({ path, theme, onToggleTheme, onOpenSearch }) {
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
         <Logo />
 
-        <nav className="ml-6 hidden items-center gap-1 lg:flex" aria-label="Main">
+        <a
+          href="/"
+          aria-current={path === '/' ? 'page' : undefined}
+          aria-label="Home"
+          title="Home"
+          className={`focus-ring ml-1 inline-flex h-9 items-center gap-1.5 rounded-full px-2.5 text-sm font-medium transition sm:ml-2 lg:px-3 ${
+            path === '/'
+              ? 'bg-brand-50 text-brand-700 dark:bg-brand-400/10 dark:text-brand-200'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white'
+          }`}
+        >
+          <Icon name={path === '/' ? 'homeFilled' : 'home'} className="h-[18px] w-[18px]" />
+          <span className="hidden lg:inline">Home</span>
+        </a>
+
+        <nav className="ml-2 hidden items-center gap-1 lg:flex" aria-label="Main">
           {NAV.map((n) => (
             <a
               key={n.href}
