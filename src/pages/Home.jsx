@@ -4,11 +4,21 @@ import CompanyCard from '../components/CompanyCard.jsx';
 import VideoEmbed from '../components/VideoEmbed.jsx';
 import EpisodeRow from '../components/EpisodeRow.jsx';
 import TrendingStrip from '../components/TrendingStrip.jsx';
+import DnaHelix from '../components/DnaHelix.jsx';
 import { connectEnabled } from '../connect/enabled.js';
 import { LinkArrow, SectionHeader, SkeletonList, Monogram } from '../components/ui.jsx';
 import { api } from '../services/api.js';
 import { useAsync } from '../hooks/useAsync.js';
 import { formatDate, timeAgo } from '../services/format.js';
+
+const EXPLORE = [
+  { href: '/news', icon: 'newspaper', title: 'News', text: 'Live headlines from STAT, Fierce Biotech, BioPharma Dive and more.', cta: 'Read' },
+  { href: '/podcasts', icon: 'mic', title: 'Podcasts', text: 'Deep-dives and deal talk you can play right on the page.', cta: 'Listen' },
+  { href: '/media', icon: 'video', title: 'Videos', text: 'The science explained, from CRISPR to AlphaFold.', cta: 'Watch' },
+  { href: '/companies', icon: 'building', title: 'Companies', text: 'Profiles, marketed medicines and pipelines of the industry leaders.', cta: 'Browse' },
+  { href: '/startups', icon: 'rocket', title: 'Startups', text: 'Every new funding round, by stage and therapeutic area.', cta: 'Track' },
+  { href: '/connect', icon: 'users', title: 'Connect', text: 'Follow people, post papers and questions, join the discussion.', cta: 'Join' },
+];
 
 export default function Home() {
   const newsQ = useAsync(() => api.getNews({ pageSize: 20 }), []);
@@ -30,7 +40,8 @@ export default function Home() {
         <div className="bg-grid absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]" />
         <div className="absolute -left-40 -top-40 h-96 w-96 rounded-full bg-brand-400/20 blur-3xl dark:bg-brand-500/15" />
         <div className="absolute -right-32 top-10 h-80 w-80 rounded-full bg-helix-400/20 blur-3xl dark:bg-helix-400/10" />
-        <div className="relative mx-auto max-w-7xl px-4 pb-12 pt-12 sm:px-6 sm:pt-20">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-8 px-4 pb-12 pt-12 sm:px-6 sm:pt-20 lg:grid-cols-[1.15fr_1fr]">
+          <div className="min-w-0">
           <p className="inline-flex items-center gap-2 rounded-full border border-helix-500/20 bg-white/70 px-3 py-1 text-xs font-semibold text-helix-700 backdrop-blur dark:bg-ink-900/60 dark:text-helix-300">
             <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-helix-400 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-helix-500" /></span>
             {today}
@@ -40,17 +51,61 @@ export default function Home() {
             <span className="bg-gradient-to-r from-brand-600 to-helix-500 bg-clip-text text-transparent dark:from-brand-300 dark:to-helix-400">decoded daily.</span>
           </h1>
           <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-600 dark:text-slate-400">
-            Breakthroughs, company moves and funding rounds from across biotech, curated into a ten-minute read.
+            News, podcasts, videos, company profiles and funding rounds from across biotech and pharma, curated into a ten-minute read.
+            {connectEnabled && ' Then talk it through with the people building it.'}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href="/news" className="focus-ring inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/25 hover:bg-brand-700">
               Read today’s brief <Icon name="chevronRight" className="h-4 w-4" />
             </a>
-            <a href="/podcasts" className="focus-ring inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:border-brand-300 dark:border-white/10 dark:bg-ink-900 dark:text-slate-200">
-              <Icon name="headphones" className="h-4 w-4" /> Listen instead
-            </a>
+            {connectEnabled ? (
+              <a href="/connect/join" className="focus-ring inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:border-brand-300 dark:border-white/10 dark:bg-ink-900 dark:text-slate-200">
+                <Icon name="users" className="h-4 w-4" /> Join the conversation
+              </a>
+            ) : (
+              <a href="/podcasts" className="focus-ring inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:border-brand-300 dark:border-white/10 dark:bg-ink-900 dark:text-slate-200">
+                <Icon name="headphones" className="h-4 w-4" /> Listen instead
+              </a>
+            )}
           </div>
           <TrendingStrip data={trendingQ.data} />
+          </div>
+
+          {/* The rotating helix, desktop only. */}
+          <div className="relative hidden h-[34rem] lg:block">
+            <DnaHelix pairs={26} turns={2.2} className="absolute inset-0" />
+            {connectEnabled && (
+              <a href="/connect" className="focus-ring card absolute left-0 top-16 w-60 animate-[bob_6s_ease-in-out_infinite] p-4 !bg-white/85 backdrop-blur hover:border-brand-300 motion-reduce:animate-none dark:!bg-ink-900/85">
+                <p className="eyebrow">Connect</p>
+                <p className="mt-1.5 text-sm font-semibold text-slate-900 dark:text-white">Discuss the papers, readouts and deals behind every headline</p>
+                <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-slate-500"><Icon name="message" className="h-3.5 w-3.5" /> Join the community</p>
+              </a>
+            )}
+            <a href="/podcasts" className="focus-ring card absolute bottom-16 right-0 w-60 animate-[bob_7s_ease-in-out_-3s_infinite] p-4 !bg-white/85 backdrop-blur hover:border-brand-300 motion-reduce:animate-none dark:!bg-ink-900/85">
+              <p className="eyebrow">Listen</p>
+              <p className="mt-1.5 text-sm font-semibold text-slate-900 dark:text-white">New episodes from the week’s biggest stories</p>
+              <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-slate-500"><Icon name="headphones" className="h-3.5 w-3.5" /> Podcasts</p>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Explore */}
+      <section className="mx-auto mb-20 mt-4 max-w-7xl px-4 sm:px-6">
+        <SectionHeader eyebrow="Explore" title="Everything biotech, one front page" />
+        <div className={`grid grid-cols-2 gap-4 md:grid-cols-3 ${connectEnabled ? 'xl:grid-cols-6' : 'xl:grid-cols-5'}`}>
+          {EXPLORE.filter((e) => connectEnabled || e.href !== '/connect').map((e, i) => (
+            <a key={e.href} href={e.href} className="focus-ring card group flex flex-col p-5 transition hover:-translate-y-0.5 hover:border-brand-300 dark:hover:border-brand-400/40">
+              <span className={`grid h-11 w-11 place-items-center rounded-xl ${i % 2 ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-300' : 'bg-brand-50 text-brand-600 dark:bg-brand-400/10 dark:text-brand-300'}`}>
+                <Icon name={e.icon} className="h-5 w-5" />
+              </span>
+              <span className="mt-4 font-display font-semibold text-slate-900 dark:text-white">{e.title}</span>
+              <span className="mt-1 flex-1 text-[13px] leading-5 text-slate-500 dark:text-slate-400">{e.text}</span>
+              <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand-600 dark:text-brand-300">
+                {e.cta} <Icon name="chevronRight" className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </span>
+            </a>
+          ))}
         </div>
       </section>
 
@@ -116,7 +171,7 @@ export default function Home() {
 
       {/* Startups + podcasts */}
       <section className="mx-auto mt-20 grid max-w-7xl grid-cols-1 gap-6 px-4 sm:px-6 lg:grid-cols-[1.3fr_1fr]">
-        <div className="card p-6">
+        <div className="card min-w-0 p-6">
           <div className="mb-5 flex items-center justify-between">
             <div>
               <p className="eyebrow mb-1">Funding</p>
@@ -145,7 +200,7 @@ export default function Home() {
           </ul>
         </div>
 
-        <div className="card p-6">
+        <div className="card min-w-0 p-6">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="eyebrow mb-1">Listen</p>

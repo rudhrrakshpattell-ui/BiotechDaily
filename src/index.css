@@ -71,6 +71,8 @@ html.has-tabbar { --tabbar-h: calc(3.25rem + env(safe-area-inset-bottom)); }
 @keyframes heart-pop { 0% { transform: scale(1); } 35% { transform: scale(1.35); } 65% { transform: scale(0.9); } 100% { transform: scale(1); } }
 .animate-heart-pop { animation: heart-pop 0.4s cubic-bezier(0.2, 0.8, 0.3, 1.2); }
 @media (prefers-reduced-motion: reduce) { .animate-heart-pop { animation: none; } }
+/* Hero cards floating beside the helix. */
+@keyframes bob { 50% { transform: translateY(-10px); } }
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 input[type="range"] { accent-color: var(--color-brand-600); }
