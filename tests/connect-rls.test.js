@@ -68,6 +68,13 @@ test('onboarding enforces the 13+ minimum and creates private birth data', async
   await fails(() => as(id.other, `select * from create_profile('ADA_L', 'Copy', $1)`, [years(30)]), /taken|duplicate/);
 });
 
+test('internal helpers are not in the public API schema', async () => {
+  for (const fn of ['is_minor(uuid)', 'is_blocked(uuid,uuid)', 'can_view(uuid)', 'can_message_between(uuid,uuid)']) {
+    const [{ found }] = (await db.query(`select to_regprocedure($1) is not null as found`, [`public.${fn}`])).rows;
+    assert.equal(found, false, `public.${fn} should not exist (PostgREST would expose it)`);
+  }
+});
+
 test('signed-out visitors cannot call member-only functions', async () => {
   await fails(() => as(null, `select * from create_profile('anon', 'Anon', $1)`, [years(30)]), /permission denied/);
   await fails(() => as(null, `select delete_my_account()`), /permission denied/);

@@ -97,7 +97,7 @@ src/
 
 **Setup**
 1. Create a free project at [supabase.com](https://supabase.com).
-2. SQL Editor → New query → paste each file in `supabase/migrations/` in order (`0001_…` through `0005_…`) → Run.
+2. SQL Editor → New query → paste each file in `supabase/migrations/` in order (`0001_…` through `0006_…`) → Run.
 3. Authentication → URL Configuration: Site URL `https://biotech-daily.vercel.app`; add redirect URLs `https://biotech-daily.vercel.app/connect` and `http://localhost:5173/connect`.
 4. Authentication → Emails → SMTP: set up a custom sender (Supabase's built-in email only reaches your own team and is heavily rate-limited).
 5. Project Settings → API: set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in Vercel (Settings → Environment Variables) and in `.env.development.local` for local dev. The anon key is public by design. Connect's menu item and home section appear only once these are set.
