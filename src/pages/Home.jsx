@@ -9,7 +9,7 @@ import { connectEnabled } from '../connect/enabled.js';
 import { LinkArrow, SectionHeader, SkeletonList, Monogram } from '../components/ui.jsx';
 import { api } from '../services/api.js';
 import { useAsync } from '../hooks/useAsync.js';
-import { formatDate, timeAgo } from '../services/format.js';
+import { timeAgo } from '../services/format.js';
 
 const EXPLORE = [
   { href: '/news', icon: 'newspaper', title: 'News', text: 'Live headlines from STAT, Fierce Biotech, BioPharma Dive and more.', cta: 'Read' },
@@ -31,7 +31,6 @@ export default function Home() {
   const items = newsQ.data?.items ?? [];
   const featured = items.find((n) => n.featured) ?? items[0];
   const rest = items.filter((n) => n !== featured).slice(0, 6);
-  const today = formatDate(new Date().toISOString(), { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
   return (
     <>
@@ -42,11 +41,7 @@ export default function Home() {
         <div className="absolute -right-32 top-10 h-80 w-80 rounded-full bg-helix-400/20 blur-3xl dark:bg-helix-400/10" />
         <div className="relative mx-auto grid max-w-7xl items-center gap-8 px-4 pb-12 pt-12 sm:px-6 sm:pt-20 lg:grid-cols-[1.15fr_1fr]">
           <div className="min-w-0">
-          <p className="inline-flex items-center gap-2 rounded-full border border-helix-500/20 bg-white/70 px-3 py-1 text-xs font-semibold text-helix-700 backdrop-blur dark:bg-ink-900/60 dark:text-helix-300">
-            <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-helix-400 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-helix-500" /></span>
-            {today}
-          </p>
-          <h1 className="mt-5 max-w-3xl font-display text-4xl font-semibold leading-[1.1] tracking-tight text-slate-900 sm:text-6xl dark:text-white">
+          <h1 className="max-w-3xl font-display text-4xl font-semibold leading-[1.1] tracking-tight text-slate-900 sm:text-6xl dark:text-white">
             The life sciences,{' '}
             <span className="bg-gradient-to-r from-brand-600 to-helix-500 bg-clip-text text-transparent dark:from-brand-300 dark:to-helix-400">decoded daily.</span>
           </h1>
