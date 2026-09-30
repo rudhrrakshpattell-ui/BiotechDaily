@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Icon from './Icon.jsx';
+import LogoMark from './LogoMark.jsx';
 import { FOUNDER } from '../seo.js';
 import { connectEnabled } from '../connect/enabled.js';
 
@@ -16,9 +17,7 @@ export const NAV = [
 export function Logo() {
   return (
     <a href="/" className="focus-ring flex items-center gap-2.5 rounded-lg">
-      <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-helix-500 text-white shadow-md shadow-brand-600/25">
-        <Icon name="dna" className="h-5 w-5" strokeWidth={2} />
-      </span>
+      <LogoMark className="h-9 w-9 shrink-0" />
       <span className="flex flex-col leading-none">
         <span className="font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
           Biotech<span className="text-brand-600 dark:text-brand-300">Daily</span>
