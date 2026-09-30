@@ -64,7 +64,7 @@ export default function Home() {
             )}
           </div>
           {/* Phones and tablets: the helix runs horizontally under the buttons. */}
-          <DnaHelix orientation="horizontal" pairs={24} turns={2.5} speed={0.8} className="relative -mx-2 mt-8 h-36 sm:h-44 lg:hidden" />
+          <DnaHelix orientation="horizontal" pairs={24} turns={2.5} speed={0.8} className="relative -mx-2 mt-8 h-40 sm:h-48 lg:hidden" />
           <TrendingStrip data={trendingQ.data} />
           </div>
 
