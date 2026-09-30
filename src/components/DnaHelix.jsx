@@ -27,15 +27,12 @@ export default function DnaHelix({ orientation = 'vertical', pairs = 22, turns =
     function draw(now) {
       const len = horizontal ? w : h, span = horizontal ? h : w;
       const pad = Math.min(len * 0.08, 40);
-      const tail = len * 0.13; // axis length each loose end takes up
       const mid = span / 2;
-      // Horizontal helices are short, so they narrow a little to leave room for the ends to hang.
-      const amp = Math.min(span * (horizontal ? 0.26 : 0.34), len * 0.2);
+      const amp = Math.min(span * 0.34, len * 0.2);
       const node = Math.max(2.5, Math.min(amp * 0.11, 7));
       const t = reduce ? 0.6 : ((now - t0) / 1000) * 0.9 * speed;
       const total = turns * Math.PI * 2;
-      const start = pad + tail, run = len - 2 * (pad + tail);
-      const at = (f) => { const ph = f * total + t; return { u: start + f * run, s: Math.sin(ph), z: Math.cos(ph) }; };
+      const at = (f) => { const ph = f * total + t; return { u: pad + f * (len - 2 * pad), s: Math.sin(ph), z: Math.cos(ph) }; };
 
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
@@ -65,38 +62,6 @@ export default function DnaHelix({ orientation = 'vertical', pairs = 22, turns =
             ctx.beginPath(); ctx.moveTo(...pt(p1.u, mid + dir * amp * p1.s)); ctx.lineTo(...pt(p2.u, mid + dir * amp * p2.s)); ctx.stroke();
           }
         }
-      }
-
-      // Loose ends: past the last base pair each strand unzips, splays away from its partner and hangs
-      // under gravity (screen-down), swaying slightly. Unpaired bases ride along, shrinking toward the tip.
-      const tailDots = [];
-      const segs = 36;
-      for (const [f, outward] of [[0, -1], [1, 1]]) {
-        const e = at(f);
-        for (const [dir, color] of [[1, colors.a], [-1, colors.b]]) {
-          const off = dir * amp * e.s;
-          const side = Math.sign(off) || dir;
-          const point = (q) => {
-            let u = e.u + outward * tail * q * (1 - 0.25 * q);
-            let x = mid + off + side * amp * 0.4 * q + Math.sin(t * 1.3 + q * 3 + dir) * amp * 0.12 * q;
-            const drop = amp * 0.45 * q * q;
-            if (horizontal) x += drop; else u += drop;
-            return pt(u, x);
-          };
-          for (let k = 0; k < segs; k++) {
-            const q = k / segs;
-            ctx.globalAlpha = 0.9 - 0.65 * q;
-            ctx.lineWidth = node * (1.2 - 0.7 * q);
-            ctx.strokeStyle = color;
-            ctx.beginPath(); ctx.moveTo(...point(q)); ctx.lineTo(...point((k + 1) / segs)); ctx.stroke();
-          }
-          for (const q of [0.4, 0.75]) tailDots.push({ p: point(q), q, c: color });
-        }
-      }
-      for (const d of tailDots) {
-        ctx.globalAlpha = 0.85 - 0.5 * d.q;
-        ctx.fillStyle = d.c;
-        ctx.beginPath(); ctx.arc(d.p[0], d.p[1], node * (1.1 - 0.5 * d.q), 0, Math.PI * 2); ctx.fill();
       }
 
       // Nucleotides, back to front; the front ones glow.
