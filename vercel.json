@@ -74,6 +74,30 @@
       },
       {
         "protocol": "https",
+        "hostname": "fiercepharma.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "**.fiercepharma.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "endpts.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "**.endpts.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "pharmaceutical-technology.com"
+      },
+      {
+        "protocol": "https",
+        "hostname": "**.pharmaceutical-technology.com"
+      },
+      {
+        "protocol": "https",
         "hostname": "genengnews.com"
       },
       {

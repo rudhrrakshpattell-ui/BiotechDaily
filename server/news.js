@@ -1,4 +1,5 @@
-// Live biotech news from newsroom RSS feeds, normalized to the app's news item shape.
+// Live biotech and pharma news from newsroom RSS feeds, normalized to the app's news item shape.
+// The funding tracker (server/funding.js) reads these too, so pharma feeds bring in pharma startup rounds.
 import { cachedLoader, classify, fetchAll, fetchFeed, hash, parseDate, stripHtml, text, truncate } from './rss.js';
 
 export const NEWS_FEEDS = [
@@ -10,10 +11,15 @@ export const NEWS_FEEDS = [
   { name: 'ScienceDaily', url: 'https://www.sciencedaily.com/rss/plants_animals/biotechnology.xml' },
   { name: 'Labiotech', url: 'https://www.labiotech.eu/feed/' },
   { name: 'BioSpace', url: 'https://www.biospace.com/news.rss' },
+  // Pharma newsrooms.
+  { name: 'Fierce Pharma', url: 'https://www.fiercepharma.com/rss/xml' },
+  { name: 'BioPharma Dive Pharma', url: 'https://www.biopharmadive.com/feeds/topic/pharma/' },
+  { name: 'Endpoints News', url: 'https://endpts.com/feed/' },
+  { name: 'Pharmaceutical Technology', url: 'https://www.pharmaceutical-technology.com/feed/' },
 ];
 
 // Newsroom sources (not press-release or paper feeds) that are eligible for the lead story.
-const LEAD_SOURCES = new Set(['STAT', 'Fierce Biotech', 'BioPharma Dive', 'BioSpace', 'Labiotech']);
+const LEAD_SOURCES = new Set(['STAT', 'Fierce Biotech', 'BioPharma Dive', 'BioSpace', 'Labiotech', 'Fierce Pharma', 'Endpoints News']);
 const MAX_PER_FEED = 25;
 const GENERIC_TAGS = new Set(['biotech', 'biotechnology', 'business', 'pharma', 'pharmaceuticals', 'research', 'news', 'the readout', 'stat+', 'health', 'science']);
 

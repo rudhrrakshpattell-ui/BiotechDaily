@@ -7,6 +7,9 @@
 const OPTIMIZED_HOSTS = [
   /(^|\.)statnews\.com$/,
   /(^|\.)fiercebiotech\.com$/,
+  /(^|\.)fiercepharma\.com$/,
+  /(^|\.)endpts\.com$/,
+  /(^|\.)pharmaceutical-technology\.com$/,
   /(^|\.)genengnews\.com$/,
   /(^|\.)labiotech\.eu$/,
   /(^|\.)biospace\.com$/,
