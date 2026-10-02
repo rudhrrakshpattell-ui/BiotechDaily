@@ -77,8 +77,9 @@ const AREA_RULES = [
 ];
 
 // Pharma vs biotech for the sector filter: pharma when the story is about classic drug-making
-// (small molecules, formulation, delivery, generics, manufacturing) or the company calls itself a pharma.
-const PHARMA_RE = /\b(pharma\w*|small[- ]molecules?|oral (?:drug|pill|tablet)s?|generics?|formulations?|drug delivery|long-acting injectables?|api manufactur\w*|cdmo|specialty drugs?)\b/i;
+// (small molecules, oral drugs, formulation, delivery, generics, manufacturing) or the company calls itself
+// a pharma or drugmaker.
+const PHARMA_RE = /\b(pharma\w*|drugmakers?|small[- ]molecules?|oral (?:drugs?|pills?|tablets?|therap\w*|medicines?)|pills?|tablets?|generics?|biosimilars?|formulations?|drug delivery|long-acting injectables?|api manufactur\w*|cdmo|specialty drugs?)\b/i;
 export const sectorOf = (text) => (PHARMA_RE.test(text) ? 'Pharma' : 'Biotech');
 
 const INVESTORS_RE = /\bled by ([A-Z][\w&.'’\- ]+?)(?:,| with | and (?:joined|participation)|\.|;|$)/;

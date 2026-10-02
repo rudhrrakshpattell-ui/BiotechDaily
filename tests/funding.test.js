@@ -32,6 +32,9 @@ const sectors = [
   ['Corvane Pharma raises $120M series B for oral degraders', 'Pharma'],
   ['Dosera adds $45M series A to build long-acting injectables', 'Pharma'],
   ['Kinetix lands $11M seed for small-molecule kinase inhibitors', 'Pharma'],
+  ['Corsera raises $80M series B to take its weight-loss pill into phase 2', 'Pharma'],
+  ['Verdiva Bio raises $411M series A for once-weekly oral obesity pills', 'Pharma'],
+  ['Indian drugmaker Zenara secures $40M series B', 'Pharma'],
   ['AusperBio adds $120M series C to advance hep B oligo therapy through phase 3', 'Biotech'],
   ['BigHat Bio raises USD 75m Series C as AI-designed protein therapeutics advance', 'Biotech'],
 ];

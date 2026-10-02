@@ -16,7 +16,7 @@ export default function Footer() {
             <span className={`h-1.5 w-1.5 rounded-full ${isMockMode ? 'bg-amber-500' : 'bg-helix-500'}`} />
             {isMockMode
               ? 'Demo mode: all content is sample data'
-              : 'Live news, funding rounds, videos and podcasts from STAT, Fierce Biotech, BioPharma Dive, GEN, BioSpace, Labiotech, ScienceDaily and more.'}
+              : 'Live news, funding rounds, videos and podcasts from STAT, Fierce Biotech, Fierce Pharma, BioPharma Dive, Endpoints News, GEN, BioSpace, Labiotech and more.'}
           </p>
         </div>
         <div>

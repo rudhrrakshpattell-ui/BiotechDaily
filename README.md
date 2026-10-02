@@ -25,7 +25,7 @@ The backend is a set of Vercel serverless functions in `api/`, deployed with the
 
 | Route | Data |
 | --- | --- |
-| `GET /api/news` | **Live.** STAT, Fierce Biotech, BioPharma Dive, GEN, BioSpace, Labiotech and ScienceDaily RSS feeds (`server/news.js`) |
+| `GET /api/news` | **Live.** STAT, Fierce Biotech, BioPharma Dive, GEN, BioSpace, Labiotech and ScienceDaily RSS feeds, plus pharma feeds from Fierce Pharma, BioPharma Dive (pharma), Endpoints News and Pharmaceutical Technology (`server/news.js`) |
 | `GET /api/videos` | **Live.** Latest uploads from 8 YouTube channels via their free channel feeds, no API key (`server/videos.js`) |
 | `GET /api/podcasts` | **Live.** 5 latest episodes from 6 biotech podcasts' RSS feeds (`server/podcasts.js`) |
 | `GET /api/trending` | Companies and themes mentioned most in the last 3 days of news, videos and podcasts (`src/services/trending.js`) |
