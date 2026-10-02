@@ -3,9 +3,9 @@
 // With VITE_API_BASE_URL unset, requests are answered from the local mock data (with a short delay
 // so loading states are exercised). Set it and the same calls become real HTTP requests:
 //   GET {BASE}/news?q=&category=&company=&range=&sort=&page=&pageSize=   -> { items, total, page, pageSize }
-//   GET {BASE}/companies?q=&focus=&sort=                         -> Company[]
+//   GET {BASE}/companies?q=&sector=&focus=&sort=                 -> Company[]
 //   GET {BASE}/companies/:id                                     -> Company
-//   GET {BASE}/startups?q=&stage=&area=&sort=                    -> Startup[]
+//   GET {BASE}/startups?q=&sector=&stage=&area=&sort=            -> Startup[]
 //   GET {BASE}/videos?category=                                  -> Video[]
 //   GET {BASE}/podcasts                                          -> Podcast[]
 //   GET {BASE}/search?q=                                         -> { news, companies, startups, videos, episodes }
@@ -67,9 +67,11 @@ function queryNews({ q, category, company, range, sort = 'newest', page = 1, pag
   return { items, total, page, pageSize };
 }
 
-function queryCompanies({ q, focus, sort = 'name' }) {
+const inSector = (sector, x) => !sector || sector === 'all' || x.sector === sector;
+
+function queryCompanies({ q, sector, focus, sort = 'name' }) {
   const items = companies.filter(
-    (c) => (!focus || focus === 'all' || c.focus.includes(focus)) && matches(q, c.name, c.ticker, c.focus, c.products.map((p) => p.name), c.hq),
+    (c) => inSector(sector, c) && (!focus || focus === 'all' || c.focus.includes(focus)) && matches(q, c.name, c.ticker, c.focus, c.products.map((p) => p.name), c.hq),
   );
   return items.sort((a, b) =>
     sort === 'founded' ? a.founded - b.founded
@@ -78,9 +80,10 @@ function queryCompanies({ q, focus, sort = 'name' }) {
   );
 }
 
-function queryStartups({ q, stage, area, sort = 'recent' }) {
+function queryStartups({ q, sector, stage, area, sort = 'recent' }) {
   const items = startups.filter(
     (s) =>
+      inSector(sector, s) &&
       (!stage || stage === 'all' || s.stage === stage) &&
       (!area || area === 'all' || s.area === area) &&
       matches(q, s.name, s.area, s.tagline, s.hq, s.investors),

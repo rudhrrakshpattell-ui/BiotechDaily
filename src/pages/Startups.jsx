@@ -5,8 +5,10 @@ import { api } from '../services/api.js';
 import { useAsync } from '../hooks/useAsync.js';
 import { useDebounce } from '../hooks/useDebounce.js';
 import { STARTUP_STAGES } from '../data/startups.js';
+import { SECTORS } from '../data/companies.js';
 import { formatMoney } from '../services/format.js';
 
+const SECTOR_OPTIONS = [{ id: 'all', label: 'All sectors' }, ...SECTORS.map((s) => ({ id: s, label: s }))];
 const STAGE_OPTIONS = [{ id: 'all', label: 'All stages' }, ...STARTUP_STAGES.map((s) => ({ id: s, label: s }))];
 const SORT_OPTIONS = [
   { value: 'recent', label: 'Most recent round' },
@@ -15,6 +17,7 @@ const SORT_OPTIONS = [
 
 export default function Startups({ query }) {
   const [q, setQ] = useState(query.q ?? '');
+  const [sector, setSector] = useState('all');
   const [stage, setStage] = useState('all');
   const [area, setArea] = useState('all');
   const [sort, setSort] = useState('recent');
@@ -22,7 +25,7 @@ export default function Startups({ query }) {
 
   // Unfiltered list powers the summary tiles and the area dropdown.
   const all = useAsync(() => api.getStartups({}), []);
-  const { data, loading, error, reload } = useAsync(() => api.getStartups({ q: debouncedQ, stage, area, sort }), [debouncedQ, stage, area, sort]);
+  const { data, loading, error, reload } = useAsync(() => api.getStartups({ q: debouncedQ, sector, stage, area, sort }), [debouncedQ, sector, stage, area, sort]);
 
   const summary = useMemo(() => {
     const list = all.data ?? [];
@@ -42,7 +45,7 @@ export default function Startups({ query }) {
 
   return (
     <>
-      <PageHeader eyebrow="Emerging startups" title="Funding tracker" description="Early-stage companies to watch, with their latest rounds, investors and focus areas.">
+      <PageHeader eyebrow="Emerging startups" title="Funding tracker" description="Early-stage biotech and pharma companies to watch, with their latest rounds, investors and focus areas.">
         <dl className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
           {summary.tiles.map((t) => (
             <div key={t.label} className="card px-4 py-3">
@@ -60,10 +63,11 @@ export default function Startups({ query }) {
             <Select label="Focus area" value={area} onChange={setArea} options={[{ value: 'all', label: 'All focus areas' }, ...summary.areas.map((a) => ({ value: a, label: a }))]} />
             <Select label="Sort" value={sort} onChange={setSort} options={SORT_OPTIONS} />
           </div>
+          <Chips label="Sector" options={SECTOR_OPTIONS} value={sector} onChange={setSector} />
           <Chips label="Stage" options={STAGE_OPTIONS} value={stage} onChange={setStage} />
         </div>
         {error && <ErrorState error={error} onRetry={reload} />}
-        {data?.length === 0 && <EmptyState onReset={() => { setQ(''); setStage('all'); setArea('all'); }} />}
+        {data?.length === 0 && <EmptyState onReset={() => { setQ(''); setSector('all'); setStage('all'); setArea('all'); }} />}
         <div className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${loading && data ? 'opacity-60' : ''}`}>
           {data ? data.map((s) => <StartupCard key={s.id} startup={s} maxRaised={summary.max} />) : <SkeletonList count={6} className="h-72" />}
         </div>

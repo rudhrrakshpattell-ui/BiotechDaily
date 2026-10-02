@@ -16,7 +16,7 @@ export default function StartupCard({ startup: s, maxRaised }) {
         <Monogram name={s.name} color="from-helix-500 to-brand-600" className="h-11 w-11 text-sm" />
         <div className="min-w-0 flex-1">
           <h3 className="font-display font-semibold text-slate-900 dark:text-white">{s.name}</h3>
-          <p className="text-xs text-slate-500">{s.area}</p>
+          <p className="text-xs text-slate-500">{s.sector} · {s.area}</p>
         </div>
         <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${STAGE_STYLES[s.stage]}`}>{s.stage}</span>
       </div>
