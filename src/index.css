@@ -3,8 +3,8 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Sora", "Inter", ui-sans-serif, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Sora Variable", "Inter Variable", ui-sans-serif, sans-serif;
 
   --color-brand-50: #eef6ff;
   --color-brand-100: #d9ebff;
@@ -30,6 +30,13 @@
 }
 
 html { scroll-behavior: smooth; }
+/* Space reserved while the Connect tab bar is showing: the full-width bar on phones, the floating capsule
+   (plus its gap from the bottom edge) on desktop. */
+:root { --tabbar-h: 0px; }
+html.has-tabbar { --tabbar-h: calc(3.25rem + env(safe-area-inset-bottom)); }
+@media (min-width: 768px) {
+  html.has-tabbar { --tabbar-h: 6.5rem; }
+}
 @layer base {
   body { @apply bg-slate-50 text-slate-800 antialiased dark:bg-ink-950 dark:text-slate-200; }
 }
@@ -45,6 +52,12 @@ html { scroll-behavior: smooth; }
   .focus-ring { @apply outline-none focus-visible:ring-4 focus-visible:ring-brand-500/25; }
 }
 
+/* slate-500 text is only 3.7:1 on the dark navy background; lift it to slate-400 (7:1) in dark mode.
+   :where() keeps specificity equal to the utility, so hover/focus colors still take precedence. */
+@layer utilities {
+  :where(.dark) .text-slate-500 { color: var(--color-slate-400); }
+}
+
 .bg-grid {
   background-image: linear-gradient(to right, rgb(28 100 237 / 0.06) 1px, transparent 1px),
     linear-gradient(to bottom, rgb(28 100 237 / 0.06) 1px, transparent 1px);
@@ -54,6 +67,12 @@ html { scroll-behavior: smooth; }
   background-image: linear-gradient(to right, rgb(142 198 255 / 0.05) 1px, transparent 1px),
     linear-gradient(to bottom, rgb(142 198 255 / 0.05) 1px, transparent 1px);
 }
+/* Like button: heart pops when liked. */
+@keyframes heart-pop { 0% { transform: scale(1); } 35% { transform: scale(1.35); } 65% { transform: scale(0.9); } 100% { transform: scale(1); } }
+.animate-heart-pop { animation: heart-pop 0.4s cubic-bezier(0.2, 0.8, 0.3, 1.2); }
+@media (prefers-reduced-motion: reduce) { .animate-heart-pop { animation: none; } }
+/* Hero cards floating beside the helix. */
+@keyframes bob { 50% { transform: translateY(-10px); } }
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 input[type="range"] { accent-color: var(--color-brand-600); }

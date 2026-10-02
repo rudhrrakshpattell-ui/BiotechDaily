@@ -5,6 +5,10 @@ import { api } from '../services/api.js';
 import { useAsync } from '../hooks/useAsync.js';
 import { useDebounce } from '../hooks/useDebounce.js';
 import { NEWS_CATEGORIES } from '../data/categories.js';
+import { timeAgo } from '../services/format.js';
+import { trendByKey, trendLabel } from '../services/trending.js';
+import { navigate } from '../hooks/useRoute.js';
+import Icon from '../components/Icon.jsx';
 
 const CATEGORY_OPTIONS = [{ id: 'all', label: 'All topics' }, ...NEWS_CATEGORIES];
 const RANGE_OPTIONS = [
@@ -25,22 +29,24 @@ export default function News({ query }) {
   const [range, setRange] = useState('all');
   const [sort, setSort] = useState('newest');
   const [page, setPage] = useState(1);
+  const trend = trendByKey[query.trend] ? query.trend : null;
   const debouncedQ = useDebounce(q);
 
-  // Follow links like #/news?category=mrna even when already on this page.
+  // Follow links like /news?category=mrna even when already on this page.
   useEffect(() => {
     if (query.category) setCategory(query.category);
     if (query.q !== undefined) setQ(query.q);
   }, [query.category, query.q]);
 
-  useEffect(() => setPage(1), [debouncedQ, category, range, sort]);
+  useEffect(() => setPage(1), [debouncedQ, category, range, sort, trend]);
 
   const { data, loading, error, reload } = useAsync(
-    () => api.getNews({ q: debouncedQ, category, range, sort, page, pageSize: 8 }),
-    [debouncedQ, category, range, sort, page],
+    () => api.getNews({ q: debouncedQ, category, trend, range, sort, page, pageSize: 8 }),
+    [debouncedQ, category, trend, range, sort, page],
   );
 
-  const reset = () => { setQ(''); setCategory('all'); setRange('all'); setSort('newest'); };
+  const clearTrend = () => navigate('/news', { replace: true });
+  const reset = () => { setQ(''); setCategory('all'); setRange('all'); setSort('newest'); if (trend) clearTrend(); };
 
   return (
     <>
@@ -54,15 +60,32 @@ export default function News({ query }) {
             <Select label="Sort" value={sort} onChange={setSort} options={SORT_OPTIONS} />
           </div>
           <Chips label="Topic" options={CATEGORY_OPTIONS} value={category} onChange={setCategory} />
+          {trend && (
+            <p className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+              <Icon name="trendingUp" className="h-4 w-4 text-helix-500" />
+              Trending:
+              <button onClick={clearTrend} className="chip chip-active focus-ring" aria-label={`Remove trending filter ${trendLabel(trendByKey[trend])}`}>
+                {trendLabel(trendByKey[trend])}
+                <Icon name="x" className="h-3 w-3" />
+              </button>
+            </p>
+          )}
         </div>
 
         <div className="mx-auto mt-6 max-w-4xl">
           {data && (
             <p className="mb-4 text-sm text-slate-500" aria-live="polite">
               {data.total} {data.total === 1 ? 'story' : 'stories'}
-              {loading && <span className="ml-2 text-brand-500">Updating…</span>}
+              {data.live && (
+                <span className="ml-3 inline-flex items-center gap-1.5 text-helix-600 dark:text-helix-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-helix-500" />
+                  Live · updated {timeAgo(data.fetchedAt)}
+                </span>
+              )}
+              {loading && <span className="ml-3 text-brand-500">Updating…</span>}
             </p>
           )}
+          <h2 className="sr-only">Stories</h2>
           {error && <ErrorState error={error} onRetry={reload} />}
           {!data && loading && <div className="space-y-4"><SkeletonList count={4} className="h-40" /></div>}
           {data?.items.length === 0 && <EmptyState onReset={reset} />}

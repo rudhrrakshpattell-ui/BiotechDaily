@@ -34,6 +34,7 @@ export default function Companies() {
           <Chips label="Sector" options={SECTOR_OPTIONS} value={sector} onChange={setSector} />
           <Chips label="Therapeutic area" options={FOCUS_OPTIONS} value={focus} onChange={setFocus} />
         </div>
+        <h2 className="sr-only">Companies</h2>
         {error && <ErrorState error={error} onRetry={reload} />}
         {data?.length === 0 && <EmptyState onReset={() => { setQ(''); setSector('all'); setFocus('all'); }} />}
         <div className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${loading && data ? 'opacity-60' : ''}`}>

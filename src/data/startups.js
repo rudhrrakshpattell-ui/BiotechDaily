@@ -1,8 +1,9 @@
-// MOCK DATA: fictional startups and investors. Replace with GET /startups from your API.
+// MOCK DATA: fictional startups and investors, used only in mock mode (no VITE_API_BASE_URL).
+// The live site shows real rounds extracted from the news (server/funding.js); these never appear there.
 // `sector` is 'Biotech' or 'Pharma' and drives the sector filter on the Startups page.
-export const STARTUP_STAGES = ['Seed', 'Series A', 'Series B', 'Series C'];
+export const STARTUP_STAGES = ['Seed', 'Series A', 'Series B', 'Series C', 'Series D+', 'IPO', 'Other'];
 
-export const startups = [
+const sampleStartups = [
   { id: 'lumora', name: 'Lumora Bio', sector: 'Biotech', stage: 'Series B', area: 'Synthetic Biology', hq: 'Boston, MA', founded: 2021, employees: 85,
     totalRaisedM: 212, lastRoundM: 140, lastRoundDate: '2026-09-25', investors: ['Northbridge Bio Ventures', 'Cobalt Life Sciences'],
     tagline: 'Programmable gene circuits that switch cell therapies on only where disease is.' },
@@ -62,3 +63,21 @@ export const startups = [
     totalRaisedM: 11, lastRoundM: 11, lastRoundDate: '2026-06-24', investors: ['Straits Bio Partners'],
     tagline: 'Covalent kinase inhibitors designed against resistance mutations.' },
 ];
+
+// Same shape as a live funding round from /api/startups.
+export const startups = sampleStartups.map((s) => ({
+  id: s.id,
+  name: s.name,
+  sector: s.sector,
+  stage: s.stage,
+  area: s.area,
+  amountM: s.lastRoundM,
+  amountLabel: `$${s.lastRoundM}M`,
+  currency: 'USD',
+  date: s.lastRoundDate,
+  headline: `${s.name} raises $${s.lastRoundM}M ${s.stage}: ${s.tagline}`,
+  url: null,
+  source: 'Sample data',
+  sources: ['Sample data'],
+  investors: s.investors,
+}));

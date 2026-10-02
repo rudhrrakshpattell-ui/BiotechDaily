@@ -5,6 +5,7 @@ import { useDebounce } from '../hooks/useDebounce.js';
 import { navigate } from '../hooks/useRoute.js';
 import { usePlayer } from '../context/PlayerContext.jsx';
 import { categoryById } from '../data/categories.js';
+import { sectorAndArea } from './StartupCard.jsx';
 
 const SUGGESTIONS = ['CRISPR', 'mRNA', 'Alzheimer', 'CAR-T', 'Series B', 'Vertex', 'AlphaFold'];
 
@@ -42,7 +43,7 @@ export default function SearchDialog({ open, onClose }) {
   const groups = results && [
     { label: 'Companies', icon: 'building', items: results.companies.map((c) => ({ key: c.id, title: c.name, sub: [c.sector, ...c.focus].join(' · '), action: () => go(`/companies/${c.id}`) })) },
     { label: 'News', icon: 'newspaper', items: results.news.map((n) => ({ key: n.id, title: n.title, sub: categoryById[n.category]?.label, action: () => go(`/news?q=${encodeURIComponent(q)}`) })) },
-    { label: 'Startups', icon: 'rocket', items: results.startups.map((s) => ({ key: s.id, title: s.name, sub: `${s.sector} · ${s.stage} · ${s.area}`, action: () => go(`/startups?q=${encodeURIComponent(s.name)}`) })) },
+    { label: 'Startups', icon: 'rocket', items: results.startups.map((s) => ({ key: s.id, title: s.name, sub: [s.stage, sectorAndArea(s)].join(' · '), action: () => go(`/startups?q=${encodeURIComponent(s.name)}`) })) },
     { label: 'Videos', icon: 'video', items: results.videos.map((v) => ({ key: v.id, title: v.title, sub: v.channel, action: () => go(`/media?v=${v.id}`) })) },
     { label: 'Podcast episodes', icon: 'mic', items: results.episodes.map((e) => ({ key: e.id, title: e.title, sub: e.show, action: () => { player.play(e); onClose(); } })) },
   ].filter((g) => g.items.length);

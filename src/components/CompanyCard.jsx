@@ -4,7 +4,7 @@ import { formatNumber } from '../services/format.js';
 
 export default function CompanyCard({ company: c }) {
   return (
-    <a href={`#/companies/${c.id}`} className="card focus-ring group flex flex-col p-5 transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-lg hover:shadow-brand-900/5 dark:hover:border-brand-400/30">
+    <a href={`/companies/${c.id}`} className="card focus-ring group flex flex-col p-5 transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-lg hover:shadow-brand-900/5 dark:hover:border-brand-400/30">
       <div className="flex items-start gap-4">
         <Monogram name={c.name} color={c.color} />
         <div className="min-w-0 flex-1">

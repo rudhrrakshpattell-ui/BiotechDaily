@@ -4,7 +4,7 @@ A daily biotech briefing site built with React 19, Vite and Tailwind CSS v4.
 
 - **News feed**: search, topic chips, date range, sort, "load more" paging
 - **Company profiles**: 10 biotechs (Genentech, Amgen, Moderna, BioNTech, Vertex, Regeneron, Gilead, Biogen, Alnylam, CSL) and 10 pharma companies (Pfizer, J&J, Roche, Novartis, Merck & Co., AstraZeneca, Eli Lilly, Novo Nordisk, Sanofi, AbbVie), each with key medicines, pipeline stages, a milestone timeline and related news; filter by sector
-- **Startup funding tracker**: biotech and pharma startups, summary figures, filters by sector, stage and focus area, sort by recency or capital raised
+- **Startup funding tracker**: biotech and pharma funding rounds, summary figures, filters by sector, stage and focus area, sort by recency or round size
 - **Video & news**: YouTube embeds that load on click, with a topic filter and a headlines sidebar
 - **Podcasts**: one app-wide audio player (seek, ±15s, speed) that keeps playing while you browse
 - **Global search**: ⌘K / Ctrl+K or `/`, covering news, companies, startups, videos and episodes
@@ -17,41 +17,105 @@ npm install
 npm run dev
 ```
 
-No Node yet? Serve the folder with any static server and open `preview.html`, which runs the same `src/` files in the browser:
+Run the tests with `npm test`.
 
-```bash
-python3 -m http.server 5178
-```
+## Backend
 
-## Connecting a real API
+The backend is a set of Vercel serverless functions in `api/`, deployed with the site. The frontend calls them through `src/services/api.js`.
 
-All data goes through `src/services/api.js`. Pages never import mock data directly.
+| Route | Data |
+| --- | --- |
+| `GET /api/news` | **Live.** STAT, Fierce Biotech, BioPharma Dive, GEN, BioSpace, Labiotech and ScienceDaily RSS feeds (`server/news.js`) |
+| `GET /api/videos` | **Live.** Latest uploads from 8 YouTube channels via their free channel feeds, no API key (`server/videos.js`) |
+| `GET /api/podcasts` | **Live.** 5 latest episodes from 6 biotech podcasts' RSS feeds (`server/podcasts.js`) |
+| `GET /api/trending` | Companies and themes mentioned most in the last 3 days of news, videos and podcasts (`src/services/trending.js`) |
+| `GET /api/search` | Live news, funding rounds, videos and episodes + companies |
+| `GET /api/companies`, `/api/companies/:id` | Curated profiles (`src/data/companies.js`) |
+| `GET /api/companies/:id?section=press` | **Live.** The company's own press releases, for the 6 companies with a public feed (`server/pressReleases.js`) |
+| `GET /api/startups` | **Live.** Funding rounds and IPOs extracted from the news headlines (`server/funding.js`) |
 
-1. Copy `.env.example` to `.env` and set `VITE_API_BASE_URL=https://your-api.example.com`.
-2. Implement the endpoints listed at the top of `api.js`. The mock query functions in the same file show how each endpoint should filter and sort, and what shape it should return.
+How the live sources work (shared plumbing in `server/rss.js`):
+- All feeds are fetched in parallel with an 8-second timeout each. If one feed fails, it's skipped and the others still show.
+- Stories are normalized, de-duplicated and sorted into topics by keyword rules (`RULES`).
+- Results are cached in memory (news 10 minutes, videos and podcasts 30 minutes), and Vercel's CDN caches responses too, so sources are fetched at most a few times an hour.
+- If every source of a kind fails, the API returns the sample data instead, so the site keeps working.
+- Videos skip hiring/culture clips and feature the most-watched upload of the last two weeks.
 
-If `VITE_API_BASE_URL` is empty, the app uses the mock data in `src/data/` and adds a short delay so loading states still show. The footer shows a "Demo mode" badge while mock data is in use.
+The funding tracker reads headlines like "Enveda reaps $311M series E" and extracts the company, amount (converted to approximate USD), stage and therapeutic area. It skips headlines about deals, acquisitions and licensing. It only knows rounds the news feeds currently carry, roughly the last two weeks, and it never falls back to sample data. Parser tests are in `tests/funding.test.js`; run them with `npm test`.
 
-Suggested sources: an RSS/news aggregator for `/news`, the YouTube Data API (a curated playlist) for `/videos`, podcast RSS feeds parsed server-side for `/podcasts`, and a financial-data provider for live company figures.
+**Trending now** (home page) counts how many distinct stories, videos and episodes from the last 72 hours mention each company or theme in `TRENDING_COMPANIES` / `TRENDING_THEMES` (at least 2 to show, widening to 7 days on very quiet stretches). Each chip links to `/news?trend=<key>`, which filters the feed with the same pattern, so the list matches the count. Add a company or theme by appending an entry with a `match` regex.
+
+**Company pages** also show the company's latest press releases (Amgen, BioNTech, Vertex, Regeneron, Biogen and Alnylam publish feeds; Moderna, Gilead, Genentech and CSL don't), plus videos, podcast episodes and funding rounds that mention it, matched with the same patterns as Trending. Sections only appear when there's something to show.
+
+To add a source, append it to `NEWS_FEEDS`, `VIDEO_CHANNELS` or `PODCAST_FEEDS`. A YouTube channel ID is in the channel page's source (`"externalId"`); a podcast's feed URL can be found with `https://itunes.apple.com/search?media=podcast&term=<name>`.
+
+In development, `npm run dev` serves the same functions through a small Vite plugin (see `vite.config.js`), so there's nothing extra to run. `VITE_API_BASE_URL` is set to `/api` in `.env.development` and `.env.production`. Empty it to run fully on mock data in the browser.
 
 ## About the mock data
 
-- **News headlines, startups, investors and podcast shows are fictional.** News dates are generated relative to today, so the feed always looks current.
+- **The sample startups, investors and podcast shows are fictional**, and only appear in mock mode. The sample news in `src/data/news.js` is fictional too; it's used only as a fallback when the live feeds fail, or in mock mode.
 - **Company background and marketed products** come from public information. Headcount, market cap and pipeline stages are approximate placeholders.
-- **Videos** are real public YouTube videos.
-- **Podcast audio** uses royalty-free SoundHelix demo tracks.
+- **Sample videos and podcasts** in `src/data/` are only used as a fallback; the sample podcast audio is royalty-free SoundHelix demo tracks.
 
 ## Structure
 
 ```
+api/                   Vercel serverless functions (one file per route; page.js + seo.js serve HTML/SEO)
+public/                favicon, share image
+design/                share image source (SVG)
+server/rss.js          feed fetching, parsing, topic classification, caching
+server/news.js         live news
+server/videos.js       live YouTube videos
+server/podcasts.js     live podcast episodes
+server/funding.js      funding rounds extracted from live news
+server/pressReleases.js company press releases
+src/connect/            Connect: Supabase client, data layer, pages, components
+supabase/migrations/   Connect database schema and security policies
+tests/                 node:test tests (npm test)
+server/http.js         JSON/caching helpers for the functions
 src/
   services/api.js      data layer (mock ↔ HTTP switch)
+  services/queries.js  filter/sort logic shared by the mock layer and the API
   services/format.js   date/money formatting
   data/                mock data + shared taxonomy
   hooks/               useAsync, useDebounce, useTheme, useRoute (hash router)
   context/             PlayerContext (global audio)
   components/          Header, Footer, SearchDialog, cards, PodcastPlayer, VideoEmbed, ui primitives
   pages/               Home, News, Companies, CompanyDetail, Startups, Media, Podcasts
+  seo.js               per-page titles/descriptions, sitemap paths
 ```
 
-Routing uses the URL hash (`#/companies/vertex`), so it works on any static host without server rewrites. Swap in react-router if you need clean URLs.
+## Connect (student community)
+
+`/connect` is a community for biotech students aged 13+: magic-link sign-in, profiles, follows, an X-style feed of posts with images, comments, likes and share links, post editing, direct messages with message requests (live via Supabase Realtime; under-18s can only be messaged by mutual follows), report and block. It's built on Supabase (Postgres + Auth + Storage), and all access rules live in the database as row-level security, so they hold even if someone calls the API directly.
+
+**Safety rules (enforced in `supabase/migrations/0001_connect.sql`, tested in `tests/connect-rls.test.js`):**
+- Age is asked before email; under-13s are refused and can't simply retry. Birth month/year is stored privately.
+- Profiles, posts and follows of under-18 members are visible only to signed-in members, and member pages are never indexed.
+- Blocking hides both people from each other and removes follows. Posting is limited to 20 per hour.
+- Reports store a snapshot of what was reported, so evidence survives deletion. Members can delete their account and everything in it.
+
+**Setup**
+1. Create a free project at [supabase.com](https://supabase.com).
+2. SQL Editor → New query → paste each file in `supabase/migrations/` in order (`0001_…` through `0006_…`) → Run.
+3. Authentication → URL Configuration: Site URL `https://biotech-daily.vercel.app`; add redirect URLs `https://biotech-daily.vercel.app/connect` and `http://localhost:5173/connect`.
+4. Authentication → Emails → SMTP: set up a custom sender (Supabase's built-in email only reaches your own team and is heavily rate-limited).
+5. Project Settings → API: set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in Vercel (Settings → Environment Variables) and in `.env.development.local` for local dev. The anon key is public by design. Connect's menu item and home section appear only once these are set.
+
+**Moderation:** review reports in Supabase → Table Editor → `reports`. To remove a post or comment, set `hidden = true` on it in `posts` or `comments`; the author still sees it, nobody else does. Post authors can also delete comments on their own posts.
+
+## Routing and SEO
+
+Pages use clean URLs (`/companies/vertex`) through a small History-API router (`src/hooks/useRoute.js`). Old `#/` links are redirected automatically.
+
+`vercel.json` sends every page URL to `api/page.js`, which serves `index.html` with that page's title, description, canonical link and Open Graph/Twitter tags. The tags come from `src/seo.js`, which the browser also uses to update the title on navigation. Link previews on LinkedIn, X and Slack work because the tags are in the HTML itself. Unknown paths return a real 404, and preview deployments are marked `noindex`.
+
+- `/sitemap.xml` and `/robots.txt` are generated by `api/seo.js`.
+- The share image is `public/og-image.png`; its source is `design/og-image.svg`.
+
+## Performance
+
+- Fonts (Inter, Sora) are self-hosted via Fontsource, so no render-blocking Google Fonts request.
+- Remote images (news photos, podcast art) go through Vercel Image Optimization (`src/services/images.js`) in production: resized to the size they're shown at, served as AVIF/WebP from the site's own domain. Allowed hosts are listed in both `src/services/images.js` and `images.remotePatterns` in `vercel.json`; images from any other host are used as-is. In development, original URLs are used.
+- Pages other than Home are code-split and load on first visit.
+- With a custom domain, set the `SITE_URL` environment variable in Vercel (e.g. `https://biotechdaily.com`), and update the defaults in `index.html` and `DEFAULT_SITE_URL` in `src/seo.js`.
