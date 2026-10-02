@@ -5,6 +5,7 @@ import { api, isMockMode } from '../services/api.js';
 import { useAsync } from '../hooks/useAsync.js';
 import { useDebounce } from '../hooks/useDebounce.js';
 import { STARTUP_STAGES } from '../data/startups.js';
+import { SECTORS } from '../data/companies.js';
 import { formatMoney } from '../services/format.js';
 
 const SORT_OPTIONS = [
@@ -14,6 +15,7 @@ const SORT_OPTIONS = [
 
 export default function Startups({ query }) {
   const [q, setQ] = useState(query.q ?? '');
+  const [sector, setSector] = useState('all');
   const [stage, setStage] = useState('all');
   const [area, setArea] = useState('all');
   const [sort, setSort] = useState('recent');
@@ -21,7 +23,7 @@ export default function Startups({ query }) {
 
   // Unfiltered list powers the summary tiles, the area dropdown and the stage chips.
   const all = useAsync(() => api.getStartups({}), []);
-  const { data, loading, error, reload } = useAsync(() => api.getStartups({ q: debouncedQ, stage, area, sort }), [debouncedQ, stage, area, sort]);
+  const { data, loading, error, reload } = useAsync(() => api.getStartups({ q: debouncedQ, sector, stage, area, sort }), [debouncedQ, sector, stage, area, sort]);
 
   const summary = useMemo(() => {
     const list = all.data ?? [];
@@ -41,7 +43,8 @@ export default function Startups({ query }) {
   }, [all.data]);
 
   const stageOptions = [{ id: 'all', label: 'All stages' }, ...summary.stages.map((s) => ({ id: s, label: s === 'Other' ? 'Undisclosed stage' : s }))];
-  const reset = () => { setQ(''); setStage('all'); setArea('all'); };
+  const sectorOptions = [{ id: 'all', label: 'All sectors' }, ...SECTORS.map((s) => ({ id: s, label: s }))];
+  const reset = () => { setQ(''); setSector('all'); setStage('all'); setArea('all'); };
 
   return (
     <>
@@ -71,6 +74,7 @@ export default function Startups({ query }) {
             <Select label="Area" value={area} onChange={setArea} options={[{ value: 'all', label: 'All areas' }, ...summary.areas.map((a) => ({ value: a, label: a }))]} />
             <Select label="Sort" value={sort} onChange={setSort} options={SORT_OPTIONS} />
           </div>
+          <Chips label="Sector" options={sectorOptions} value={sector} onChange={setSector} />
           {summary.stages.length > 1 && <Chips label="Stage" options={stageOptions} value={stage} onChange={setStage} />}
         </div>
         <h2 className="sr-only">Funding rounds</h2>

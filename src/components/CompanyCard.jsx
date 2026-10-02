@@ -9,7 +9,7 @@ export default function CompanyCard({ company: c }) {
         <Monogram name={c.name} color={c.color} />
         <div className="min-w-0 flex-1">
           <h3 className="font-display text-lg font-semibold text-slate-900 group-hover:text-brand-700 dark:text-white dark:group-hover:text-brand-300">{c.name}</h3>
-          <p className="text-xs font-medium text-slate-500">{c.ticker} · Est. {c.founded}</p>
+          <p className="text-xs font-medium text-slate-500">{c.sector} · {c.ticker} · Est. {c.founded}</p>
         </div>
         <Icon name="arrowUpRight" className="h-4 w-4 text-slate-300 transition group-hover:text-brand-500" />
       </div>

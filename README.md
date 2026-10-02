@@ -3,8 +3,8 @@
 A daily biotech briefing site built with React 19, Vite and Tailwind CSS v4.
 
 - **News feed**: search, topic chips, date range, sort, "load more" paging
-- **Top 10 company profiles**: Genentech, Amgen, Moderna, BioNTech, Vertex, Regeneron, Gilead, Biogen, Alnylam, CSL, each with key medicines, pipeline stages, a milestone timeline and related news
-- **Startup funding tracker**: summary figures, filters by stage and focus area, sort by recency or capital raised
+- **Company profiles**: 10 biotechs (Genentech, Amgen, Moderna, BioNTech, Vertex, Regeneron, Gilead, Biogen, Alnylam, CSL) and 10 pharma companies (Pfizer, J&J, Roche, Novartis, Merck & Co., AstraZeneca, Eli Lilly, Novo Nordisk, Sanofi, AbbVie), each with key medicines, pipeline stages, a milestone timeline and related news; filter by sector
+- **Startup funding tracker**: biotech and pharma funding rounds, summary figures, filters by sector, stage and focus area, sort by recency or round size
 - **Video & news**: YouTube embeds that load on click, with a topic filter and a headlines sidebar
 - **Podcasts**: one app-wide audio player (seek, ±15s, speed) that keeps playing while you browse
 - **Global search**: ⌘K / Ctrl+K or `/`, covering news, companies, startups, videos and episodes

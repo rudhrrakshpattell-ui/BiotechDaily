@@ -37,9 +37,12 @@ export function queryNews(news, { q, category, company, trend, range, sort = 'ne
   return { items, total, page, pageSize };
 }
 
-export function queryCompanies(companies, { q, focus, sort = 'name' } = {}) {
+// sector is 'Biotech' or 'Pharma'; 'all' or empty matches both.
+const inSector = (sector, x) => !sector || sector === 'all' || x.sector === sector;
+
+export function queryCompanies(companies, { q, sector, focus, sort = 'name' } = {}) {
   const items = companies.filter(
-    (c) => (!focus || focus === 'all' || c.focus.includes(focus)) && matches(q, c.name, c.ticker, c.focus, c.products.map((p) => p.name), c.hq),
+    (c) => inSector(sector, c) && (!focus || focus === 'all' || c.focus.includes(focus)) && matches(q, c.name, c.ticker, c.focus, c.products.map((p) => p.name), c.hq),
   );
   return items.sort((a, b) =>
     sort === 'founded' ? a.founded - b.founded
@@ -48,9 +51,10 @@ export function queryCompanies(companies, { q, focus, sort = 'name' } = {}) {
   );
 }
 
-export function queryStartups(rounds, { q, stage, area, sort = 'recent' } = {}) {
+export function queryStartups(rounds, { q, sector, stage, area, sort = 'recent' } = {}) {
   const items = rounds.filter(
     (r) =>
+      inSector(sector, r) &&
       (!stage || stage === 'all' || r.stage === stage) &&
       (!area || area === 'all' || r.area === area) &&
       matches(q, r.name, r.area, r.headline, r.investors, r.sources ?? r.source),

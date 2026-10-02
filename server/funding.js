@@ -76,6 +76,11 @@ const AREA_RULES = [
   ['Drug Discovery', /\b(drug discovery|platform)/i],
 ];
 
+// Pharma vs biotech for the sector filter: pharma when the story is about classic drug-making
+// (small molecules, formulation, delivery, generics, manufacturing) or the company calls itself a pharma.
+const PHARMA_RE = /\b(pharma\w*|small[- ]molecules?|oral (?:drug|pill|tablet)s?|generics?|formulations?|drug delivery|long-acting injectables?|api manufactur\w*|cdmo|specialty drugs?)\b/i;
+export const sectorOf = (text) => (PHARMA_RE.test(text) ? 'Pharma' : 'Biotech');
+
 const INVESTORS_RE = /\bled by ([A-Z][\w&.'’\- ]+?)(?:,| with | and (?:joined|participation)|\.|;|$)/;
 
 export function parseRound(story) {
@@ -101,6 +106,7 @@ export function parseRound(story) {
   return {
     id: `round-${hash(name.toLowerCase())}`,
     name,
+    sector: sectorOf(`${title} ${story.summary ?? ''}`),
     stage: parseStage(`${title} ${story.summary ?? ''}`),
     area,
     ...amount,

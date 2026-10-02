@@ -123,7 +123,7 @@ export default function Home() {
 
       {/* Companies */}
       <section className="mx-auto mt-20 max-w-7xl px-4 sm:px-6">
-        <SectionHeader eyebrow="Industry leaders" title="Top 10 biotech companies" description="Profiles, marketed medicines, pipeline focus and milestones." action={<LinkArrow href="/companies">All profiles</LinkArrow>} />
+        <SectionHeader eyebrow="Industry leaders" title="Top biotech & pharma companies" description="Profiles, marketed medicines, pipeline focus and milestones." action={<LinkArrow href="/companies">All profiles</LinkArrow>} />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {companiesQ.data ? companiesQ.data.slice(0, 4).map((c) => <CompanyCard key={c.id} company={c} />) : <SkeletonList count={4} className="h-60" />}
         </div>

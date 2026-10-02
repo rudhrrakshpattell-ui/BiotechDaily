@@ -26,3 +26,19 @@ for (const [title, want] of cases) {
     assert.equal(r ? `${r.name}|${r.amountLabel}|${r.stage}` : null, want);
   });
 }
+
+// [headline, expected sector] for the Startups sector filter.
+const sectors = [
+  ['Corvane Pharma raises $120M series B for oral degraders', 'Pharma'],
+  ['Dosera adds $45M series A to build long-acting injectables', 'Pharma'],
+  ['Kinetix lands $11M seed for small-molecule kinase inhibitors', 'Pharma'],
+  ['AusperBio adds $120M series C to advance hep B oligo therapy through phase 3', 'Biotech'],
+  ['BigHat Bio raises USD 75m Series C as AI-designed protein therapeutics advance', 'Biotech'],
+];
+
+for (const [title, want] of sectors) {
+  test(`sector: ${title}`, () => {
+    const r = parseRound({ title, summary: '', date: new Date().toISOString(), url: 'https://example.com', source: 'test' });
+    assert.equal(r?.sector, want);
+  });
+}

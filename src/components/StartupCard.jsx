@@ -14,6 +14,9 @@ const STAGE_STYLES = {
 
 export const stageStyle = (stage) => STAGE_STYLES[stage] ?? STAGE_STYLES.Other;
 
+// "Pharma · Drug Delivery"; a live round whose area is just "Biotech" shows it once.
+export const sectorAndArea = (r) => [...new Set([r.sector, r.area].filter(Boolean))].join(' · ');
+
 // One funding round. With a source URL, the headline link covers the whole card.
 export default function StartupCard({ startup: r, maxRaised }) {
   return (
@@ -22,7 +25,7 @@ export default function StartupCard({ startup: r, maxRaised }) {
         <Monogram name={r.name} color="from-helix-500 to-brand-600" className="h-11 w-11 text-sm" />
         <div className="min-w-0 flex-1">
           <h3 className="truncate font-display font-semibold text-slate-900 dark:text-white">{r.name}</h3>
-          <p className="text-xs text-slate-500">{r.area}</p>
+          <p className="text-xs text-slate-500">{sectorAndArea(r)}</p>
         </div>
         <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${stageStyle(r.stage)}`}>{r.stage === 'Other' ? 'Round' : r.stage}</span>
       </div>

@@ -4,10 +4,10 @@
 // VITE_API_BASE_URL empty: answered in the browser from the mock data in src/data.
 //
 //   GET {BASE}/news?q=&category=&company=&range=&sort=&page=&pageSize=   -> { items, total, page, pageSize, live }
-//   GET {BASE}/companies?q=&focus=&sort=                         -> Company[]
+//   GET {BASE}/companies?q=&sector=&focus=&sort=                 -> Company[]
 //   GET {BASE}/companies/:id                                     -> Company
 //   GET {BASE}/companies/:id?section=press                       -> { pressReleases }
-//   GET {BASE}/startups?q=&stage=&area=&sort=                    -> Startup[]
+//   GET {BASE}/startups?q=&sector=&stage=&area=&sort=            -> Startup[]
 //   GET {BASE}/videos?category=                                  -> Video[]
 //   GET {BASE}/podcasts                                          -> Podcast[]
 //   GET {BASE}/search?q=                                         -> { news, companies, startups, videos, episodes }
