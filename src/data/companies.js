@@ -247,6 +247,33 @@ export const companies = [
       { year: 2022, event: 'Hemgenix approved; acquires Vifor Pharma' },
     ],
   },
+  {
+    id: 'biocon', name: 'Biocon', sector: 'Biotech', ticker: 'BIOCON (NSE)', founded: 1978, hq: 'Bengaluru, India',
+    ceo: 'Siddharth Mittal', employees: 16000, marketCapB: 5,
+    color: 'from-orange-500 to-amber-700', website: 'https://www.biocon.com',
+    focus: ['Biosimilars', 'Oncology', 'Immunology', 'Cardiometabolic'],
+    tagline: 'India’s largest biopharma and a global biosimilars leader.',
+    description: 'Founded in Bengaluru in 1978 by Kiran Mazumdar-Shaw, Biocon grew from an enzymes maker into India’s largest biopharmaceutical company. Its subsidiary Biocon Biologics is one of the world’s biggest biosimilars makers, with insulins, oncology antibodies and immunology drugs sold in the US, Europe and emerging markets, and it also makes generic APIs and formulations.',
+    products: [
+      { name: 'Ogivri', indication: 'HER2+ breast & gastric cancer (trastuzumab biosimilar)' },
+      { name: 'Semglee', indication: 'Diabetes (interchangeable insulin glargine)' },
+      { name: 'Fulphila', indication: 'Neutropenia (pegfilgrastim biosimilar)' },
+      { name: 'Hulio', indication: 'Immune-mediated diseases (adalimumab biosimilar)' },
+      { name: 'Yesafili', indication: 'Retinal disease (aflibercept biosimilar)' },
+    ],
+    pipeline: [
+      { name: 'Denosumab biosimilars', stage: 'Filed' },
+      { name: 'GLP-1 peptides (liraglutide, semaglutide)', stage: 'Filed' },
+      { name: 'Itolizumab (with Equillium)', stage: 'Phase 3' },
+    ],
+    milestones: [
+      { year: 1978, event: 'Founded in Bengaluru by Kiran Mazumdar-Shaw' },
+      { year: 2004, event: 'Lists on Indian stock exchanges' },
+      { year: 2017, event: 'Ogivri becomes the first trastuzumab biosimilar approved in the US' },
+      { year: 2021, event: 'Semglee becomes the first interchangeable biosimilar approved in the US' },
+      { year: 2022, event: 'Biocon Biologics acquires Viatris’ biosimilars business' },
+    ],
+  },
   // ---- Pharma ----
   {
     id: 'pfizer', name: 'Pfizer', sector: 'Pharma', ticker: 'PFE', founded: 1849, hq: 'New York, NY',

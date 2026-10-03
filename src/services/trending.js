@@ -31,6 +31,7 @@ export const TRENDING_COMPANIES = [
   { name: 'Biogen', id: 'biogen', match: /\bbiogen\b/i },
   { name: 'Alnylam', id: 'alnylam', match: /\balnylam\b/i },
   { name: 'CSL', id: 'csl', match: /\bCSL\b/ },
+  { name: 'Biocon', id: 'biocon', match: /\bbiocon\b/i },
 ];
 
 // Recurring themes, matched the same way.

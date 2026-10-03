@@ -7,7 +7,7 @@ import { useDebounce } from '../hooks/useDebounce.js';
 import { SECTORS } from '../data/companies.js';
 
 const SECTOR_OPTIONS = [{ id: 'all', label: 'All sectors' }, ...SECTORS.map((s) => ({ id: s, label: s }))];
-const FOCUS_OPTIONS = ['all', 'Oncology', 'Neuroscience', 'Immunology', 'Rare disease', 'Infectious disease', 'Cardiometabolic', 'Vaccines', 'Gene editing'].map((f) => ({ id: f, label: f === 'all' ? 'All areas' : f }));
+const FOCUS_OPTIONS = ['all', 'Oncology', 'Neuroscience', 'Immunology', 'Rare disease', 'Infectious disease', 'Cardiometabolic', 'Vaccines', 'Biosimilars', 'Gene editing'].map((f) => ({ id: f, label: f === 'all' ? 'All areas' : f }));
 const SORT_OPTIONS = [
   { value: 'name', label: 'Name A–Z' },
   { value: 'founded', label: 'Oldest first' },
