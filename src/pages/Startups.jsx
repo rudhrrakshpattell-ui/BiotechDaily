@@ -50,11 +50,11 @@ export default function Startups({ query }) {
     <>
       <PageHeader
         eyebrow="Funding tracker"
-        title="Who’s raising in biotech"
+        title="Who’s raising in biotech & pharma"
         description={
           isMockMode
             ? 'Sample funding rounds (demo mode).'
-            : 'Venture rounds and IPOs picked out of today’s biotech news automatically. Each links to the article that reported it; coverage spans roughly the last two weeks.'
+            : 'Venture rounds, IPOs and offerings from biotech startups and pharma companies, picked out of today’s biotech and pharma news automatically. Each links to the article that reported it; coverage spans roughly the last two weeks.'
         }
       >
         <dl className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">

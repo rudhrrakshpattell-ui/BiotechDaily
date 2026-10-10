@@ -61,7 +61,7 @@ export function metaFor(pathname, query = {}) {
     }
     case 'startups':
       if (id) return notFound;
-      return { ...page('Biotech funding tracker', 'The latest biotech venture rounds and IPOs, pulled from the news with amounts, stages and therapeutic areas.'), status: 200, index: !query.q };
+      return { ...page('Biotech & pharma funding tracker', 'The latest biotech and pharma venture rounds, IPOs and offerings, pulled from the news with amounts, stages and therapeutic areas.'), status: 200, index: !query.q };
     case 'media':
       if (id) return notFound;
       return { ...page('Biotech videos', 'The latest videos from STAT, Endpoints News, the Broad Institute, Nature and Science, alongside today’s top biotech stories.'), status: 200, index: !query.v };

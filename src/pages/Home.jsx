@@ -16,7 +16,7 @@ const EXPLORE = [
   { href: '/podcasts', icon: 'mic', title: 'Podcasts', text: 'Deep-dives and deal talk you can play right on the page.', cta: 'Listen' },
   { href: '/media', icon: 'video', title: 'Videos', text: 'The science explained, from CRISPR to AlphaFold.', cta: 'Watch' },
   { href: '/companies', icon: 'building', title: 'Companies', text: 'Profiles, marketed medicines and pipelines of the industry leaders.', cta: 'Browse' },
-  { href: '/startups', icon: 'rocket', title: 'Startups', text: 'Every new funding round, by stage and therapeutic area.', cta: 'Track' },
+  { href: '/startups', icon: 'rocket', title: 'Startups', text: 'Every new biotech and pharma funding round, by stage and therapeutic area.', cta: 'Track' },
   { href: '/connect', icon: 'users', title: 'Connect', text: 'Follow people, post papers and questions, join the discussion.', cta: 'Join' },
 ];
 
