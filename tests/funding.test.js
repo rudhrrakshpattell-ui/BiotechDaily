@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseRound } from '../server/funding.js';
+import { parseRound, parseRounds } from '../server/funding.js';
 
 // [headline, expected "name|amount|stage"] — null means it must NOT be read as a funding round.
 const cases = [
@@ -43,5 +43,43 @@ for (const [title, want] of sectors) {
   test(`sector: ${title}`, () => {
     const r = parseRound({ title, summary: '', date: new Date().toISOString(), url: 'https://example.com', source: 'test' });
     assert.equal(r?.sector, want);
+  });
+}
+
+// Pharma financing: rupee amounts, listings, share offerings and debt.
+const pharma = [
+  ['Mankind Pharma raises Rs 500 crore via QIP to fund expansion', 'Mankind Pharma|₹500 Cr|Other|Pharma'],
+  ['Akums Drugs secures ₹1,200 crore loan for new injectables plant', 'Akums Drugs|₹1,200 Cr|Other|Pharma'],
+  ['Corvane Pharma prices $300M public offering', 'Corvane Pharma|$300M|Other|Pharma'],
+  ['Zenara Laboratories lands $40M series B for sterile injectables', 'Zenara Laboratories|$40M|Series B|Pharma'],
+  ['GSK commits $800M to R&D, manufacturing hub, as Pennsylvania bonds deepen', null],
+  ['Viatris to snap up Pacira’s non-opioid pain pipeline for $1.65B', null],
+];
+
+for (const [title, want] of pharma) {
+  test(`pharma: ${title}`, () => {
+    const r = parseRound({ title, summary: '', date: new Date().toISOString(), url: 'https://example.com', source: 'test' });
+    assert.equal(r ? `${r.name}|${r.amountLabel}|${r.stage}|${r.sector}` : null, want);
+  });
+}
+
+test('rupee amounts convert to USD millions', () => {
+  const r = parseRound({ title: 'Mankind Pharma raises Rs 880 crore via QIP', summary: '', date: new Date().toISOString(), url: 'https://example.com', source: 'test' });
+  assert.equal(r.amountM, 100);
+  assert.equal(r.currency, 'INR');
+});
+
+// Roundup headlines (Endpoints News) carry more than one round.
+const roundups = [
+  ['City Therapeutics targets $158M IPO; Iambic seeks $135M Nasdaq debut', ['City Therapeutics|$158M|IPO', 'Iambic|$135M|Other']],
+  ['TRexBio prices $117M IPO for Tregs as Retension lands $45M Nasdaq debut for hypertension', ['TRexBio|$117M|IPO', 'Retension|$45M|Other']],
+  ['Robotics company Multiply Labs nets $75M; Isotope maker NorthStar gets up to $185M', ['Multiply Labs|$75M|Other']],
+];
+
+for (const [title, want] of roundups) {
+  test(`roundup: ${title}`, () => {
+    const rs = parseRounds({ title, summary: '', date: new Date().toISOString(), url: 'https://example.com', source: 'test' });
+    assert.deepEqual(rs.map((r) => `${r.name}|${r.amountLabel}|${r.stage}`), want);
+    assert.ok(rs.every((r) => r.headline === title));
   });
 }

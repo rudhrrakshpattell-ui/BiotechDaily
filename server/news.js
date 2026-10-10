@@ -14,7 +14,7 @@ export const NEWS_FEEDS = [
   // Pharma newsrooms.
   { name: 'Fierce Pharma', url: 'https://www.fiercepharma.com/rss/xml' },
   { name: 'BioPharma Dive Pharma', url: 'https://www.biopharmadive.com/feeds/topic/pharma/' },
-  { name: 'Endpoints News', url: 'https://endpts.com/feed/' },
+  { name: 'Endpoints News', url: 'https://endpoints.news/feed/' },
   { name: 'Pharmaceutical Technology', url: 'https://www.pharmaceutical-technology.com/feed/' },
 ];
 

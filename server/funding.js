@@ -1,4 +1,4 @@
-// Funding rounds extracted from live news headlines ("Enveda reaps $311M series E ...").
+// Funding rounds extracted from live biotech and pharma news headlines ("Enveda reaps $311M series E ...").
 // Only covers rounds the news feeds report, i.e. roughly the last 1-2 weeks.
 import { getLiveNews } from './news.js';
 import { classify, hash } from './rss.js';
@@ -7,17 +7,31 @@ import { categoryById } from '../src/data/categories.js';
 // Verbs that on their own signal a company raising money.
 const RAISE_VERBS = 'raises|raised|raise|scores|reaps|amasses|rakes in|hauls in|hauls|bags|nabs|snags|secures|lands|closes|nets|banks|pulls in|collects';
 // Verbs that only count when a financing word is also present ("adds $120M series C").
-const WEAK_VERBS = 'adds|gets|launches with|debuts with|emerges with|rises with|unveils|announces|completes|prices|files for';
+const WEAK_VERBS = 'adds|gets|launches with|debuts with|emerges with|rises with|unveils|announces|completes|prices|files for|targets|seeks|eyes|plans';
 const VERB_RE = new RegExp(`\\s(${RAISE_VERBS}|${WEAK_VERBS})\\b`, 'i');
 const STRONG_RE = new RegExp(`^(${RAISE_VERBS})$`, 'i');
-const FINANCING_RE = /\b(series [a-h]|seed|pre-seed|ipo|financing|funding|round|venture|private placement)\b/i;
+// Pharma companies also raise through listings, share offerings and debt ("prices $300M public offering", "Rs 500 crore QIP").
+const FINANCING_RE = /\b(series [a-h]|seed|pre-seed|ipo|financing|funding|round|venture|private placement|(?:public|share|stock|notes?) offering|nasdaq debut|listing|qip|rights issue|convertible notes?|debt|loan|credit facility)\b/i;
 // Headlines with money in them that are about something other than a company raising capital.
 const EXCLUDE_RE = /\b(deal|pact|acqui\w*|buyout|merger|licens\w*|partnership|collaboration|contract|settle\w*|lawsuit|layoffs?|prospect|market to|fund (?:launch|close)|vc firm)\b/i;
-const NOT_A_NAME = /\b(ceo|founder|former|executive|biotechs|startups|investors)\b/i;
+const NOT_A_NAME = /\b(ceo|founder|former|executive|biotechs|pharmas|drugmakers|startups|investors)\b/i;
 
 const FX_TO_USD = { $: 1, US$: 1, USD: 1, '€': 1.1, EUR: 1.1, '£': 1.3, GBP: 1.3, CHF: 1.1 };
+const INR_TO_USD = 1 / 88;
+
+// Indian pharma rounds are reported in rupees: "Rs 500 crore", "₹1,200 crore", "INR 80 crore". 1 crore = 10M rupees.
+function parseRupees(title) {
+  const m = title.match(/(?:rs\.?|₹|inr)\s?(\d[\d,]*(?:\.\d+)?)\s?(crore|cr|lakh)\b/i);
+  if (!m) return null;
+  const n = Number(m[1].replace(/,/g, ''));
+  if (!Number.isFinite(n) || n <= 0) return null;
+  const crore = /^l/i.test(m[2]) ? n / 100 : n;
+  return { amountM: Math.round(crore * 10 * INR_TO_USD * 10) / 10, amountLabel: `₹${(+crore.toFixed(2)).toLocaleString('en-IN')} Cr`, currency: 'INR' };
+}
 
 function parseAmount(title) {
+  const rupees = parseRupees(title);
+  if (rupees) return rupees;
   const m =
     title.match(/(US\$|USD|\$|€|EUR|£|GBP|CHF)\s?(\d+(?:[.,]\d+)?)\s?(billion|bn|b|million|mn|m)?\b/i) ??
     title.match(/(\d+(?:\.\d+)?)\s?(million|m|billion|bn)\s?(euros?|dollars?|pounds?)/i);
@@ -79,13 +93,24 @@ const AREA_RULES = [
 // Pharma vs biotech for the sector filter: pharma when the story is about classic drug-making
 // (small molecules, oral drugs, formulation, delivery, generics, manufacturing) or the company calls itself
 // a pharma or drugmaker.
-const PHARMA_RE = /\b(pharma\w*|drugmakers?|small[- ]molecules?|oral (?:drugs?|pills?|tablets?|therap\w*|medicines?)|pills?|tablets?|generics?|biosimilars?|formulations?|drug delivery|long-acting injectables?|api manufactur\w*|cdmo|specialty drugs?)\b/i;
+const PHARMA_RE = /\b(pharma\w*|drug[- ]?makers?|medicines? makers?|laborator(?:y|ies)|active pharmaceutical ingredients?|small[- ]molecules?|oral (?:drugs?|pills?|tablets?|therap\w*|medicines?)|pills?|tablets?|generics?|biosimilars?|formulations?|drug delivery|injectables?|api manufactur\w*|cdmo|contract manufactur\w*|specialty drugs?)\b/i;
 export const sectorOf = (text) => (PHARMA_RE.test(text) ? 'Pharma' : 'Biotech');
 
 const INVESTORS_RE = /\bled by ([A-Z][\w&.'’\- ]+?)(?:,| with | and (?:joined|participation)|\.|;|$)/;
 
-export function parseRound(story) {
-  const title = story.title;
+// Roundup headlines report several rounds at once: "City Therapeutics targets $158M IPO; Iambic seeks $135M Nasdaq debut",
+// "TRexBio prices $117M IPO as Retension lands $45M Nasdaq debut". Each clause is parsed on its own.
+const splitClauses = (title) => title.split(/;\s+|\s+as\s+(?=[A-Z])/);
+
+export function parseRounds(story) {
+  const clauses = splitClauses(story.title);
+  const rounds = clauses.map((title) => parseClause(title, story)).filter(Boolean);
+  return rounds.map((r) => ({ ...r, headline: story.title }));
+}
+
+export const parseRound = (story) => parseRounds(story)[0] ?? null;
+
+function parseClause(title, story) {
   if (EXCLUDE_RE.test(title)) return null;
   const verb = title.match(VERB_RE);
   if (!verb) return null;
@@ -124,14 +149,14 @@ export async function getFundingRounds() {
   const byCompany = new Map();
   // Oldest first, so the earliest report of a round is kept and later coverage only fills gaps.
   for (const story of [...items].reverse()) {
-    const round = parseRound(story);
-    if (!round) continue;
-    const prev = byCompany.get(round.id);
-    if (!prev) byCompany.set(round.id, { ...round, sources: [round.source] });
-    else {
-      if (prev.stage === 'Other' && round.stage !== 'Other') prev.stage = round.stage;
-      if (!prev.investors.length) prev.investors = round.investors;
-      if (!prev.sources.includes(round.source)) prev.sources.push(round.source);
+    for (const round of parseRounds(story)) {
+      const prev = byCompany.get(round.id);
+      if (!prev) byCompany.set(round.id, { ...round, sources: [round.source] });
+      else {
+        if (prev.stage === 'Other' && round.stage !== 'Other') prev.stage = round.stage;
+        if (!prev.investors.length) prev.investors = round.investors;
+        if (!prev.sources.includes(round.source)) prev.sources.push(round.source);
+      }
     }
   }
   return { items: [...byCompany.values()], fetchedAt };
