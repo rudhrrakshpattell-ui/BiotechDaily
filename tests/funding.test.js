@@ -71,8 +71,8 @@ test('rupee amounts convert to USD millions', () => {
 
 // Roundup headlines (Endpoints News) carry more than one round.
 const roundups = [
-  ['City Therapeutics targets $158M IPO; Iambic seeks $135M Nasdaq debut', ['City Therapeutics|$158M|IPO', 'Iambic|$135M|Other']],
-  ['TRexBio prices $117M IPO for Tregs as Retension lands $45M Nasdaq debut for hypertension', ['TRexBio|$117M|IPO', 'Retension|$45M|Other']],
+  ['City Therapeutics targets $158M IPO; Iambic seeks $135M Nasdaq debut', ['City Therapeutics|$158M|IPO', 'Iambic|$135M|IPO']],
+  ['TRexBio prices $117M IPO for Tregs as Retension lands $45M Nasdaq debut for hypertension', ['TRexBio|$117M|IPO', 'Retension|$45M|IPO']],
   ['Robotics company Multiply Labs nets $75M; Isotope maker NorthStar gets up to $185M', ['Multiply Labs|$75M|Other']],
 ];
 
@@ -83,3 +83,8 @@ for (const [title, want] of roundups) {
     assert.ok(rs.every((r) => r.headline === title));
   });
 }
+
+test('a pharma round with no specific area is labelled Pharma, not Biotech', () => {
+  const r = parseRound({ title: 'Mankind Pharma raises Rs 500 crore via QIP to fund expansion', summary: '', date: new Date().toISOString(), url: 'https://example.com', source: 'test' });
+  assert.equal(r.area, 'Pharma');
+});

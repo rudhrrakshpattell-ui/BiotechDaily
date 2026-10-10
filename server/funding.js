@@ -52,10 +52,10 @@ function parseAmount(title) {
 }
 
 function parseStage(text) {
-  const m = text.match(/\b(pre-seed|seed|series ([a-h])|ipo)\b/i);
+  const m = text.match(/\b(pre-seed|seed|series ([a-h])|ipo|nasdaq debut)\b/i);
   if (!m) return 'Other';
   if (/^pre-seed|^seed/i.test(m[1])) return 'Seed';
-  if (/^ipo/i.test(m[1])) return 'IPO';
+  if (/^ipo|^nasdaq/i.test(m[1])) return 'IPO';
   const letter = m[2].toUpperCase();
   return letter <= 'C' ? `Series ${letter}` : 'Series D+';
 }
@@ -124,15 +124,17 @@ function parseClause(title, story) {
   const noMoney = (t = '') => t.replace(/\b(rais\w*|fund\w*|financ\w*|series [a-h]|seed|ipo|venture|invest\w*|round|capital|backers?|deals?)\b/gi, ' ');
   const hay = `${noMoney(title)} ${noMoney(story.summary)}`;
   const topic = classify(noMoney(title), noMoney(story.summary));
+  const sector = sectorOf(`${title} ${story.summary ?? ''}`);
+  // With no specific area, fall back to the sector so pharma rounds don't read "Pharma · Biotech".
   const area =
     AREA_RULES.find(([, re]) => re.test(hay))?.[0] ??
-    (['funding', 'industry', 'regulatory', 'research'].includes(topic) ? 'Biotech' : categoryById[topic]?.label ?? 'Biotech');
+    (['funding', 'industry', 'regulatory', 'research'].includes(topic) ? sector : categoryById[topic]?.label ?? sector);
   const investors = story.summary?.match(INVESTORS_RE)?.[1]?.trim();
 
   return {
     id: `round-${hash(name.toLowerCase())}`,
     name,
-    sector: sectorOf(`${title} ${story.summary ?? ''}`),
+    sector,
     stage: parseStage(`${title} ${story.summary ?? ''}`),
     area,
     ...amount,
