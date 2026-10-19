@@ -100,10 +100,12 @@ export default function PostCard({ post: initialPost, me, liked: initiallyLiked,
   }
 
   return (
-    <article className="flex gap-3 px-4 py-4 transition hover:bg-slate-50/70 sm:px-5 dark:hover:bg-white/[0.02]">
+    // Phones: the post runs full width under the author row, with room on the right for a scrolling thumb.
+    // Tablet and up: X-style, with everything indented beside the avatar.
+    <article className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 px-4 py-4 transition hover:bg-slate-50/70 sm:px-5 dark:hover:bg-white/[0.02]">
       <a href={`/connect/u/${author.username}`} className="focus-ring h-fit shrink-0 rounded-full"><Avatar profile={author} /></a>
 
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 self-center sm:self-start">
         {/* name · @handle · time                                  ••• */}
         <div className="flex items-start gap-2">
           <p className="min-w-0 flex-1 truncate text-[15px] leading-5">
@@ -136,7 +138,9 @@ export default function PostCard({ post: initialPost, me, liked: initiallyLiked,
         {(author.program || author.university) && (
           <p className="truncate text-xs text-slate-500">{[author.program, author.university].filter(Boolean).join(' · ')}</p>
         )}
+      </div>
 
+      <div className="col-span-2 mt-1.5 min-w-0 pr-6 sm:col-span-1 sm:col-start-2 sm:mt-0 sm:pr-0">
         {editing ? (
           <form onSubmit={saveEdit} className="mt-2">
             <label htmlFor={`edit-${post.id}`} className="sr-only">Edit post</label>
@@ -159,7 +163,7 @@ export default function PostCard({ post: initialPost, me, liked: initiallyLiked,
             </div>
           </form>
         ) : (
-          <p className="mt-1 whitespace-pre-wrap break-words text-[15px] leading-[1.45] text-slate-900 dark:text-slate-100"><Linkified text={post.body} /></p>
+          <p className="whitespace-pre-wrap break-words sm:mt-1 text-[15px] leading-[1.45] text-slate-900 dark:text-slate-100"><Linkified text={post.body} /></p>
         )}
 
         {post.image_url && (
