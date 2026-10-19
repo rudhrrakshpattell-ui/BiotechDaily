@@ -12,7 +12,7 @@ const VERB_RE = new RegExp(`\\s(${RAISE_VERBS}|${WEAK_VERBS})\\b`, 'i');
 const STRONG_RE = new RegExp(`^(${RAISE_VERBS})$`, 'i');
 const FINANCING_RE = /\b(series [a-h]|seed|pre-seed|ipo|financing|funding|round|venture|private placement)\b/i;
 // Headlines with money in them that are about something other than a company raising capital.
-const EXCLUDE_RE = /\b(deal|pact|acqui\w*|buyout|merger|licens\w*|partnership|collaboration|contract|settle\w*|lawsuit|layoffs?|prospect|market to|fund (?:launch|close)|vc firm|new [\w ]{0,24}funds?|largest fundraise)\b/i;
+const EXCLUDE_RE = /\b(deal|pact|acqui\w*|buyout|merger|licens\w*|partnership|collaboration|contract|settle\w*|lawsuit|layoffs?|prospect|market to|fund (?:launch|close)|vc firm|new [\w ]{0,24}funds?|largest fundraise|to (?:back|invest in) [\w ]{0,30}(?:players|companies|startups|biotechs))\b/i;
 const NOT_A_NAME = /\b(ceo|founder|former|executive|biotechs|startups|investors)\b/i;
 
 const FX_TO_USD = { $: 1, US$: 1, USD: 1, '€': 1.1, EUR: 1.1, '£': 1.3, GBP: 1.3, CHF: 1.1 };

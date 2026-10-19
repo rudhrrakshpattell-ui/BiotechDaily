@@ -21,6 +21,7 @@ const cases = [
   // Investors raising their own funds.
   ['OrbiMed raises $3B in new life sciences funds, including $1B+ for Asia', null],
   ['Forbion raises $2.6 billion, its largest fundraise to date', null],
+  ['OrbiMed raises $3bn to back global life science players', null],
 ];
 
 for (const [title, want] of cases) {
