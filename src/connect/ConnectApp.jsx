@@ -23,7 +23,7 @@ function NotConfigured() {
   return (
     <div className="mx-auto max-w-lg px-4 py-20 text-center">
       <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-brand-400/10 dark:text-brand-300"><Icon name="users" /></span>
-      <h1 className="mt-4 font-display text-2xl font-semibold text-slate-900 dark:text-white">Connect is almost ready</h1>
+      <h1 className="mt-4 font-display text-2xl font-semibold text-slate-900 dark:text-white">The Gene Pool is almost ready</h1>
       <p className="mt-2 text-slate-500">The community for biotech students is launching soon.</p>
     </div>
   );
@@ -65,7 +65,7 @@ function SubNav({ path, profile, unread }) {
     <div className="border-b border-slate-200/70 bg-white/60 dark:border-white/5 dark:bg-ink-900/40">
       <div className="no-scrollbar mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-4 sm:px-6">
         <a href="/connect" className="focus-ring mr-3 flex shrink-0 items-center gap-2 rounded-lg py-3 font-display text-sm font-semibold text-slate-900 dark:text-white">
-          <Icon name="users" className="h-4 w-4 text-helix-500" /> Connect
+          <Icon name="users" className="h-4 w-4 text-helix-500" /> The Gene Pool
         </a>
         {links.map((l) => (
           <a
@@ -120,7 +120,7 @@ export default function ConnectApp({ route }) {
   else if (page === 'p' && a && !b) body = <PostPage key={a} id={a} me={me} />;
   else if (page === 'u' && a && !b) body = <Profile key={a} username={a} me={me} />;
   else if (page === 'u' && a && (b === 'followers' || b === 'following')) body = <People key={`${a}/${b}`} username={a} direction={b} me={me} />;
-  else body = <div className="py-24 text-center text-slate-500">Page not found. <a href="/connect" className="font-semibold text-brand-600">Back to Connect</a></div>;
+  else body = <div className="py-24 text-center text-slate-500">Page not found. <a href="/connect" className="font-semibold text-brand-600">Back to The Gene Pool</a></div>;
 
   return (
     <>

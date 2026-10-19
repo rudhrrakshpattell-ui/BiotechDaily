@@ -13,6 +13,17 @@ export const supabase = isConfigured
   ? createClient(url, anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' } })
   : null;
 
+// Whether a sign-in provider (e.g. 'google') is switched on in the Supabase dashboard. Read from the public
+// auth settings, so the button only appears once it works. Cached for the page's lifetime.
+let authSettings = null;
+export function providerEnabled(provider) {
+  if (!isConfigured) return Promise.resolve(false);
+  authSettings ??= fetch(`${url}/auth/v1/settings`, { headers: { apikey: anonKey } })
+    .then((r) => (r.ok ? r.json() : {}))
+    .catch(() => ({}));
+  return authSettings.then((s) => Boolean(s.external?.[provider]));
+}
+
 // Supabase errors from our RPCs carry a friendly message; fall back to a generic one otherwise.
 export function friendlyError(error) {
   if (!error) return null;
