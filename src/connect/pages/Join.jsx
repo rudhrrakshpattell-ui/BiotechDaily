@@ -92,7 +92,7 @@ export default function Join({ mode }) {
               {signIn ? <>New here? <a href="/connect/join" className="font-semibold text-brand-600 dark:text-brand-300">Join The Gene Pool</a></> : <>Already a member? <a href="/connect/join?mode=signin" className="font-semibold text-brand-600 dark:text-brand-300">Sign in</a></>}
             </p>
             <p className="mt-3 text-xs leading-relaxed text-slate-500">
-              By continuing you agree to the <a href="/connect/guidelines" className="font-medium text-brand-600 underline dark:text-brand-300">community guidelines</a>.
+              By continuing you agree to the <a href="/connect/guidelines" className="font-medium text-brand-600 underline dark:text-brand-300">community guidelines</a> and <a href="/privacy" className="font-medium text-brand-600 underline dark:text-brand-300">privacy policy</a>.
             </p>
           </div>
         )}
@@ -114,7 +114,7 @@ export default function Join({ mode }) {
               {signIn ? <>New here? <a href="/connect/join" className="font-semibold text-brand-600 dark:text-brand-300">Join The Gene Pool</a></> : <>Already a member? <a href="/connect/join?mode=signin" className="font-semibold text-brand-600 dark:text-brand-300">Sign in</a></>}
             </p>
             <p className="mt-3 text-xs leading-relaxed text-slate-500">
-              By continuing you agree to the <a href="/connect/guidelines" className="font-medium text-brand-600 underline dark:text-brand-300">community guidelines</a>.
+              By continuing you agree to the <a href="/connect/guidelines" className="font-medium text-brand-600 underline dark:text-brand-300">community guidelines</a> and <a href="/privacy" className="font-medium text-brand-600 underline dark:text-brand-300">privacy policy</a>.
             </p>
             {google && <button type="button" onClick={() => setUseEmail(false)} className="focus-ring mt-3 w-full text-center text-sm font-semibold text-brand-600 dark:text-brand-300">Back to Google sign-in</button>}
           </form>

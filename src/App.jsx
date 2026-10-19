@@ -26,11 +26,12 @@ const Startups = lazyPage(() => import('./pages/Startups.jsx'));
 const Media = lazyPage(() => import('./pages/Media.jsx'));
 const Podcasts = lazyPage(() => import('./pages/Podcasts.jsx'));
 const Connect = lazyPage(() => import('./connect/ConnectApp.jsx'));
+const Privacy = lazyPage(() => import('./pages/Privacy.jsx'));
 
 // Loads the code for the page at `pathname` (no-op for Home and unknown paths).
 export function preloadPage(pathname) {
   const [section, id] = pathname.split('/').filter(Boolean);
-  const page = { news: News, companies: id ? CompanyDetail : Companies, startups: Startups, media: Media, podcasts: Podcasts, connect: Connect }[section];
+  const page = { news: News, companies: id ? CompanyDetail : Companies, startups: Startups, media: Media, podcasts: Podcasts, connect: Connect, privacy: Privacy }[section];
   return page ? page.preload().catch(() => {}) : Promise.resolve();
 }
 import { metaFor } from './seo.js';
@@ -45,15 +46,19 @@ function Page({ route }) {
     case 'media': return <Media query={route.query} />;
     case 'podcasts': return <Podcasts />;
     case 'connect': return <Connect route={route} />;
-    default:
-      return (
-        <div className="mx-auto max-w-xl px-4 py-24 text-center">
-          <p className="eyebrow">404</p>
-          <h1 className="mt-2 font-display text-3xl font-semibold text-slate-900 dark:text-white">Page not found</h1>
-          <a href="/" className="mt-6 inline-block font-semibold text-brand-600">Back to today’s brief</a>
-        </div>
-      );
+    case 'privacy': return id ? <NotFound /> : <Privacy />;
+    default: return <NotFound />;
   }
+}
+
+function NotFound() {
+  return (
+    <div className="mx-auto max-w-xl px-4 py-24 text-center">
+      <p className="eyebrow">404</p>
+      <h1 className="mt-2 font-display text-3xl font-semibold text-slate-900 dark:text-white">Page not found</h1>
+      <a href="/" className="mt-6 inline-block font-semibold text-brand-600">Back to today’s tea</a>
+    </div>
+  );
 }
 
 function Shell() {

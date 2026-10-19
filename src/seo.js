@@ -65,6 +65,9 @@ export function metaFor(pathname, query = {}) {
     case 'media':
       if (id) return notFound;
       return { ...page('Biotech videos', 'The latest videos from STAT, Endpoints News, the Broad Institute, Nature and Science, alongside today’s top biotech stories.'), status: 200, index: !query.v };
+    case 'privacy':
+      if (id) return notFound;
+      return { ...page('Privacy policy', 'How Spill the Genes and The Gene Pool collect, use and protect your information, and how to delete your account.'), status: 200, index: true };
     case 'podcasts':
       if (id) return notFound;
       return { ...page('Biotech podcasts', 'New episodes from The Readout Loud, Biotech Hangout, The Long Run and more, playable right in your browser.'), status: 200, index: true };
@@ -74,4 +77,4 @@ export function metaFor(pathname, query = {}) {
 }
 
 // Paths listed in sitemap.xml.
-export const SITEMAP_PATHS = ['/', '/news', '/companies', ...companies.map((c) => `/companies/${c.id}`), '/startups', '/media', '/podcasts', '/connect', '/connect/guidelines'];
+export const SITEMAP_PATHS = ['/', '/news', '/companies', ...companies.map((c) => `/companies/${c.id}`), '/startups', '/media', '/podcasts', '/connect', '/connect/guidelines', '/privacy'];

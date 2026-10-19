@@ -37,7 +37,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t border-slate-200/70 py-5 text-center text-xs text-slate-400 dark:border-white/5">
-        © {new Date().getFullYear()} Spill the Genes. Not medical or investment advice.
+        © {new Date().getFullYear()} Spill the Genes. Not medical or investment advice. <a href="/privacy" className="underline hover:text-brand-600">Privacy</a>
       </div>
     </footer>
   );
