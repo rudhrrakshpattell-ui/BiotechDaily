@@ -51,7 +51,7 @@ export default function ProfileForm({ initial = {}, withUsername = false, submit
             <input value={f.username} onChange={(e) => setF((p) => ({ ...p, username: e.target.value.toLowerCase().replace(/\s/g, '') }))} required maxLength={20} autoComplete="off" className="input pl-8" placeholder="ada_lovelace" />
           </div>
           <span className={`mt-1 block text-xs ${usernameStatus === 'ok' ? 'text-helix-600' : usernameStatus === 'taken' || usernameStatus === 'invalid' ? 'text-rose-600' : 'text-slate-500'}`}>
-            {{ ok: 'Available', taken: 'That username is taken', invalid: '3–20 characters: lowercase letters, numbers and _', checking: 'Checking…' }[usernameStatus] ?? 'This is your profile link: biotech-daily.vercel.app/connect/u/…'}
+            {{ ok: 'Available', taken: 'That username is taken', invalid: '3–20 characters: lowercase letters, numbers and _', checking: 'Checking…' }[usernameStatus] ?? 'This is your profile link: spill-the-genes.vercel.app/connect/u/…'}
           </span>
         </label>
       )}

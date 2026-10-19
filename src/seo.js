@@ -7,7 +7,7 @@ import { trendByKey, trendLabel } from './services/trending.js';
 export const SITE_NAME = 'Spill the Genes';
 export const FOUNDER = 'Rudhrraksh Pattell';
 // Canonical origin for links in sitemaps and share tags. Override with SITE_URL for a custom domain.
-export const DEFAULT_SITE_URL = 'https://biotech-daily.vercel.app';
+export const DEFAULT_SITE_URL = 'https://spill-the-genes.vercel.app';
 export const OG_IMAGE_PATH = '/og-image.png';
 
 const HOME = {

@@ -98,7 +98,7 @@ src/
 **Setup**
 1. Create a free project at [supabase.com](https://supabase.com).
 2. SQL Editor → New query → paste each file in `supabase/migrations/` in order (`0001_…` through `0006_…`) → Run.
-3. Authentication → URL Configuration: Site URL `https://biotech-daily.vercel.app`; add redirect URLs `https://biotech-daily.vercel.app/connect` and `http://localhost:5173/connect`.
+3. Authentication → URL Configuration: Site URL `https://spill-the-genes.vercel.app`; add redirect URLs `https://spill-the-genes.vercel.app/connect` and `http://localhost:5173/connect`.
 4. Authentication → Emails → SMTP: set up a custom sender (Supabase's built-in email only reaches your own team and is heavily rate-limited).
 5. Project Settings → API: set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in Vercel (Settings → Environment Variables) and in `.env.development.local` for local dev. The anon key is public by design. Connect's menu item and home section appear only once these are set.
 
@@ -118,4 +118,4 @@ Pages use clean URLs (`/companies/vertex`) through a small History-API router (`
 - Fonts (Inter, Sora) are self-hosted via Fontsource, so no render-blocking Google Fonts request.
 - Remote images (news photos, podcast art) go through Vercel Image Optimization (`src/services/images.js`) in production: resized to the size they're shown at, served as AVIF/WebP from the site's own domain. Allowed hosts are listed in both `src/services/images.js` and `images.remotePatterns` in `vercel.json`; images from any other host are used as-is. In development, original URLs are used.
 - Pages other than Home are code-split and load on first visit.
-- With a custom domain, set the `SITE_URL` environment variable in Vercel (e.g. `https://biotechdaily.com`), and update the defaults in `index.html` and `DEFAULT_SITE_URL` in `src/seo.js`.
+- With a custom domain, set the `SITE_URL` environment variable in Vercel (e.g. `https://spillthegenes.com`), and update the defaults in `index.html` and `DEFAULT_SITE_URL` in `src/seo.js`.
