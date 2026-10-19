@@ -29,6 +29,9 @@ export default function News({ query }) {
   const [range, setRange] = useState('all');
   const [sort, setSort] = useState('newest');
   const [page, setPage] = useState(1);
+  // Phones: date range and sort hide behind a Filters button so stories start higher up.
+  const [showFilters, setShowFilters] = useState(false);
+  const filtered = range !== 'all' || sort !== 'newest';
   const trend = trendByKey[query.trend] ? query.trend : null;
   const debouncedQ = useDebounce(q);
 
@@ -50,14 +53,25 @@ export default function News({ query }) {
 
   return (
     <>
-      <PageHeader eyebrow="News & discoveries" title="The daily feed" description="Research breakthroughs, clinical readouts, approvals and deals, filtered the way you want." />
+      <PageHeader eyebrow="News & discoveries" title="The daily feed" description="Research breakthroughs, clinical readouts, approvals and deals, filtered the way you want." compact />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="sticky top-16 z-20 -mx-4 space-y-3 border-b border-slate-200/70 bg-slate-50/90 px-4 py-4 backdrop-blur-xl sm:-mx-6 sm:px-6 dark:border-white/5 dark:bg-ink-950/90">
-          <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto]">
-            <SearchInput value={q} onChange={setQ} placeholder="Search headlines, topics, tags…" />
-            <Select label="Date range" value={range} onChange={setRange} options={RANGE_OPTIONS} />
-            <Select label="Sort" value={sort} onChange={setSort} options={SORT_OPTIONS} />
+        <div className="sticky top-16 z-20 -mx-4 space-y-3 border-b border-slate-200/70 bg-slate-50/90 px-4 py-3 backdrop-blur-xl sm:-mx-6 sm:px-6 sm:py-4 dark:border-white/5 dark:bg-ink-950/90">
+          <div className="grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[1fr_auto_auto] sm:gap-3">
+            <SearchInput value={q} onChange={setQ} placeholder="Search the news…" />
+            <button
+              onClick={() => setShowFilters((s) => !s)}
+              aria-expanded={showFilters}
+              aria-label="Date and sort filters"
+              className={`focus-ring relative grid w-11 place-items-center rounded-xl border sm:hidden ${showFilters ? 'border-brand-400 bg-brand-50 text-brand-700 dark:bg-brand-400/10 dark:text-brand-200' : 'border-slate-200 bg-white text-slate-600 dark:border-white/10 dark:bg-ink-900 dark:text-slate-300'}`}
+            >
+              <Icon name="sliders" className="h-5 w-5" />
+              {filtered && <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-brand-500" />}
+            </button>
+            <div className={`${showFilters ? 'col-span-2 grid grid-cols-2 gap-2' : 'hidden'} sm:contents`}>
+              <Select label="Date range" value={range} onChange={setRange} options={RANGE_OPTIONS} />
+              <Select label="Sort" value={sort} onChange={setSort} options={SORT_OPTIONS} />
+            </div>
           </div>
           <Chips label="Topic" options={CATEGORY_OPTIONS} value={category} onChange={setCategory} />
           {trend && (

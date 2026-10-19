@@ -24,15 +24,16 @@ export function SectionHeader({ eyebrow, title, description, action }) {
   );
 }
 
-export function PageHeader({ eyebrow, title, description, children }) {
+// `compact`: tighter on phones, with the description shown from tablet width up.
+export function PageHeader({ eyebrow, title, description, children, compact = false }) {
   return (
     <header className="relative overflow-hidden border-b border-slate-200/70 dark:border-white/5">
       <div className="bg-grid absolute inset-0 [mask-image:linear-gradient(to_bottom,black,transparent)]" />
       <div className="absolute -top-24 right-0 h-64 w-96 rounded-full bg-helix-400/15 blur-3xl dark:bg-helix-400/10" />
-      <div className="relative mx-auto max-w-7xl px-4 pb-8 pt-10 sm:px-6 sm:pt-14">
+      <div className={`relative mx-auto max-w-7xl px-4 sm:px-6 sm:pb-8 sm:pt-14 ${compact ? 'pb-5 pt-6' : 'pb-8 pt-10'}`}>
         {eyebrow && <p className="eyebrow mb-3">{eyebrow}</p>}
         <h1 className="font-display text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl dark:text-white">{title}</h1>
-        {description && <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-400">{description}</p>}
+        {description && <p className={`mt-3 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-400 ${compact ? 'hidden sm:block' : ''}`}>{description}</p>}
         {children}
       </div>
     </header>

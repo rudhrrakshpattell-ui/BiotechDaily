@@ -78,8 +78,8 @@ function Manifesto() {
     return () => window.removeEventListener('scroll', onScroll);
   }, [words.length]);
   return (
-    <section ref={ref} className="h-[240vh] motion-reduce:h-auto">
-      <div className="sticky top-0 flex h-screen items-center motion-reduce:static motion-reduce:h-auto motion-reduce:py-28">
+    <section ref={ref} className="h-[150vh] sm:h-[240vh] motion-reduce:h-auto">
+      <div className="sticky top-0 flex h-[70vh] items-center sm:h-screen motion-reduce:static motion-reduce:h-auto motion-reduce:py-28">
         <p className="mx-auto max-w-5xl px-4 font-display text-[clamp(30px,5.2vw,60px)] font-semibold leading-[1.12] tracking-[-0.035em] sm:px-6">
           {words.map((w, i) => (
             <span key={i} className={`manifesto-word ${i < lit ? 'is-lit' : ''} ${HIGHLIGHT.has(w.toLowerCase()) ? 'is-highlight' : ''}`}>{w} </span>
@@ -138,7 +138,7 @@ export default function Home() {
   return (
     <div className="overflow-x-clip">
       {/* Hero */}
-      <section className="relative pt-14 text-center sm:pt-24">
+      <section className="relative pt-10 text-center sm:pt-24">
         <div className="bg-grid absolute inset-0 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_30%,black_30%,transparent_75%)]" />
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
           <h1 className="hero-rise font-display text-[clamp(44px,8.4vw,100px)] font-semibold leading-[0.98] tracking-[-0.045em] text-slate-900 dark:text-white">
@@ -157,7 +157,7 @@ export default function Home() {
             )}
           </div>
         </div>
-        <div className="relative mt-2 h-[clamp(420px,66vh,720px)]">
+        <div className="relative mt-2 h-[52vh] sm:h-[clamp(420px,66vh,720px)]">
           <div className="pointer-events-none absolute left-1/2 top-1/2 aspect-[2/1] w-[min(900px,120%)] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(closest-side,rgb(50_131_248/0.28),transparent_70%),radial-gradient(closest-side_at_70%_60%,rgb(16_185_138/0.24),transparent_70%)] blur-2xl" />
           <Helix3D className="h-full" />
           <FloatingChip label="Fresh spills today" className="left-[4%] top-[16%]">
@@ -175,10 +175,10 @@ export default function Home() {
       <Manifesto />
 
       {/* Numbers */}
-      <section className="mx-auto max-w-6xl px-4 pb-28 sm:px-6">
+      <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 sm:pb-28">
         <Reveal><Eyebrow>The tea, by the numbers</Eyebrow></Reveal>
         <Reveal delay={80}><H2>A whole industry.<br />Spilled in minutes.</H2></Reveal>
-        <div className="mt-14 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-4">
+        <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-8 sm:mt-14 sm:gap-y-10 md:grid-cols-4">
           {[
             [newsQ.data?.total, undefined, 'stories read today, so you don’t have to'],
             [startupsQ.data ? rounds.length : null, undefined, 'funding rounds spotted this week'],
@@ -194,7 +194,7 @@ export default function Home() {
       </section>
 
       {/* Today's spill */}
-      <section className="bg-slate-100/70 py-24 sm:py-32 dark:bg-ink-900/60">
+      <section className="bg-slate-100/70 py-16 sm:py-32 dark:bg-ink-900/60">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
@@ -278,7 +278,7 @@ export default function Home() {
           <Reveal>
             <CountUp value={raised} format={money} className="mt-8 block bg-gradient-to-b from-white from-30% to-white/35 bg-clip-text font-display text-[clamp(84px,17vw,210px)] font-semibold leading-[0.9] tracking-[-0.055em] text-transparent" />
           </Reveal>
-          <Reveal className="mt-14">
+          <Reveal className="mt-10 sm:mt-14">
             {biggest.map((r) => (
               <a key={r.id} href={r.url || '/startups'} target={r.url ? '_blank' : undefined} rel="noopener noreferrer" className="focus-ring grid grid-cols-[1fr_auto] items-center gap-x-5 gap-y-1.5 border-t border-white/10 py-5 last:border-b">
                 <span className="font-display text-[clamp(19px,2.4vw,24px)] font-semibold tracking-tight">{r.name}</span>
@@ -296,7 +296,7 @@ export default function Home() {
       </section>
 
       {/* Companies */}
-      <section className="py-24 sm:py-32">
+      <section className="py-16 sm:py-32">
         <div className="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-6 px-4 sm:px-6">
           <div>
             <Reveal><Eyebrow>The cast</Eyebrow></Reveal>
@@ -327,12 +327,12 @@ export default function Home() {
       </section>
 
       {/* Watch and listen */}
-      <section className="bg-slate-100/70 py-24 sm:py-32 dark:bg-ink-900/60">
+      <section className="bg-slate-100/70 py-16 sm:py-32 dark:bg-ink-900/60">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <Reveal><Eyebrow tone="green">Watch and listen</Eyebrow></Reveal>
           <Reveal delay={80}><H2>Biotech, out loud.</H2></Reveal>
           <Reveal delay={160}><Lede>Talks, briefings and podcasts worth your commute. Picked by humans, not algorithms.</Lede></Reveal>
-          <div className="mt-12 grid gap-4 lg:grid-cols-[1.25fr_1fr]">
+          <div className="mt-8 grid gap-4 sm:mt-12 lg:grid-cols-[1.25fr_1fr]">
             <Reveal className="min-w-0 rounded-[32px] border border-slate-200/80 bg-white p-6 shadow-sm sm:p-7 dark:border-white/[0.07] dark:bg-ink-900">
               <div className="mb-5 flex items-center justify-between"><h3 className="font-display text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">Watch</h3><LinkArrow href="/media">All videos</LinkArrow></div>
               <div className="grid gap-5 sm:grid-cols-2">
@@ -364,7 +364,7 @@ export default function Home() {
 
       {/* The Gene Pool */}
       {connectEnabled && (
-        <section className="py-24 sm:py-32">
+        <section className="py-16 sm:py-32">
           <div className="mx-auto grid max-w-6xl items-center gap-14 px-4 sm:px-6 lg:grid-cols-2">
             <div>
               <Reveal><Eyebrow>The Gene Pool</Eyebrow></Reveal>
@@ -395,7 +395,7 @@ export default function Home() {
       )}
 
       {/* Finale */}
-      <section className="pb-8 pt-24 text-center sm:pt-32">
+      <section className="pb-8 pt-16 text-center sm:pt-32">
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
           <Reveal><LogoMark className="teacup-wobble mx-auto h-44 w-44 text-slate-900 dark:text-white" /></Reveal>
           <Reveal delay={80}><H2 className="mt-6 !text-[clamp(40px,7vw,80px)]">Your daily dose of<br /><span className="text-shimmer">science gossip.</span></H2></Reveal>

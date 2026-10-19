@@ -3,6 +3,7 @@ import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
 import SearchDialog from './components/SearchDialog.jsx';
 import PodcastPlayer from './components/PodcastPlayer.jsx';
+import SiteTabBar from './components/SiteTabBar.jsx';
 import { PlayerProvider, usePlayer } from './context/PlayerContext.jsx';
 import { useRoute } from './hooks/useRoute.js';
 import { useTheme } from './hooks/useTheme.js';
@@ -99,6 +100,7 @@ function Shell() {
       </main>
       <Footer />
       <PodcastPlayer />
+      {route.segments[0] !== 'connect' && <SiteTabBar path={route.path} />}
       <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );

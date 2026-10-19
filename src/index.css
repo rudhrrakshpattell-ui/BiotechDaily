@@ -37,6 +37,11 @@ html.has-tabbar { --tabbar-h: calc(3.25rem + env(safe-area-inset-bottom)); }
 @media (min-width: 768px) {
   html.has-tabbar { --tabbar-h: 6.5rem; }
 }
+/* The site-wide floating tab bar on phones and tablets (hidden from lg up). */
+html.has-site-tabbar { --tabbar-h: calc(4.75rem + env(safe-area-inset-bottom)); }
+@media (min-width: 1024px) {
+  html.has-site-tabbar { --tabbar-h: 0px; }
+}
 @layer base {
   body { @apply bg-slate-50 text-slate-800 antialiased dark:bg-ink-950 dark:text-slate-200; }
 }
