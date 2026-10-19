@@ -5,7 +5,7 @@ const UPDATED = 'October 19, 2026';
 
 const SECTIONS = [
   ['Reading the news', [
-    'You can read every story, company profile, funding round, video and podcast without an account. We don’t use advertising or analytics trackers.',
+    'You can read every story, company profile, funding round, video and podcast without an account. We don’t use advertising trackers. To see how many people visit and which pages they read, we use Vercel Web Analytics, which uses no cookies, doesn’t follow you across other sites, and never sees member names or who you message.',
     'Your browser remembers a few settings on your device only, such as light or dark mode. Videos load from YouTube and podcast audio from each show’s host only when you press play, and those services have their own privacy policies.',
   ]],
   ['Joining Connect', [

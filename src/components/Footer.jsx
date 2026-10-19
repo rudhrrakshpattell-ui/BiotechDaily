@@ -1,6 +1,7 @@
 import { Logo, NAV } from './Header.jsx';
 import { FOUNDER } from '../seo.js';
 import { isMockMode } from '../services/api.js';
+import { connectEnabled } from '../connect/enabled.js';
 
 export default function Footer() {
   return (
@@ -28,12 +29,11 @@ export default function Footer() {
           </ul>
         </div>
         <div>
-          <p className="mb-3 text-sm font-semibold text-slate-900 dark:text-white">The morning spill</p>
-          <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">The best tea in your inbox at 7am.</p>
-          <form onSubmit={(e) => e.preventDefault()} className="flex gap-2">
-            <input type="email" placeholder="you@lab.org" className="input" aria-label="Email address" />
-            <button className="focus-ring shrink-0 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700">Join</button>
-          </form>
+          <p className="mb-3 text-sm font-semibold text-slate-900 dark:text-white">Join the conversation</p>
+          <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">Talk science with biotech and pharma students on Connect.</p>
+          <a href={connectEnabled ? '/connect/join' : '/news'} className="focus-ring inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-700">
+            {connectEnabled ? 'Join Connect' : 'Read today’s tea'}
+          </a>
         </div>
       </div>
       <div className="border-t border-slate-200/70 py-5 text-center text-xs text-slate-400 dark:border-white/5">
