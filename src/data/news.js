@@ -12,7 +12,7 @@ export const news = [
     id: 'n1', category: 'gene-editing', featured: true, date: daysAgo(0, 7), readTime: 6,
     title: 'Base-editing therapy clears liver target in first-in-human cohort',
     summary: 'A single infusion of an in-vivo base editor lowered its target protein by a median of 78% across six patients, with no serious adverse events at the 90-day readout.',
-    source: 'BiotechDaily Staff', tags: ['base editing', 'in vivo', 'cardiometabolic'],
+    source: 'Spill the Genes Staff', tags: ['base editing', 'in vivo', 'cardiometabolic'],
   },
   {
     id: 'n2', category: 'ai-discovery', date: daysAgo(0, 8), readTime: 5,
@@ -24,7 +24,7 @@ export const news = [
     id: 'n3', category: 'mrna', date: daysAgo(0, 10), readTime: 4,
     title: 'Personalized cancer vaccine approach expands to three new tumor types',
     summary: 'Individualized neoantigen mRNA vaccines move into later-stage testing in bladder, renal and lung cancers after encouraging melanoma data.',
-    source: 'BiotechDaily Staff', tags: ['neoantigen', 'immunotherapy'], companyIds: ['moderna', 'biontech'],
+    source: 'Spill the Genes Staff', tags: ['neoantigen', 'immunotherapy'], companyIds: ['moderna', 'biontech'],
   },
   {
     id: 'n4', category: 'funding', date: daysAgo(0, 12), readTime: 3,
@@ -60,7 +60,7 @@ export const news = [
     id: 'n9', category: 'gene-editing', date: daysAgo(2, 14), readTime: 5,
     title: 'Prime editing corrects sickle-cell mutation with fewer bystander edits',
     summary: 'Preclinical data show a next-generation prime editor restoring healthy hemoglobin in patient-derived stem cells at clinically relevant efficiency.',
-    source: 'BiotechDaily Staff', tags: ['prime editing', 'sickle cell'],
+    source: 'Spill the Genes Staff', tags: ['prime editing', 'sickle cell'],
   },
   {
     id: 'n10', category: 'funding', date: daysAgo(3, 10), readTime: 3,
@@ -78,7 +78,7 @@ export const news = [
     id: 'n12', category: 'ai-discovery', date: daysAgo(4, 11), readTime: 6,
     title: 'Single-cell foundation model predicts drug response across 40 cell types',
     summary: 'Trained on 90 million single-cell profiles, the model forecast transcriptional responses to unseen compounds.',
-    source: 'BiotechDaily Staff', tags: ['single-cell', 'foundation models'], startupIds: ['cellscope'],
+    source: 'Spill the Genes Staff', tags: ['single-cell', 'foundation models'], startupIds: ['cellscope'],
   },
   {
     id: 'n13', category: 'oncology', date: daysAgo(5, 9), readTime: 5,
@@ -108,7 +108,7 @@ export const news = [
     id: 'n17', category: 'gene-editing', date: daysAgo(21, 9), readTime: 4,
     title: 'Epigenetic editor silences hepatitis B genes for six months in primates',
     summary: 'Without cutting DNA, the editor durably switched off viral gene expression, a step toward a functional cure.',
-    source: 'BiotechDaily Staff', tags: ['epigenetic editing', 'hepatitis b'], startupIds: ['epiloop'],
+    source: 'Spill the Genes Staff', tags: ['epigenetic editing', 'hepatitis b'], startupIds: ['epiloop'],
   },
   {
     id: 'n18', category: 'funding', date: daysAgo(35, 9), readTime: 3,

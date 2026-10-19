@@ -47,4 +47,6 @@ function devApiRoutes() {
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), devApiRoutes()],
+  // three.js (~176 kB gzipped) is its own chunk, loaded only by the home page's 3D helix after first paint.
+  build: { chunkSizeWarningLimit: 700 },
 });

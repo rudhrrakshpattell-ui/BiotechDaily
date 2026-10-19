@@ -14,13 +14,13 @@ export default function Landing() {
         <div className="bg-grid absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]" />
         <div className="absolute -right-32 top-0 h-80 w-80 rounded-full bg-helix-400/20 blur-3xl" />
         <div className="relative mx-auto max-w-6xl px-4 pb-14 pt-14 sm:px-6 sm:pt-20">
-          <p className="eyebrow mb-3">BiotechDaily Connect</p>
+          <p className="eyebrow mb-3">The Gene Pool · by Spill the Genes</p>
           <h1 className="max-w-3xl font-display text-4xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-5xl dark:text-white">
-            The community for <span className="bg-gradient-to-r from-brand-600 to-helix-500 bg-clip-text text-transparent dark:from-brand-300 dark:to-helix-400">biotech students.</span>
+            Dive into the community for <span className="bg-gradient-to-r from-brand-600 to-helix-500 bg-clip-text text-transparent dark:from-brand-300 dark:to-helix-400">biotech students.</span>
           </h1>
-          <p className="mt-4 max-w-2xl text-lg text-slate-600 dark:text-slate-400">Create your profile, follow other students, and share what you’re learning and building.</p>
+          <p className="mt-4 max-w-2xl text-lg text-slate-600 dark:text-slate-400">Create your profile, follow other biotech and pharma students, and swap what you’re learning, building and gossiping about in the lab.</p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <a href="/connect/join" className="focus-ring rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/25 hover:bg-brand-700">Join free</a>
+            <a href="/connect/join" className="focus-ring rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/25 hover:bg-brand-700">Dive in free</a>
             <a href="/connect/join?mode=signin" className="focus-ring rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:border-brand-300 dark:border-white/10 dark:bg-ink-900 dark:text-slate-200">Sign in</a>
           </div>
           <div className="mt-12 grid gap-4 sm:grid-cols-3">

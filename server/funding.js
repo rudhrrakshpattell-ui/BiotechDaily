@@ -12,7 +12,7 @@ const VERB_RE = new RegExp(`\\s(${RAISE_VERBS}|${WEAK_VERBS})\\b`, 'i');
 const STRONG_RE = new RegExp(`^(${RAISE_VERBS})$`, 'i');
 const FINANCING_RE = /\b(series [a-h]|seed|pre-seed|ipo|financing|funding|round|venture|private placement)\b/i;
 // Headlines with money in them that are about something other than a company raising capital.
-const EXCLUDE_RE = /\b(deal|pact|acqui\w*|buyout|merger|licens\w*|partnership|collaboration|contract|settle\w*|lawsuit|layoffs?|prospect|market to|fund (?:launch|close)|vc firm)\b/i;
+const EXCLUDE_RE = /\b(deal|pact|acqui\w*|buyout|merger|licens\w*|partnership|collaboration|contract|settle\w*|lawsuit|layoffs?|prospect|market to|fund (?:launch|close)|vc firm|new [\w ]{0,24}funds?|largest fundraise)\b/i;
 const NOT_A_NAME = /\b(ceo|founder|former|executive|biotechs|startups|investors)\b/i;
 
 const FX_TO_USD = { $: 1, US$: 1, USD: 1, '€': 1.1, EUR: 1.1, '£': 1.3, GBP: 1.3, CHF: 1.1 };
@@ -48,7 +48,8 @@ function parseStage(text) {
 
 // Company = the run of capitalized words right before the verb: "RNAi drug specialist ADARx raises" -> "ADARx".
 function parseCompany(beforeVerb) {
-  const tokens = beforeVerb.replace(/[’']s$/, '').split(/\s+/);
+  // "Biogen-backed Estuary" -> "Estuary".
+  const tokens = beforeVerb.replace(/[’']s$/, '').split(/\s+/).filter((w) => !/-backed$/i.test(w));
   const name = [];
   for (let i = tokens.length - 1; i >= 0 && name.length < 5; i--) {
     const t = tokens[i].replace(/[,:;“”"]/g, '');
@@ -119,20 +120,37 @@ export function parseRound(story) {
   };
 }
 
+// Words that don't identify a company: "City Therapeutics" and "City" are the same startup.
+const NAME_SUFFIX = /\b(therapeutics|therapeutic|bio|biotech|biosciences?|biotherapeutics|pharma\w*|medicines?|inc|ltd|labs?|health|sciences?)\b/gi;
+const coreName = (name) => name.toLowerCase().replace(NAME_SUFFIX, ' ').replace(/[^a-z0-9 ]/g, ' ').trim().split(/\s+/)[0] ?? '';
+
+// Two reports of one round: the same core company name and amounts within 20% (outlets round differently,
+// or count committed versus closed money).
+export function sameRound(a, b) {
+  if (a.currency !== b.currency || !coreName(a.name) || coreName(a.name) !== coreName(b.name)) return false;
+  return Math.abs(a.amountM - b.amountM) <= 0.2 * Math.max(a.amountM, b.amountM);
+}
+
+// Folds repeat coverage of a round into its earliest report. Expects rounds oldest first.
+export function mergeRounds(rounds) {
+  const merged = [];
+  for (const round of rounds) {
+    const prev = merged.find((m) => m.id === round.id || sameRound(m, round));
+    if (!prev) {
+      merged.push({ ...round, sources: [round.source] });
+      continue;
+    }
+    if (round.name.length > prev.name.length) prev.name = round.name; // "City Therapeutics" over "City"
+    if (prev.stage === 'Other' && round.stage !== 'Other') prev.stage = round.stage;
+    if (!prev.investors.length) prev.investors = round.investors;
+    if (!prev.sources.includes(round.source)) prev.sources.push(round.source);
+  }
+  return merged;
+}
+
 export async function getFundingRounds() {
   const { items, fetchedAt } = await getLiveNews();
-  const byCompany = new Map();
   // Oldest first, so the earliest report of a round is kept and later coverage only fills gaps.
-  for (const story of [...items].reverse()) {
-    const round = parseRound(story);
-    if (!round) continue;
-    const prev = byCompany.get(round.id);
-    if (!prev) byCompany.set(round.id, { ...round, sources: [round.source] });
-    else {
-      if (prev.stage === 'Other' && round.stage !== 'Other') prev.stage = round.stage;
-      if (!prev.investors.length) prev.investors = round.investors;
-      if (!prev.sources.includes(round.source)) prev.sources.push(round.source);
-    }
-  }
-  return { items: [...byCompany.values()], fetchedAt };
+  const rounds = [...items].reverse().map(parseRound).filter(Boolean);
+  return { items: mergeRounds(rounds), fetchedAt };
 }

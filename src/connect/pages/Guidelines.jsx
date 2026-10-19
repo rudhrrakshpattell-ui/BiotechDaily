@@ -10,9 +10,9 @@ const RULES = [
 export default function Guidelines() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-      <p className="eyebrow mb-2">BiotechDaily Connect</p>
+      <p className="eyebrow mb-2">The Gene Pool</p>
       <h1 className="font-display text-3xl font-semibold text-slate-900 dark:text-white">Community guidelines</h1>
-      <p className="mt-3 text-slate-600 dark:text-slate-400">Connect is a place for students aged 13 and over to learn about biotech together. These rules keep it safe and useful for everyone.</p>
+      <p className="mt-3 text-slate-600 dark:text-slate-400">The Gene Pool is a place for students aged 13 and over to learn about biotech together. These rules keep it safe and useful for everyone.</p>
       <ol className="mt-8 space-y-4">
         {RULES.map(([title, text], i) => (
           <li key={title} className="card flex gap-4 p-5">
@@ -27,7 +27,7 @@ export default function Guidelines() {
       <section className="card mt-8 space-y-3 p-5 text-sm text-slate-600 dark:text-slate-400">
         <h2 className="font-display text-lg font-semibold text-slate-900 dark:text-white">Safety features</h2>
         <p><span className="font-semibold text-slate-800 dark:text-slate-200">Members under 18</span> have profiles and posts that are visible only to signed-in members, never to the public web or search engines.</p>
-        <p><span className="font-semibold text-slate-800 dark:text-slate-200">Direct messages:</span> you can message people you follow. If they don’t follow you back, your first message arrives as a request, and you can’t send more until they reply. <span className="font-semibold text-slate-800 dark:text-slate-200">Members under 18</span> can only be messaged by people they follow back. Blocking stops messages both ways. Messages are private, but a message that’s reported can be reviewed by BiotechDaily.</p>
+        <p><span className="font-semibold text-slate-800 dark:text-slate-200">Direct messages:</span> you can message people you follow. If they don’t follow you back, your first message arrives as a request, and you can’t send more until they reply. <span className="font-semibold text-slate-800 dark:text-slate-200">Members under 18</span> can only be messaged by people they follow back. Blocking stops messages both ways. Messages are private, but a message that’s reported can be reviewed by the Spill the Genes team.</p>
         <p><span className="font-semibold text-slate-800 dark:text-slate-200">Report and block:</span> use the ••• menu on any post or profile. Blocking hides you from each other completely.</p>
         <p><span className="font-semibold text-slate-800 dark:text-slate-200">Your data:</span> we store your email, birth month and year (never shown), what you put on your profile, and your posts, comments and messages. You can delete your account and everything in it at any time from Settings.</p>
         <p>Breaking these rules can lead to posts being removed or accounts being suspended.</p>

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseRound } from '../server/funding.js';
+import { mergeRounds, parseRound } from '../server/funding.js';
 
 // [headline, expected "name|amount|stage"] — null means it must NOT be read as a funding round.
 const cases = [
@@ -18,6 +18,9 @@ const cases = [
   ['Lexeo takes up the Mantle in $8M acquisition for Friedreich ataxia assets', null],
   ['Growth mode: 3 biotechs that are staffing up after series B raises', null],
   ['Merck sees pivotal victory for $3B eye disease prospect', null],
+  // Investors raising their own funds.
+  ['OrbiMed raises $3B in new life sciences funds, including $1B+ for Asia', null],
+  ['Forbion raises $2.6 billion, its largest fundraise to date', null],
 ];
 
 for (const [title, want] of cases) {
@@ -45,3 +48,19 @@ for (const [title, want] of sectors) {
     assert.equal(r?.sector, want);
   });
 }
+
+test('repeat coverage of one round is merged', () => {
+  const round = (title, source) => parseRound({ title, summary: '', date: '2026-10-16T00:00:00Z', url: 'https://example.com', source });
+  const merged = mergeRounds([
+    round('City raises $200M in IPO to take RNAi drugs forward', 'a'),
+    round('City Therapeutics raises $200M in upsized IPO', 'b'),
+    round('Biogen-backed Estuary raises $93M for kidney gene therapies', 'a'),
+    round('Estuary secures $103m to advance kidney disease gene therapies', 'c'),
+    round('Estuary Labs raises $10M seed', 'd'),
+  ]);
+  assert.deepEqual(merged.map((r) => `${r.name}|${r.amountLabel}|${r.sources.join(',')}`), [
+    'City Therapeutics|$200M|a,b',
+    'Estuary|$93M|a,c',
+    'Estuary Labs|$10M|d',
+  ]);
+});

@@ -1,5 +1,5 @@
 {
-  "name": "biotechdaily",
+  "name": "spill-the-genes",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -15,7 +15,8 @@
     "@supabase/supabase-js": "^2.117.2",
     "fast-xml-parser": "^5.11.1",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "three": "^0.169.0"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",

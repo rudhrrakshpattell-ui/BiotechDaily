@@ -4,15 +4,15 @@ import { companies } from './data/companies.js';
 import { categoryById } from './data/categories.js';
 import { trendByKey, trendLabel } from './services/trending.js';
 
-export const SITE_NAME = 'BiotechDaily';
+export const SITE_NAME = 'Spill the Genes';
 export const FOUNDER = 'Rudhrraksh Pattell';
 // Canonical origin for links in sitemaps and share tags. Override with SITE_URL for a custom domain.
 export const DEFAULT_SITE_URL = 'https://biotech-daily.vercel.app';
 export const OG_IMAGE_PATH = '/og-image.png';
 
 const HOME = {
-  title: 'BiotechDaily: daily biotech news, funding rounds, videos & podcasts',
-  description: 'BiotechDaily, founded by Rudhrraksh Pattell: live biotech news from STAT, Fierce Biotech and BioPharma Dive, funding rounds, company profiles, videos and podcasts.',
+  title: 'Spill the Genes: biotech and pharma news, served hot',
+  description: 'Spill the Genes, founded by Rudhrraksh Pattell: the juiciest biotech and pharma news from STAT, Fierce Biotech and BioPharma Dive, plus funding rounds, company profiles, videos and podcasts.',
 };
 
 const page = (title, description) => ({ title: `${title} | ${SITE_NAME}`, description });
@@ -24,14 +24,14 @@ export function metaFor(pathname, query = {}) {
 
   if (section === 'connect') {
     const connect = (title, description, index = false) => ({ ...page(title, description), status: 200, index });
-    if (!id) return connect('Connect: the community for biotech students', 'Join BiotechDaily Connect: create your profile, follow biotech students from universities worldwide, and share what you’re learning.', true);
-    if (id === 'guidelines' && !rest.length) return connect('Connect community guidelines', 'The rules that keep BiotechDaily Connect safe and useful for biotech students aged 13 and over.', true);
-    if (id === 'join' && !rest.length) return connect('Join Connect', 'Create your free BiotechDaily Connect profile.');
+    if (!id) return connect('The Gene Pool: the community for biotech students', 'Dive into The Gene Pool: create your profile, follow biotech and pharma students from universities worldwide, and share what you’re learning.', true);
+    if (id === 'guidelines' && !rest.length) return connect('The Gene Pool community guidelines', 'The rules that keep The Gene Pool safe and useful for biotech students aged 13 and over.', true);
+    if (id === 'join' && !rest.length) return connect('Join The Gene Pool', 'Create your free Gene Pool profile on Spill the Genes.');
     // Member pages are never indexed: some members are under 18.
-    if (id === 'u' && rest.length >= 1 && rest.length <= 2) return connect(`@${rest[0]} on Connect`, 'A biotech student on BiotechDaily Connect.');
-    if (id === 'p' && rest.length === 1) return connect('Post on Connect', 'A post from the BiotechDaily Connect community for biotech students.');
-    if (id === 'messages' && rest.length <= 1) return connect('Messages', 'Your BiotechDaily Connect messages.');
-    if ((id === 'settings' || id === 'search') && !rest.length) return connect('Connect', 'BiotechDaily Connect.');
+    if (id === 'u' && rest.length >= 1 && rest.length <= 2) return connect(`@${rest[0]} in The Gene Pool`, 'A biotech student in The Gene Pool on Spill the Genes.');
+    if (id === 'p' && rest.length === 1) return connect('Post in The Gene Pool', 'A post from The Gene Pool, the Spill the Genes community for biotech students.');
+    if (id === 'messages' && rest.length <= 1) return connect('Messages', 'Your Gene Pool messages.');
+    if ((id === 'settings' || id === 'search') && !rest.length) return connect('The Gene Pool', 'The Gene Pool on Spill the Genes.');
     return notFound;
   }
   if (rest.length) return notFound;

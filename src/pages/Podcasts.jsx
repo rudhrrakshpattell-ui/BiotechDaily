@@ -62,7 +62,7 @@ export default function Podcasts() {
             </div>
           </section>
         ))}
-        <p className="text-xs text-slate-400">Episodes stream from each show’s public feed. BiotechDaily isn’t affiliated with these podcasts.</p>
+        <p className="text-xs text-slate-400">Episodes stream from each show’s public feed. Spill the Genes isn’t affiliated with these podcasts.</p>
       </div>
     </>
   );

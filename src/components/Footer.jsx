@@ -9,7 +9,7 @@ export default function Footer() {
         <div>
           <Logo />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-            Your daily briefing on discoveries, companies and capital shaping the life sciences.
+            The juiciest biotech and pharma news, spilled fresh every morning. Discoveries, deals, drama and the people behind them.
             <span className="mt-2 block font-medium text-slate-700 dark:text-slate-300">Founded by {FOUNDER}</span>
           </p>
           <p className="mt-4 inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 dark:bg-white/5 dark:text-slate-400">
@@ -28,8 +28,8 @@ export default function Footer() {
           </ul>
         </div>
         <div>
-          <p className="mb-3 text-sm font-semibold text-slate-900 dark:text-white">The daily brief</p>
-          <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">Top stories in your inbox at 7am.</p>
+          <p className="mb-3 text-sm font-semibold text-slate-900 dark:text-white">The morning spill</p>
+          <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">The best tea in your inbox at 7am.</p>
           <form onSubmit={(e) => e.preventDefault()} className="flex gap-2">
             <input type="email" placeholder="you@lab.org" className="input" aria-label="Email address" />
             <button className="focus-ring shrink-0 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700">Join</button>
@@ -37,7 +37,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t border-slate-200/70 py-5 text-center text-xs text-slate-400 dark:border-white/5">
-        © {new Date().getFullYear()} BiotechDaily. Not medical or investment advice.
+        © {new Date().getFullYear()} Spill the Genes. Not medical or investment advice.
       </div>
     </footer>
   );

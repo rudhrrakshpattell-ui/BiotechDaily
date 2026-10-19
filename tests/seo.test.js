@@ -6,7 +6,7 @@ import { seoTags } from '../api/page.js';
 test('known pages are indexable with their own titles', () => {
   assert.equal(metaFor('/').status, 200);
   assert.match(metaFor('/companies/vertex').title, /^Vertex: company profile/);
-  assert.equal(metaFor('/news', { category: 'oncology' }).title, 'Oncology news | BiotechDaily');
+  assert.equal(metaFor('/news', { category: 'oncology' }).title, 'Oncology news | Spill the Genes');
   for (const path of SITEMAP_PATHS) assert.equal(metaFor(path).index, true, path);
 });
 

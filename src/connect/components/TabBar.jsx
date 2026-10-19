@@ -23,7 +23,7 @@ export default function TabBar({ path, profile, unread = 0 }) {
 
   return (
     <nav
-      aria-label="Connect"
+      aria-label="The Gene Pool"
       className={[
         'fixed z-40 backdrop-blur-2xl backdrop-saturate-150',
         // Phones and tablets: full-width bar with a hairline top border and room for the home indicator.

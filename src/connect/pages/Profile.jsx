@@ -16,7 +16,7 @@ function Unavailable({ signedIn }) {
       <p className="mt-2 text-sm text-slate-500">
         {signedIn ? 'It may have been deleted, or you can’t view it.' : 'Some profiles are only visible to members.'}
       </p>
-      <a href={signedIn ? '/connect' : '/connect/join'} className="focus-ring mt-6 inline-block rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white">{signedIn ? 'Back to Connect' : 'Join Connect'}</a>
+      <a href={signedIn ? '/connect' : '/connect/join'} className="focus-ring mt-6 inline-block rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white">{signedIn ? 'Back to The Gene Pool' : 'Join Connect'}</a>
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { XMLParser } from 'fast-xml-parser';
 
 // No URL in the UA: some investor-relations firewalls (Q4) stall requests whose UA contains one.
-const USER_AGENT = 'Mozilla/5.0 (compatible; BiotechDaily/1.0)';
+const USER_AGENT = 'Mozilla/5.0 (compatible; SpillTheGenes/1.0)';
 // Large podcast feeds (hundreds of episodes) can take 6-8s; functions get 30s (vercel.json).
 const FETCH_TIMEOUT_MS = 12000;
 

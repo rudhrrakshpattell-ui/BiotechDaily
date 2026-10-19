@@ -30,7 +30,7 @@ export default function PostPage({ id, me }) {
         <div className="card px-6 py-12 text-center">
           <p className="font-display text-xl font-semibold text-slate-900 dark:text-white">This post isn’t available</p>
           <p className="mt-2 text-sm text-slate-500">It may have been deleted, or it’s only visible to members.</p>
-          <a href={me ? '/connect' : '/connect/join'} className="focus-ring mt-5 inline-block rounded-full bg-brand-600 px-5 py-2 text-sm font-semibold text-white">{me ? 'Back to Connect' : 'Join Connect'}</a>
+          <a href={me ? '/connect' : '/connect/join'} className="focus-ring mt-5 inline-block rounded-full bg-brand-600 px-5 py-2 text-sm font-semibold text-white">{me ? 'Back to The Gene Pool' : 'Join Connect'}</a>
         </div>
       )}
       {post && (

@@ -62,7 +62,7 @@ export default function PostCard({ post: initialPost, me, liked: initiallyLiked,
   async function share() {
     try {
       if (navigator.share && matchMedia('(pointer: coarse)').matches) {
-        await navigator.share({ title: `${author.display_name} on BiotechDaily Connect`, url: link });
+        await navigator.share({ title: `${author.display_name} in The Gene Pool`, url: link });
         return;
       }
       await navigator.clipboard.writeText(link);
