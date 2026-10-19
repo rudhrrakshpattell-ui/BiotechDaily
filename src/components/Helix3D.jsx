@@ -111,7 +111,8 @@ function mount(THREE, host, canvas, onReady) {
     camera.aspect = aspect;
     camera.updateProjectionMatrix();
     baseZ = aspect > 1.1 ? Math.PI / 2 - 0.32 : 0.28;
-    camera.position.set(0, 0, aspect > 1.1 ? Math.max(18, 26 / aspect + 7) : 20);
+    // Tall phone screens (helix behind the headline): pull back so it reads as a slender background strand.
+    camera.position.set(0, 0, aspect > 1.1 ? Math.max(18, 26 / aspect + 7) : aspect < 0.75 ? 30 : 20);
   }
 
   let tx = 0, ty = 0, px = 0, py = 0, vel = 0, angle = 0, lastY = window.scrollY, visible = true, raf = 0, prev = performance.now();

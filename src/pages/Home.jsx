@@ -138,9 +138,12 @@ export default function Home() {
   return (
     <div className="overflow-x-clip">
       {/* Hero */}
-      <section className="relative pt-10 text-center sm:pt-24">
+      {/* Phones: the DNA turns behind the headline and fills the first screen. Tablet and up: it sits below. */}
+      <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden pb-24 pt-10 text-center sm:block sm:min-h-0 sm:overflow-visible sm:pb-0 sm:pt-24">
         <div className="bg-grid absolute inset-0 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_30%,black_30%,transparent_75%)]" />
-        <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6">
+          {/* Phones: a soft glow of the page colour behind the words keeps them readable over the helix. */}
+          <div className="pointer-events-none absolute inset-x-0 -inset-y-10 -z-10 bg-[radial-gradient(ellipse_at_center,var(--color-slate-50)_35%,transparent_72%)] sm:hidden dark:bg-[radial-gradient(ellipse_at_center,var(--color-ink-950)_35%,transparent_72%)]" />
           <h1 className="hero-rise font-display text-[clamp(44px,8.4vw,100px)] font-semibold leading-[0.98] tracking-[-0.045em] text-slate-900 dark:text-white">
             <span className="block">Biotech and pharma.</span>
             <span className="text-shimmer block">Served hot.</span>
@@ -157,7 +160,7 @@ export default function Home() {
             )}
           </div>
         </div>
-        <div className="relative mt-2 h-[52vh] sm:h-[clamp(420px,66vh,720px)]">
+        <div className="absolute inset-0 opacity-60 sm:relative sm:inset-auto sm:mt-2 sm:h-[clamp(420px,66vh,720px)] sm:opacity-100 dark:opacity-70 sm:dark:opacity-100">
           <div className="pointer-events-none absolute left-1/2 top-1/2 aspect-[2/1] w-[min(900px,120%)] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(closest-side,rgb(50_131_248/0.28),transparent_70%),radial-gradient(closest-side_at_70%_60%,rgb(16_185_138/0.24),transparent_70%)] blur-2xl" />
           <Helix3D className="h-full" />
           <FloatingChip label="Fresh spills today" className="left-[4%] top-[16%]">
