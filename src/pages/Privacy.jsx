@@ -8,7 +8,7 @@ const SECTIONS = [
     'You can read every story, company profile, funding round, video and podcast without an account. We don’t use advertising or analytics trackers.',
     'Your browser remembers a few settings on your device only, such as light or dark mode. Videos load from YouTube and podcast audio from each show’s host only when you press play, and those services have their own privacy policies.',
   ]],
-  ['Joining The Gene Pool', [
+  ['Joining Connect', [
     'When you join, we store your email address and your birth month and year. We use your age only to keep the community safe: you must be 13 or older to join, and members under 18 get extra messaging protections. Your birth date is never shown on your profile.',
     'If you sign in with Google, Google shares your name, email address and profile picture with us. We never see or store your Google password.',
     'Anything you add to your profile (name, username, university, program, interests, bio and photo), your posts, comments, likes, follows and direct messages are stored so the community works.',
@@ -20,7 +20,7 @@ const SECTIONS = [
     'Account data is stored with Supabase, our database and sign-in provider. The site is hosted on Vercel. Sign-in emails are sent through Gmail. We don’t sell your data or share it with advertisers.',
   ]],
   ['Your choices', [
-    'You can edit your profile at any time, and delete your account from Settings in The Gene Pool. Deleting your account removes your profile, posts, comments, likes, follows and messages.',
+    'You can edit your profile at any time, and delete your account from Settings in Connect. Deleting your account removes your profile, posts, comments, likes, follows and messages.',
     `For anything else, including a copy of your data, email ${CONTACT}.`,
   ]],
   ['Changes', [
@@ -31,7 +31,7 @@ const SECTIONS = [
 export default function Privacy() {
   return (
     <>
-      <PageHeader eyebrow="Privacy" title="Privacy policy" description={`How Spill the Genes and The Gene Pool handle your information. Last updated ${UPDATED}.`} />
+      <PageHeader eyebrow="Privacy" title="Privacy policy" description={`How Spill the Genes and Spill the Genes Connect handle your information. Last updated ${UPDATED}.`} />
       <div className="mx-auto max-w-3xl space-y-8 px-4 py-10 sm:px-6">
         {SECTIONS.map(([title, paragraphs]) => (
           <section key={title}>

@@ -10,9 +10,9 @@ const RULES = [
 export default function Guidelines() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-      <p className="eyebrow mb-2">The Gene Pool</p>
+      <p className="eyebrow mb-2">Connect</p>
       <h1 className="font-display text-3xl font-semibold text-slate-900 dark:text-white">Community guidelines</h1>
-      <p className="mt-3 text-slate-600 dark:text-slate-400">The Gene Pool is a place for students aged 13 and over to learn about biotech together. These rules keep it safe and useful for everyone.</p>
+      <p className="mt-3 text-slate-600 dark:text-slate-400">Connect is a place for students aged 13 and over to learn about biotech together. These rules keep it safe and useful for everyone.</p>
       <ol className="mt-8 space-y-4">
         {RULES.map(([title, text], i) => (
           <li key={title} className="card flex gap-4 p-5">

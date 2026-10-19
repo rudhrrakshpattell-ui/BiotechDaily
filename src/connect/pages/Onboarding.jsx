@@ -34,7 +34,7 @@ export default function Onboarding({ session }) {
       <div className="mx-auto max-w-md px-4 py-16 text-center">
         <div className="card p-8">
           <p className="font-display text-xl font-semibold text-slate-900 dark:text-white">Sorry, you can’t join yet</p>
-          <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">The Gene Pool is for students aged {MIN_AGE} and over.</p>
+          <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">Connect is for students aged {MIN_AGE} and over.</p>
           <button onClick={() => supabase.auth.signOut()} className="focus-ring mt-6 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white">Sign out</button>
         </div>
       </div>

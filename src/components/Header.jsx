@@ -10,7 +10,7 @@ export const NAV = [
   { href: '/media', label: 'Video', icon: 'video' },
   { href: '/podcasts', label: 'Podcasts', icon: 'mic' },
   // Shown once Supabase is configured.
-  ...(connectEnabled ? [{ href: '/connect', label: 'Gene Pool', icon: 'users' }] : []),
+  ...(connectEnabled ? [{ href: '/connect', label: 'Connect', icon: 'users' }] : []),
 ];
 
 export function Logo() {

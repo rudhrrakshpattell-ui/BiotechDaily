@@ -7,10 +7,10 @@ const TABS = [
   { href: '/news', label: 'News', icon: 'newspaper' },
   { href: '/startups', label: 'Funding', icon: 'rocket' },
   { href: '/podcasts', label: 'Listen', icon: 'headphones' },
-  ...(connectEnabled ? [{ href: '/connect', label: 'Gene Pool', icon: 'users' }] : []),
+  ...(connectEnabled ? [{ href: '/connect', label: 'Connect', icon: 'users' }] : []),
 ];
 
-// Phones and tablets: a floating glass capsule of the main sections, like the Gene Pool's tab bar. Hidden on
+// Phones and tablets: a floating glass capsule of the main sections, like the Connect tab bar. Hidden on
 // desktop, where the header shows every section. While mounted it sets html.has-site-tabbar so --tabbar-h
 // keeps content and the podcast player clear of it (see index.css).
 export default function SiteTabBar({ path }) {

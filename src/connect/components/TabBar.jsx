@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import Icon from '../../components/Icon.jsx';
 import Avatar from './Avatar.jsx';
 
-// Apple-style tab bar for The Gene Pool: a floating glass capsule centred near the bottom on every screen size
+// Apple-style tab bar for Connect: a floating glass capsule centred near the bottom on every screen size
 // (full width minus a margin on phones, sized to its tabs from tablet up). Filled icon + blue tint for the active tab, red unread badge, profile
 // photo as the Profile tab. While mounted it sets html.has-tabbar so --tabbar-h reserves space (see index.css).
 export default function TabBar({ path, profile, unread = 0 }) {
@@ -24,7 +24,7 @@ export default function TabBar({ path, profile, unread = 0 }) {
 
   return (
     <nav
-      aria-label="The Gene Pool"
+      aria-label="Connect"
       className={[
         'fixed left-1/2 z-40 -translate-x-1/2 rounded-full border border-white/60 bg-white/60 p-1.5 backdrop-blur-2xl backdrop-saturate-150',
         'shadow-[0_12px_40px_-8px_rgba(15,23,42,0.35),inset_0_1px_0_rgba(255,255,255,0.6)]',

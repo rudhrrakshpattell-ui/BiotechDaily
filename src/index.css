@@ -30,7 +30,7 @@
 }
 
 html { scroll-behavior: smooth; }
-/* Space reserved while the Gene Pool tab bar is showing: the floating capsule plus its gap from the bottom edge. */
+/* Space reserved while the Connect tab bar is showing: the floating capsule plus its gap from the bottom edge. */
 :root { --tabbar-h: 0px; }
 html.has-tabbar { --tabbar-h: calc(4.75rem + env(safe-area-inset-bottom)); }
 @media (min-width: 768px) {

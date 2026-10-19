@@ -29,7 +29,7 @@ export default function People({ username, direction, query, me }) {
     return (
       <div className="mx-auto max-w-md px-4 py-20 text-center">
         <p className="font-display text-2xl font-semibold text-slate-900 dark:text-white">{title}</p>
-        <a href="/connect" className="focus-ring mt-6 inline-block rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white">Back to The Gene Pool</a>
+        <a href="/connect" className="focus-ring mt-6 inline-block rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white">Back to Connect</a>
       </div>
     );
   }

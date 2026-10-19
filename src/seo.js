@@ -24,14 +24,14 @@ export function metaFor(pathname, query = {}) {
 
   if (section === 'connect') {
     const connect = (title, description, index = false) => ({ ...page(title, description), status: 200, index });
-    if (!id) return connect('The Gene Pool: the community for biotech and pharma students', 'Dive into The Gene Pool: create your profile, follow biotech and pharma students from universities worldwide, and share what you’re learning.', true);
-    if (id === 'guidelines' && !rest.length) return connect('The Gene Pool community guidelines', 'The rules that keep The Gene Pool safe and useful for biotech and pharma students aged 13 and over.', true);
-    if (id === 'join' && !rest.length) return connect('Join The Gene Pool', 'Create your free Gene Pool profile on Spill the Genes.');
+    if (!id) return connect('Connect: the community for biotech and pharma students', 'Join Connect on Spill the Genes: create your profile, follow biotech and pharma students from universities worldwide, and share what you’re learning.', true);
+    if (id === 'guidelines' && !rest.length) return connect('Connect community guidelines', 'The rules that keep Connect safe and useful for biotech and pharma students aged 13 and over.', true);
+    if (id === 'join' && !rest.length) return connect('Join Connect', 'Create your free Connect profile on Spill the Genes.');
     // Member pages are never indexed: some members are under 18.
-    if (id === 'u' && rest.length >= 1 && rest.length <= 2) return connect(`@${rest[0]} in The Gene Pool`, 'A biotech student in The Gene Pool on Spill the Genes.');
-    if (id === 'p' && rest.length === 1) return connect('Post in The Gene Pool', 'A post from The Gene Pool, the Spill the Genes community for biotech and pharma students.');
-    if (id === 'messages' && rest.length <= 1) return connect('Messages', 'Your Gene Pool messages.');
-    if ((id === 'settings' || id === 'search') && !rest.length) return connect('The Gene Pool', 'The Gene Pool on Spill the Genes.');
+    if (id === 'u' && rest.length >= 1 && rest.length <= 2) return connect(`@${rest[0]} on Connect`, 'A biotech or pharma student on Spill the Genes Connect.');
+    if (id === 'p' && rest.length === 1) return connect('Post on Connect', 'A post from Connect, the Spill the Genes community for biotech and pharma students.');
+    if (id === 'messages' && rest.length <= 1) return connect('Messages', 'Your Connect messages.');
+    if ((id === 'settings' || id === 'search') && !rest.length) return connect('Connect', 'Connect on Spill the Genes.');
     return notFound;
   }
   if (rest.length) return notFound;
@@ -67,7 +67,7 @@ export function metaFor(pathname, query = {}) {
       return { ...page('Biotech videos', 'The latest videos from STAT, Endpoints News, the Broad Institute, Nature and Science, alongside today’s top biotech stories.'), status: 200, index: !query.v };
     case 'privacy':
       if (id) return notFound;
-      return { ...page('Privacy policy', 'How Spill the Genes and The Gene Pool collect, use and protect your information, and how to delete your account.'), status: 200, index: true };
+      return { ...page('Privacy policy', 'How Spill the Genes and Spill the Genes Connect collect, use and protect your information, and how to delete your account.'), status: 200, index: true };
     case 'podcasts':
       if (id) return notFound;
       return { ...page('Biotech podcasts', 'New episodes from The Readout Loud, Biotech Hangout, The Long Run and more, playable right in your browser.'), status: 200, index: true };

@@ -1,4 +1,4 @@
-// Supabase client for The Gene Pool (the community, under /connect). Only imported by the Connect pages, so the rest of the
+// Supabase client for Connect (the community, under /connect). Only imported by the Connect pages, so the rest of the
 // site doesn't download it. The anon key is public by design: access is enforced by the row-level
 // security policies in supabase/migrations/0001_connect.sql.
 import { createClient } from '@supabase/supabase-js';

@@ -154,7 +154,7 @@ export default function Home() {
           <div className="hero-rise mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 [animation-delay:240ms]">
             <a href="/news" className="focus-ring bouncy rounded-full bg-brand-600 px-6 py-3 font-medium text-white shadow-lg shadow-brand-600/30 hover:bg-brand-700">Get the tea</a>
             {connectEnabled ? (
-              <a href="/connect" className="focus-ring inline-flex items-center gap-1 rounded-full px-2 py-3 font-medium text-brand-600 hover:underline dark:text-brand-300">Dive into The Gene Pool <Icon name="chevronRight" className="h-4 w-4" /></a>
+              <a href="/connect" className="focus-ring inline-flex items-center gap-1 rounded-full px-2 py-3 font-medium text-brand-600 hover:underline dark:text-brand-300">Join Connect <Icon name="chevronRight" className="h-4 w-4" /></a>
             ) : (
               <a href="/podcasts" className="focus-ring inline-flex items-center gap-1 rounded-full px-2 py-3 font-medium text-brand-600 hover:underline dark:text-brand-300">Listen instead <Icon name="chevronRight" className="h-4 w-4" /></a>
             )}
@@ -365,13 +365,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* The Gene Pool */}
+      {/* Connect */}
       {connectEnabled && (
         <section className="py-16 sm:py-32">
           <div className="mx-auto grid max-w-6xl items-center gap-14 px-4 sm:px-6 lg:grid-cols-2">
             <div>
-              <Reveal><Eyebrow>The Gene Pool</Eyebrow></Reveal>
-              <Reveal delay={80}><H2>Dive into<br /><span className="text-shimmer">The Gene Pool.</span></H2></Reveal>
+              <Reveal><Eyebrow>Connect</Eyebrow></Reveal>
+              <Reveal delay={80}><H2>Your lab.<br /><span className="text-shimmer">Connected.</span></H2></Reveal>
               <Reveal delay={160}><Lede>A friendly community for biotech and pharma students. Share what you’re learning, follow people you admire and swap science gossip.</Lede></Reveal>
               <ul className="mt-9 space-y-6">
                 {[
@@ -410,7 +410,7 @@ export default function Home() {
   );
 }
 
-// An iPhone showing The Gene Pool feed, with the floating glass tab bar. Illustrative posts only.
+// An iPhone showing the Connect feed, with the floating glass tab bar. Illustrative posts only.
 function PhoneMockup({ headline }) {
   const posts = [
     ['Maya R.', '@maya.bio', '2h', 'Finally got clean bands on my first Western blot. Three weeks of troubleshooting and it was the transfer buffer.', 24, true, 'from-brand-500 to-helix-500'],
@@ -421,7 +421,7 @@ function PhoneMockup({ headline }) {
     <div aria-hidden="true" className="relative mx-auto aspect-[9/19.3] w-[min(320px,82vw)] rounded-[52px] bg-gradient-to-br from-[#2a3446] to-[#0b1220] p-3 shadow-[0_40px_80px_-30px_rgba(11,24,43,0.55),inset_0_0_0_2px_rgba(255,255,255,0.08)]">
       <div className="relative flex h-full flex-col overflow-hidden rounded-[41px] bg-white dark:bg-ink-950">
         <div className="absolute left-1/2 top-2.5 z-10 h-[26px] w-[92px] -translate-x-1/2 rounded-full bg-black" />
-        <p className="border-b border-slate-200/70 px-[18px] pb-2.5 pt-12 font-display text-[22px] font-semibold tracking-tight text-slate-900 dark:border-white/10 dark:text-white">The Gene Pool</p>
+        <p className="border-b border-slate-200/70 px-[18px] pb-2.5 pt-12 font-display text-[22px] font-semibold tracking-tight text-slate-900 dark:border-white/10 dark:text-white">Connect</p>
         <div className="flex-1 overflow-hidden px-3.5">
           {posts.map(([name, handle, ago, body, likes, liked, avatar]) => (
             <div key={handle} className="grid grid-cols-[34px_1fr] gap-2.5 border-b border-slate-200/70 py-3.5 text-[12.5px] leading-snug dark:border-white/10">
