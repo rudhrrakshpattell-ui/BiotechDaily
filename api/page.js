@@ -69,3 +69,6 @@ export async function GET(request) {
     },
   });
 }
+
+// Crawlers and link checkers often check with HEAD first; answer it like GET (the platform drops the body).
+export const HEAD = GET;

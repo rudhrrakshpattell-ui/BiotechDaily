@@ -27,3 +27,6 @@ export function GET(request) {
 
   return new Response('Not found', { status: 404 });
 }
+
+// Crawlers and validators often check with HEAD first; answer it like GET (the platform drops the body).
+export const HEAD = GET;
