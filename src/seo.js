@@ -24,12 +24,12 @@ export function metaFor(pathname, query = {}) {
 
   if (section === 'connect') {
     const connect = (title, description, index = false) => ({ ...page(title, description), status: 200, index });
-    if (!id) return connect('The Gene Pool: the community for biotech students', 'Dive into The Gene Pool: create your profile, follow biotech and pharma students from universities worldwide, and share what you’re learning.', true);
-    if (id === 'guidelines' && !rest.length) return connect('The Gene Pool community guidelines', 'The rules that keep The Gene Pool safe and useful for biotech students aged 13 and over.', true);
+    if (!id) return connect('The Gene Pool: the community for biotech and pharma students', 'Dive into The Gene Pool: create your profile, follow biotech and pharma students from universities worldwide, and share what you’re learning.', true);
+    if (id === 'guidelines' && !rest.length) return connect('The Gene Pool community guidelines', 'The rules that keep The Gene Pool safe and useful for biotech and pharma students aged 13 and over.', true);
     if (id === 'join' && !rest.length) return connect('Join The Gene Pool', 'Create your free Gene Pool profile on Spill the Genes.');
     // Member pages are never indexed: some members are under 18.
     if (id === 'u' && rest.length >= 1 && rest.length <= 2) return connect(`@${rest[0]} in The Gene Pool`, 'A biotech student in The Gene Pool on Spill the Genes.');
-    if (id === 'p' && rest.length === 1) return connect('Post in The Gene Pool', 'A post from The Gene Pool, the Spill the Genes community for biotech students.');
+    if (id === 'p' && rest.length === 1) return connect('Post in The Gene Pool', 'A post from The Gene Pool, the Spill the Genes community for biotech and pharma students.');
     if (id === 'messages' && rest.length <= 1) return connect('Messages', 'Your Gene Pool messages.');
     if ((id === 'settings' || id === 'search') && !rest.length) return connect('The Gene Pool', 'The Gene Pool on Spill the Genes.');
     return notFound;

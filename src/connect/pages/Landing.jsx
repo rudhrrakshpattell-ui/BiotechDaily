@@ -2,7 +2,7 @@ import Icon from '../../components/Icon.jsx';
 import PostList from '../components/PostList.jsx';
 
 const FEATURES = [
-  ['users', 'Find your people', 'Follow biotech students from universities around the world.'],
+  ['users', 'Find your people', 'Follow biotech and pharma students from universities around the world.'],
   ['sparkles', 'Share what you’re working on', 'Papers, lab wins, internship tips, questions.'],
   ['flask', 'Built for science students', 'Profiles show your program, university and research interests.'],
 ];
@@ -16,7 +16,7 @@ export default function Landing() {
         <div className="relative mx-auto max-w-6xl px-4 pb-14 pt-14 sm:px-6 sm:pt-20">
           <p className="eyebrow mb-3">The Gene Pool · by Spill the Genes</p>
           <h1 className="max-w-3xl font-display text-4xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-5xl dark:text-white">
-            Dive into the community for <span className="bg-gradient-to-r from-brand-600 to-helix-500 bg-clip-text text-transparent dark:from-brand-300 dark:to-helix-400">biotech students.</span>
+            Dive into the community for <span className="bg-gradient-to-r from-brand-600 to-helix-500 bg-clip-text text-transparent dark:from-brand-300 dark:to-helix-400">biotech and pharma students.</span>
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-slate-600 dark:text-slate-400">Create your profile, follow other biotech and pharma students, and swap what you’re learning, building and gossiping about in the lab.</p>
           <div className="mt-8 flex flex-wrap gap-3">

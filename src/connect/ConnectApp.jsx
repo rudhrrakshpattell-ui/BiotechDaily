@@ -24,7 +24,7 @@ function NotConfigured() {
     <div className="mx-auto max-w-lg px-4 py-20 text-center">
       <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-brand-400/10 dark:text-brand-300"><Icon name="users" /></span>
       <h1 className="mt-4 font-display text-2xl font-semibold text-slate-900 dark:text-white">The Gene Pool is almost ready</h1>
-      <p className="mt-2 text-slate-500">The community for biotech students is launching soon.</p>
+      <p className="mt-2 text-slate-500">The community for biotech and pharma students is launching soon.</p>
     </div>
   );
 }
