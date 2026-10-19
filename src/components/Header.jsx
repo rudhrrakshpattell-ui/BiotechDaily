@@ -38,7 +38,7 @@ export default function Header({ path, theme, onToggleTheme, onOpenSearch }) {
           aria-current={path === '/' ? 'page' : undefined}
           aria-label="Home"
           title="Home"
-          className={`focus-ring inline-flex h-9 items-center gap-1.5 rounded-full px-2.5 max-[379px]:hidden text-sm font-medium transition sm:ml-2 lg:px-3 ${
+          className={`focus-ring hidden h-9 items-center gap-1.5 rounded-full px-3 text-sm font-medium transition lg:ml-2 lg:inline-flex ${
             path === '/'
               ? 'bg-brand-50 text-brand-700 dark:bg-brand-400/10 dark:text-brand-200'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white'

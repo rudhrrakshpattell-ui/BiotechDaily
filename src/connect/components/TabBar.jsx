@@ -13,7 +13,8 @@ export default function TabBar({ path, profile, unread = 0 }) {
 
   const profilePath = profile ? `/connect/u/${profile.username}` : null;
   const tabs = [
-    { href: '/connect', label: 'Feed', icon: 'home', activeIcon: 'homeFilled', active: path === '/connect' },
+    { href: '/', label: 'Home', icon: 'home', active: false }, // back to the main site
+    { href: '/connect', label: 'Feed', icon: 'feed', activeIcon: 'feedFilled', active: path === '/connect' },
     { href: '/connect/search', label: 'Search', icon: 'search', active: path === '/connect/search' },
     { href: profile ? '/connect/messages' : '/connect/join?mode=signin', label: 'Messages', icon: 'message', activeIcon: 'messageFilled', active: path.startsWith('/connect/messages'), badge: unread },
     profile
@@ -33,7 +34,7 @@ export default function TabBar({ path, profile, unread = 0 }) {
         'md:dark:border-white/[0.12] md:dark:bg-ink-800/55 md:dark:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.08)]',
       ].join(' ')}
     >
-      <ul className="grid h-[3.25rem] grid-cols-4 md:flex md:h-auto md:gap-1">
+      <ul className="grid h-[3.25rem] grid-cols-5 md:flex md:h-auto md:gap-1">
         {tabs.map((t) => (
           <li key={t.label}>
             <a
