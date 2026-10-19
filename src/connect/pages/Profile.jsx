@@ -16,7 +16,7 @@ function Unavailable({ signedIn }) {
       <p className="mt-2 text-sm text-slate-500">
         {signedIn ? 'It may have been deleted, or you can’t view it.' : 'Some profiles are only visible to members.'}
       </p>
-      <a href={signedIn ? '/connect' : '/connect/join'} className="focus-ring mt-6 inline-block rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white">{signedIn ? 'Back to The Gene Pool' : 'Join Connect'}</a>
+      <a href={signedIn ? '/connect' : '/connect/join'} className="focus-ring mt-6 inline-block rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white">{signedIn ? 'Back to The Gene Pool' : 'Join The Gene Pool'}</a>
     </div>
   );
 }
@@ -55,9 +55,17 @@ export default function Profile({ username, me }) {
   }
 
   const stat = (key, label, href) => (
-    <a href={href} className="focus-ring rounded-lg px-1 hover:underline">
+    <a href={href} className="focus-ring whitespace-nowrap rounded-lg px-1 hover:underline">
       <span className="font-semibold tabular-nums text-slate-900 dark:text-white">{stats ? formatNumber(stats[key]) : '–'}</span> <span className="text-slate-500">{label}</span>
     </a>
+  );
+
+  const stats3 = (
+    <>
+      {stat('posts', 'posts', `/connect/u/${person.username}`)}
+      {stat('followers', 'followers', `/connect/u/${person.username}/followers`)}
+      {stat('following', 'following', `/connect/u/${person.username}/following`)}
+    </>
   );
 
   return (
@@ -69,14 +77,10 @@ export default function Profile({ username, me }) {
             <h1 className="font-display text-2xl font-semibold text-slate-900 sm:text-3xl dark:text-white">{person.display_name}</h1>
             <p className="text-slate-500">@{person.username}</p>
             {(person.program || person.university) && <p className="mt-2 text-sm font-medium text-slate-700 dark:text-slate-300">{[person.program, person.university].filter(Boolean).join(' · ')}</p>}
-            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-              {stat('posts', 'posts', `/connect/u/${person.username}`)}
-              {stat('followers', 'followers', `/connect/u/${person.username}/followers`)}
-              {stat('following', 'following', `/connect/u/${person.username}/following`)}
-            </div>
+            <div className="mt-3 hidden flex-wrap gap-x-4 gap-y-1 text-sm sm:flex">{stats3}</div>
           </div>
           <div className="flex items-center gap-2">
-            {isMe && <a href="/connect/settings" className="focus-ring rounded-full border border-slate-200 px-5 py-2 text-sm font-semibold text-slate-700 dark:border-white/15 dark:text-slate-200">Edit profile</a>}
+            {isMe && <a href="/connect/settings" className="focus-ring hidden rounded-full border border-slate-200 px-5 py-2 text-sm font-semibold text-slate-700 sm:inline-block dark:border-white/15 dark:text-slate-200">Edit profile</a>}
             {me && !isMe && !blocked && messageable && (
               <a href={`/connect/messages/${person.username}`} className="focus-ring grid h-10 w-10 place-items-center rounded-full border border-slate-200 text-slate-700 hover:border-brand-300 hover:text-brand-600 dark:border-white/15 dark:text-slate-200" aria-label={`Message ${person.display_name}`} title="Message">
                 <Icon name="message" className="h-[18px] w-[18px]" />
@@ -96,6 +100,11 @@ export default function Profile({ username, me }) {
               </div>
             )}
           </div>
+        </div>
+        {/* Phones: stats get their own full-width row, with Edit profile at the end. */}
+        <div className="mt-5 flex items-center gap-x-2 border-t border-slate-100 pt-4 text-[13px] sm:hidden dark:border-white/5">
+          {stats3}
+          {isMe && <a href="/connect/settings" className="focus-ring ml-auto inline-flex shrink-0 items-center gap-1 rounded-full border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-700 dark:border-white/15 dark:text-slate-200"><Icon name="settings" className="h-3.5 w-3.5" />Edit</a>}
         </div>
         {person.bio && <p className="mt-5 whitespace-pre-wrap text-slate-700 dark:text-slate-300">{person.bio}</p>}
         {person.interests?.length > 0 && (
